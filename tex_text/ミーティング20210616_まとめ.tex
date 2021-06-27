@@ -50,7 +50,7 @@
 
 \begin{document}
 \maketitle
-2021/6/16のミーティングで決まったことをまとめます。
+2021/6/16のミーティングで決まったことと、それらをもとに考えたことをまとめます。
 
 \section{階層TDESの問題設定の変更}
 TACに提出した論文では、Problem 2 の問題設定においてAlgorithm 2を用いて階層TDESの動作計画をtop-down的に上位TDESから求めていった。
@@ -86,12 +86,9 @@ Modular of a specification&導入した&導入しない\\\hline
 また、上位TDES $G$の単位時間を$\tick_p$、下位TDES $G_i$の単位時間を$\tick_i$で表記し、$\tick_i$が経過したことを表す事象を$\textit{tick}_i$とする。
 
 それぞれの下位TDES $G_i$に与えるHard制約を$\phi_i$と表記する。$t_i$は、$G_i$で$\phi_i$を満たすために必要な時間（事象$\textit{tick}_i$の数）とする。
-%Hard制約は$G_i$で表現されたタスクを正しく行うための制約を表す。
-%Hard制約を満たす$G_i$の実行列（execution）$\pi_i$を求められることと、$G_i$とHard制約で表現されたタスクを場所$s_i$で完了できることは等価とする。
 
 変更後では、上位TDESに与える仕様をパラメータ化する。
 パラメーターを要素としてもつベクトルを$\bm{m}=(m_1,\ldots,m_M)\in\mathbb{Z}_{\geq 0}^M$とする。
-%上位TDESはすべての下位TDESの情報を扱わなければいけないため、このようにベクトルでパラメータを表現する。
 $m_i$は$t_i$によって値が決まる。
 $\bm{m}$によりパラメータ化されたticked LTL${}_f$式を$\varphi(\bm{m})$と表記する。
 
@@ -104,6 +101,7 @@ Given a two-level hierarchical TDES $\mathcal{G}$, a parameterized hard constrai
 %
 \end{pbm}
 %
+このProblem 3の文章は修正が必要だと考えています。
 %
 %
 \section{新しいアルゴリズムについて}\label{app}
@@ -121,149 +119,65 @@ Problem \ref{pbm3}を解くためのアルゴリズムの流れを以下にま�
 すべての$i\in\{1,\ldots,M\}$について、
 \begin{enumerate}
 \item\label{1-a}
-下位TDES $G_i$のHard制約$\phi_i$を満たす実行列$\pi_i$を求める。
+下位TDES $G_i$のHard制約$\phi_i$を満たす実行列（execution）$\pi_i$を求める。
 \item\label{1-b}
 $\pi_i$から$\phi_i$を満たすのにかかった時間を求め、$t_i$とする
 \end{enumerate}
-\item
-それぞれの$i$について、$m_i=\left\lceil t_i\frac{\tick_i}{\tick_p} \right\rceil = \left\lceil \frac{t_i}{K_i}\right\rceil $を求める、（$K_i$は提出した論文の式15で導入）
+\item\label{2}
+それぞれの$i$について、$m_i=\left\lceil t_i\frac{\tick_i}{\tick_p} \right\rceil = \left\lceil \frac{t_i}{K_i}\right\rceil $を求める（$K_i$は提出した論文の式15で導入）
 \item
 $G$の仕様に$\bm{m}=(m_1,\ldots,m_M)$の値を代入
 \item
 $G$の動作計画を行う
 \end{enumerate}
 %
-\ref{1-a}を行うために$G_i$の実行列の長さ$\Len_i$を与える。
-
-\ref{1-b}で$t_i$を求めるための具体的な方法を説明していきます。
-%
-%
-%
-\begin{comment}
-%
-%
-\subsection{実行列の長さの決め方}\label{sec:len}
-まず、このsubsectionで必要な表記と仮定について述べる。
-
-表記：ticked LTL${}_f$式のnestされた時相論理の演算子の上限時間の合計を\textit{bound}とする（参考：\cite{raman2014model}）。
-例として$\phi=\Diamond_{[2,5]}(\Box_{[0,3]}\varphi)$を挙げると、$\phi$のboundは$5+3=8$である。
-また、$b(\phi)\in\mathbb{Z}_{\geq 0}$はticked LTL${}_f$式 $\phi$のboundの値を表すとする。
-
-仮定：それぞれの下位TDES $G_i$の事象について
-「少なくとも一つの事象$\underline{\sigma}$のlower time $l_{\underline{\sigma}}$は1以上である（$\exists {\underline{\sigma}}\in\Sigma_i,l_{\underline{\sigma}} \geq1$）」と仮定する。
-
-$i\in\{1,\ldots,M\}$について、どのような実行列$\pi_i$であっても$b(\phi_i)$個の事象$\textit{tick}_i$を含む$\Len_i$の最小値は以下のようになる。
-\begin{align}\label{len}
-\Len_i = b(\phi_i)+q=q(l^*+1)+k,
+\ref{1-a}で$\pi_i$を求めるために実行列の長さ$\Len_i$を与える。
+最短時間でHard制約を満たすために、$\pi_i$を求める最適化問題の目的関数に
+\begin{align}
+\mbox{min:}~\sum_{k=1}^{\Len_i}z_e(k)
 \end{align}
-ここで、$ l^*=\min\{l_\sigma|\ \sigma\in\Sigma_i, l_\sigma\geq1\}$、$q$と$k$はそれぞれ$b(\phi_i)$を$l^*$で割ったときの商と余りとする（$b(\phi_i)=q\cdot l^*+k$）。
+を追加する。$z_e(k)$は$\pi_i$の$k$番目の事象が$\textit{tick}_i$なら1、それ以外の事象なら0をとる二値変数である（TACに提出した論文の式6から式9で導入しています）。
 
-「説明」
-
-状態と事象が交互に現れる実行列から事象のみを抜き出した列を事象列と呼ぶ。事象列において事象$\textit{tick}$を$t$と簡略化し、$\textit{tick}$が$n$個連続して生起することを$\textit{tick}^n,t^n$と表記する。例えば、$t,t,t,\sigma$は$t^3,\sigma$と表記される。
-
-最も実行列の中に含まれる事象$\textit{tick}$が少なくなる状況は以下のようなときである。
+また、前回のミーティングではSoft制約を下位TDESには与えない、となりましたが、以下のような形式でSoft制約$\Psi_i=\{(\psi_{i,j},w_{i,j})|\ j\in\{1,\ldots,N_i\}\}$を組み込むことは可能だと感じました。
+\begin{align}\label{obj1}
+\mbox{min:}~\sum_{k=1}^{\Len_i}z_e(k) + \left(-\sum_{j=1}^{N_i} w_{i,j}\cdot z_{\psi_{i,j}}\right)
+\end{align}
+または、
+\begin{align}
+\mbox{min:}~\alpha\sum_{k=1}^{\Len_i}z_e(k) + \left\{-(1-\alpha)\sum_{j=1}^{N_i} w_{i,j}\cdot z_{\psi_{i,j}}\right\},~0\leq \alpha\leq 1
+\end{align}
+%
+\req{obj1}では、時間とSoft制約のトレードオフ（Soft制約は満たしたいけど、余計な時間がかかる）について、以下のようなことが考えられる。
 \begin{itemize}
 \item
-lower timeが最小の事象$\sigma^*$のみが生起する（DESの構造的に常に同じ事象が生起することは少ないと考えられますが、あり得ないことではないです）。
+$w_{i,j}>1$なら１単位時間（$1\tick_i$）を余分にかけて$\psi_{i,j}$を満たす価値がある。
 \item
-事象$\sigma^*$が$l_{\sigma^*}$個の$\textit{tick}$を生起させた直後に生起する状況である（余分な$\textit{tick}$を生起させない）。
-\item
-一つの状態からの遷移は一つのみであり、その遷移に関わる事象は他の状態の遷移には関与しない（$\forall s[ \delta(s,\sigma)!\Rightarrow \delta(s,\sigma')\not{!},\sigma\neq\sigma']\land\forall\sigma[\delta(s,\sigma)!\Rightarrow \delta(s',\sigma)\not{!},s\neq s']$）。一つの$\textit{tick}$で状態に組み込まれている一つのタイマー$t_\sigma$しか減らすことができないことを表す（一つの$\textit{tick}$で複数のタイマーの値を減らすことができない。したがって、事象）。
+$w_{i,j_1}+w_{i,j_2}>3$なら3単位時間（$3\tick_i$）を余分にかけて$\psi_{i,j_1}$と$\psi_{i,j_2}$を満たす価値がある。
 \end{itemize}
+%
 
-この三つの状況でも$b(\phi_i)$個の$\textit{tick}_i$を含むことができる列の長さが\req{len}で示したものである。
-
-上記の状況で、$\Len_i$の値を\req{len}のようにとると、事象列は、$l^*$個の$\textit{tick}$と$\sigma^*$の列$t^{l^*},\sigma^*$が$q$個続き、その後$k(0\leq k \leq l^*-1)$個の$\textit{tick}$が生起する。
+\ref{1-b}を行う時、$t_i$を簡単に求めるために、
 \begin{align}
-t^{l^*},\sigma^*,t^{l^*},\sigma^*,\ldots,t^{l^*},\sigma^*,t^{k}
+t_i=\mbox{（$\pi_i$の$s_0$から$s_{\Len_i}$までに含まれる事象$\textit{tick}_i$の数）}
 \end{align}
-この事象列に含まれる$\textit{tick}$の数は$b(\phi)$と一致することが確認できる。
-ここで$l^*$の定義・与え方から$k$個の$\textit{tick}$の間は他の事象は生起できない。
-
-\begin{figure}[hbt]
-\begin{center}
-\subfigure
-[$b(\phi)=8$とした時の必要な$\tick$数。]
-{
-{\includegraphics[width=6cm]{len_1-crop.pdf}} \label{c1}
-}
-\hspace{0.3cm}
-%
-%
-\subfigure
-[事象$\textit{tick}$の数が最小となる事象列。]
-{
-{\includegraphics[width=7cm]{len_2-crop.pdf}} \label{c2}
-}
-\hspace{0cm}
-%
-%
-\caption{。} 
-\label{c}
-\end{center}
-\end{figure}
-%
-%
-%
-%
-\end{comment}
-%
-%
-
-%
-\begin{comment}
-%
-%
-同じ長さ$\Len$の実行列を考える。
-事象列の中で事象$\textit{tick}$の数が最少になるのは、事象$\textit{tick}$以外の事象の数が最大になるときである。
-
-
-$b(\phi)$個以上の$\textit{tick}$を事象列（実行列）に含ませたい。そのために最低限必要な$\Len$の長さを求める。$\Len$が大きすぎると時間がかかる、小さすぎると実行列の長さ不足により、解なしになる。
-$l_{\sigma_1}=1$と$l_{\sigma_2}=2$を考える。
-$u_{\sigma_1}=u_{\sigma_2}=5$とする（そこまで重要ではない）。
-$\Len=6$のとき、$t$を事象$\textit{tick}$と簡略化して、以下の事象列を考える。
+としたい。
+このとき、表記の方法としては以下の2通りが考えられる。
 \begin{align}
-\pi_e^1=&t,\sigma_1,\sigma_1,t,\sigma_1 \\
-\pi_e^2=&t,t,\sigma_2,t,t,\sigma_2 \\
-\pi_e^3=&t,t,t,t,t,\sigma_1 \\
-\pi_e^2=&t,t,\sigma_2,t,\sigma_1,t 
+&t_i=\sum_{k=1}^{\Len_i}z_e(k),\\
+&t_i=\textit{count}_{\pi_i}(0,\Len_i).
 \end{align}
-事象$\textit{tick}$以外の事象の数が最大になるのは、最もlower time が小さい事象$\sigma^*$のみが事象列に現れ、$l_{\sigma^*}$個の$\textit{tick}$が生起した直後に$\sigma^*$が生起するような事象列である。この状況において、
+%
+しかし、DES（TDES）が巡回するようなループ構造をしていた場合、仕様を満たす時間を適切に求めることができない。例えば、ある状態で仕様を満たした後に事象$\textit{tick}_i$を生起させる遷移しかない、という状況が考えられる。
 
-%
-%
-\end{comment}
-%
-%
-%
-%
-%
-%
-%
-\subsection{下位TDESの動作計画に必要な時間$t_i$の求め方}\label{sec:time}
-前回のミーティングで下位TDESについてILP問題を実際に解き、そこから下位TDESがHard制約を満たすために必要な時間を求める、という話になりました。
-しかし、以下の二つの課題が考えられました。
-\begin{enumerate}
-\item
-どこの状態に到達すれば、仕様を満たし終わったのかを判断できない。
-\item
-「最も短い時間で仕様を満たす」という考え方がTDESにはない。
-
-\end{enumerate}
-この二つの課題について、一つ一つ対処方法を考える。
-%\subsection{一つ目の課題の対処方法}
-\subsubsection{一つ目の課題の対処方法}
-一つ目の課題を解決するために、下位TDESの元となっているDESの構造に手を加え、更新します。ここでは$i$番目のDES $G_{i,\textit{act}}=(S_{i,\textit{act}},\Sigma_{i,\textit{act}},\delta_{i,\textit{act}},s_{\textit{init},i,\textit{act}},\textit{AP}_{i,\textit{act}},L_{i,\textit{act}})$を考え、更新後のDESを$G_{i,\textit{act}}'=(S_{i,\textit{act}}',\Sigma_{i,\textit{act}}',\delta_{i,\textit{act}}',s_{\textit{init},i,\textit{act}}',\textit{AP}_{i,\textit{act}}',L_{i,\textit{act}}')$と表記する。
+そこで、「仕様を満たし終わった」ことを表す状態を下位TDESの元となっているDESに追加する。
+ここでは$i$番目のDES $G_{i,\textit{act}}=(S_{i,\textit{act}},\Sigma_{i,\textit{act}},\delta_{i,\textit{act}},s_{\textit{init},i,\textit{act}},\textit{AP}_{i,\textit{act}},L_{i,\textit{act}})$を考え、更新後のDESを$G_{i,\textit{act}}'=(S_{i,\textit{act}}',\Sigma_{i,\textit{act}}',\delta_{i,\textit{act}}',s_{\textit{init},i,\textit{act}}',\textit{AP}_{i,\textit{act}}',L_{i,\textit{act}}')$と表記する。
 具体的なDESの更新を以下に示します。図\ref{c}で示した具体例を一緒に見ながらですと分かりやすいと思います。
 %
-\begin{enumerate}
+\begin{itemize}
 \item
-%状態$s'$を追加し、新たな状態集合を$S'_{i,\textit{act}}$とする。
 $S'_{i,\textit{act}}=S_{i,\textit{act}}\cup\{s'\}$。
 $s'$は仕様$\phi_i$を全て満たし終わったことを表す。
 \item
-%事象$e_f$と$\textit{fin}$を追加し、新たな事象集合を$\Sigma_{i,\textit{act}}'$とする。
 $\Sigma'_{i,\textit{act}}=\Sigma_{i,\textit{act}}\cup\{e_f,\textit{fin}\}$。
 $e_f$と$\textit{fin}$のlower time とupper time は以下のように与える。
 \begin{align}
@@ -278,19 +192,15 @@ l_{\textit{fin}}=0,\ u_{\textit{fin}}=0.\label{eq:fin}
 &\delta'_{i,act}(s',\textit{fin})=s'.\label{delta:fin}
 \end{align}
 \item
-%原子命題$\textit{Fin}$を新たに追加する。
-%新たな原子命題の集合$\textit{AP}'_{i,\textit{act}}$は、
 $\textit{AP}_{i,\textit{act}}'=\textit{AP}_{i,\textit{act}}\cup\{\textit{Fin}\}$。
 \item
 原子命題$\textit{Fin}$は$s'$に割り当てられるとする。
-%$L_{i,\textit{act}}$に以下の原子命題と状態の対応を追加した新たなラベル関数を$L_{i,\textit{act}}'$とする。
-%新たなラベル関数を$L_{i,\textit{act}}'$とする。これは
 $L_{i,\textit{act}}'$は$L_{i,\textit{act}}$に以下の原子命題と状態の対応関係が追加されたものである。
 \begin{align}
 L_{i,\textit{act}}'(s')=\textit{Fin}.
 \end{align}
 %
-\end{enumerate}
+\end{itemize}
 %
 \begin{figure}[hbt]
 \begin{center}
@@ -315,7 +225,10 @@ L_{i,\textit{act}}'(s')=\textit{Fin}.
 \end{center}
 \end{figure}
 %
-
+%
+\begin{comment}
+%
+%
 更新されたDES $G_{i,act}'$から得られるTDESに与える仕様$\phi_i$に以下の仕様を追加する。
 \begin{align}\label{add_spec}
 &(\lnot \textit{Fin})U_{[0,\Len_i]}\phi_i,&\Diamond_{[0,\Len_i]}\textit{Fin}.
@@ -329,142 +242,14 @@ L_{i,\textit{act}}'(s')=\textit{Fin}.
 \land \Diamond_{[0,\Len_i]}\textit{Fin}
 \end{align}
 となる。
-
-以上により、$s'$に到達したら仕様$\phi_i$を満たした、ということが判定できる。
-%
-%
-%\subsection{二つ目の課題の対処方法}
-\subsubsection{二つ目の課題の対処方法}
-\label{sec2-1}
-%
-% 
-%
-%
-\begin{comment}
-%
-%
-%
-%
-
-%
-二つめの課題の具体例をDES $G_{i,\textit{act}}$から得られる$i$番目の下位TDESをもとに考える。ここで、状態と事象が交互に現れる実行列から事象のみを抜き出した列を事象列と呼ぶ。
-仕様は$\phi_i=\Diamond_{0,\Len_i}L(s^*)$とする。
-最も短い時間でHard制約を満たす事象列は$a,b,c(\Len_i=3)$である。しかし、$\Len_i=3$では事象列$a,\textit{tick}_i,d$も解として得られる。
-この二つの事象列は実行可能解としては区別されない。
-\begin{figure}
-\begin{center}
-\includegraphics[width=6cm]{exa1-crop.pdf}
-\caption{矢印は遷移を表し、その近くの$(\sigma,l_\sigma,u_\sigma)$は遷移に関わる事象$\sigma$とそのlower time $l_\sigma$とupper time $u_\sigma$からなるタプルである。}
-\label{exa1}
-\end{center}
-\end{figure}
-
-% 
 %
 %
 \end{comment}
 %
-%
-%
-%
-
-対象方法として最適化問題の目的関数に
-\begin{align}
-\mbox{min:}~\sum_{k=1}^{\Len_i}z_e(k)
-\end{align}
-を追加する方法が考えられる。$z_e(k)$はTACに提出した論文の式6から式9で導入しています。
-
-また、前回のミーティングではSoft制約を下位TDESには与えない、となりましたが、以下のような形式でSoft制約を組み込むことは可能だと感じました。
-\begin{align}\label{obj1}
-\mbox{min:}~\sum_{k=1}^{\Len_i}z_e(k) + \left(-\sum_{j=1}^N w_{i,j}\cdot z_{\psi_{i,j}}\right)
-\end{align}
-または、
-\begin{align}
-\mbox{min:}~\alpha\sum_{k=1}^{\Len_i}z_e(k) + \left\{-(1-\alpha)\sum_{j=1}^N w_{i,j}\cdot z_{\psi_{i,j}}\right\},~0\leq \alpha\leq 1
-\end{align}
-%
-\req{obj1}では、時間とSoft制約のトレードオフ（Soft制約は満たしたいけど、時間が余分に必要になる）について、以下のようなことが考えられる。
-\begin{itemize}
-\item
-$w_{i,j}>1$なら１単位時間（$1\tick_i$）を余分にかけて$\psi_{i,j}$を満たす価値がある。
-\item
-$w_{i,j_1}+w_{i,j_2}>3$なら3単位時間（$3\tick_i$）を余分にかけて$\psi_{i,j_1}$と$\psi_{i,j_2}$を満たす価値がある。
-\end{itemize}
-%
-%
-\begin{comment}
-%
-%
-%
+こうすることで、仕様を満たし、かつ$\textit{tick}_i$を生起させたくない時に対応できます。
 %
 
-[対処方法２]
-仕様に
-\begin{align}
-\Box_{[0,\Len_i]}\left( \phi_i\to\Diamond_{[0,0]}\textit{Fin}\right).\label{eq:spec}
-\end{align}
-を追加する。この仕様は、$\phi_i$を満たしたならば、次の\textit{tick}が生起するまでに$s'$に遷移しなくてはならないことを表す。ここで、$\Diamond_{[0,0]}\textit{Fin}$は次の$\tick$が生起するまでに状態$s'$に到達することを表す。
-
-
-したがって、最終的に$i$番目の下位TDESに与える仕様$\phi_i''$は、
-$\phi_i''=\phi_i
-\land\left\{(\lnot \textit{Fin})U_{[0,\Len_i]}\phi_i \right\}
-\land\left\{ \Box_{[0,\Len_i]}\left( \phi_i\to\Diamond_{[0,0]}\textit{Fin}\right)\right\}$となる。
-
-$G_{i,act}'$、$\phi_i'$、$\Len_i$から実行列$\pi_i$を得る。
-そして、Hard制約を満たすために最低限必要な時間$t_i$を$t_i=\textit{count}_{\pi_i}(0,\Len_i)$とする。
-これの正当性は、
-\begin{itemize}
-\item
-\req{eq:spec}より、$\phi_i$が満たされたら次の事象\textit{tick}が生起するまでに$s'$に遷移する。
-%
-\item
-\req{eq:fin}より、$s'$に遷移したら二度と\textit{tick}が生起できない。
-\end{itemize}
-ということからきている。
-
-この方法では、最適化関数
-
-%
-%
-\begin{algorithm}
-\caption{Find an execution of a two-level hierarchical TDES} \label{alg4}
-\begin{algorithmic}
-\Require $\mathcal{G}$ (two-level hierarchical TDES), $\phi$, $\Psi$, $\phi_1,\ldots,\phi_M$, $f_1,\ldots,f_M$, $\Count$, $\Len$
-\Ensure All executions $\pi$, $\pi_{i}$ 
-\For{$i \in [1,\ M]$}
-\State $\pi_i=$Find($G_i$,$\phi_i$,$\Len$)
-\State get $t_i$
-\State $m_i=\lceil t_i\frac{\tick_p}{\tick_i} \rceil$
-\EndFor
-%\If {$\pi=\bot$}
-%	\State finish
-%\EndIf
-\State $\bm{m}=(m_1,\ldots,m_M)$
-
-\State $\pi=$Find($G$,$\phi(\bm{m})$,$\Psi(\bm{m})$,$\Len$)
-
-
-\end{algorithmic}
-\end{algorithm}
-%
-%
-%
-%
-\end{comment}
-%
-%
-\subsubsection{$t_i$の求め方}
-%\subsection{$t_i$の求め方}
-%
-%
-\rsec{sec2-1}より、
-$t_i$は$G_i$の実行列の$s_0$から$s_{\Len_i}$までに含まれる事象$\textit{tick}_i$の数を数えることで求めることができる。
-表記の方法としては以下の2通りが考えられる。
-\begin{align}
-&t_i=\sum_{k=1}^{\Len_i}z_e(k),\\
-&t_i=\textit{count}_{\pi_i}(0,\Len_i).
-\end{align}
+\ref{2}では、上位TDESと下位TDESの単位時間の違いを調整している。
 %
 \section{具体例の案}
 前回のミーティングで発案された具体例について定式化します。
@@ -474,7 +259,7 @@ $t_i$は$G_i$の実行列の$s_0$から$s_{\Len_i}$までに含まれる事象$\
 上位TDESの状態（場所）$s_i$には、下位TDESで表現されたタスクが存在していることを表す。
 
 $M'$を$1\leq M'\leq M$を満たす整数とする。
-$i_h\in\{1,\ldots, M'\}$について、$s_{i_h}$で行うタスクは必ずどこかで完了しなければならないとする。
+$i_h\in\{1,\ldots, M'\}$について、$s_{i_h}$で行うタスクは必ずどこかのタイミングで完了しなければならないとする。
 $i_s\in\{M'+1,\ldots, M\}$について、$s_{i_s}$で行うタスクは可能ならば実行するとする。
 そうすると、$G$に与えるHard制約とSoft制約は、パラメーター$m_i\in \mathbb{Z}_{\geq 0},i\in\{1,\ldots,M\}$を用いて以下のように与えられる。
 \begin{align}
@@ -482,12 +267,12 @@ $i_s\in\{M'+1,\ldots, M\}$について、$s_{i_s}$で行うタスクは可能な
 \Psi(\bm{m})=&\left\{\Diamond_{[0,\Len]}\Box_{[0,m_{i_s}]}L(s_{i_s})|\ i_s\in\left\{M'+1,\ldots, M\right\}\right\}\cup \Psi'.
 \end{align}
 ここで、$L$は$G$のラベル関数、$\phi'$はHard制約の一部を表すticked LTL${}_f$式、$\Psi'$はSoft制約の一部とその重みのタプルの集合を表す集合とする。
-$m_i$は、先に求めた$G_i$でHard制約を満たすために必要最低限な時間（tick数）によって決められる。
+%$m_i$は、先に求めた$G_i$でHard制約を満たすために必要最低限な時間（tick数）によって決められる。
 
 
 
 
-\bibliography{TAC_refine} %hoge.bibから拡張子を外した名前
-\bibliographystyle{unsrt} 
+%\bibliography{TAC_refine} %hoge.bibから拡張子を外した名前
+%\bibliographystyle{unsrt} 
 
 \end{document}
