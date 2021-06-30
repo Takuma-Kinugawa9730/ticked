@@ -1,0 +1,439 @@
+\documentclass[ 10pt]{jsarticle}
+
+\usepackage[dvipdfm]{graphicx}      % include this line if your document contains figures
+
+\usepackage{algorithmicx,algpseudocode}
+\usepackage{mathtools}
+\usepackage{subfigure}
+\usepackage{cases}
+\usepackage{bm}
+%\usepackage{txfonts}
+\usepackage{comment}
+%\usepackage{mathtools}
+\usepackage{amsmath}
+\usepackage{balance}
+\usepackage{amssymb}
+\usepackage{amsfonts}
+\usepackage{comment}
+\graphicspath{{./pic/}}
+\usepackage{algorithm}
+%\usepackage{algorithmic}
+%\usepackage[linesnumbered, ruled]{algorithm2e}
+%\usepackage{url}
+\newcommand{\qedwhite}{\hfill \ensuremath{\Box}}
+\newtheorem{myrem}{Remark}
+\newtheorem{dfn}{Definition}
+\newtheorem{pbm}{Problem}
+\newtheorem{exa}{Example}
+\newcommand{\rdef}[1]{Definition\,\ref{#1}}
+\newcommand{\req}[1]{\eqref{#1}} 
+\newcommand{\rpro}[1]{Problem\,\ref{#1}}
+\newcommand{\rsec}[1]{Section\,\ref{#1}}
+\newcommand{\rfig}[1]{Fig.\,\ref{#1}} 
+
+\newcommand{\argmax}{\mathop{\rm arg~max}\limits}
+\newcommand{\argmin}{\mathop{\rm arg~min}\limits}
+\newcommand{\Count}{{\sf Count}}
+\newcommand{\tick}{{\sf tick}}
+\newcommand{\Len}{{\sf L}}
+\renewcommand{\algorithmicrequire}{\textbf{Input:}}
+\renewcommand{\algorithmicensure}{\textbf{Output:}}
+
+\DeclareMathSymbol{\smallslash}{\mathord}{operators}{32}
+\newcommand{\negexcl}{\mathrel{\smallslash\mkern-5mu{!}}}
+
+\setcounter{pbm}{2}
+\setcounter{algorithm}{2}
+
+\title{ミーティング（2021/6/16）のまとめ}
+\author{衣川　琢磨}
+
+\begin{document}
+\maketitle
+修正案をまとめます。
+
+集合$S$について、$|S|$は$S$の濃度（要素数）を表すとする。
+
+以下に示す天井関数$\lceil x \rceil$を導入する。
+\begin{align}
+\lceil x \rceil =\min\{n\in\mathbb{Z}|\ x\leq n\}.
+\end{align}
+
+今回の論文では二階層の階層TDESを考え、
+一つの上位TDES（pTDES） $G$と$M$個の下位TDES（cTDES） $G_1,\ldots,G_M$があるとする。
+$i\in\{1,\ldots,M\}$として、$G$の状態$s_i$と$G_i$が対応付けられているとする。
+
+下位TDES $G_i$の単位時間を$\tick_i$で表記し、$\tick_i$が経過したことを表す事象を$\textit{tick}_i$とする。
+
+%
+%
+\section{DES・TDESの設定変更}
+
+$i$番目の下位システムをモデル化したDES $G_{i,\textit{act}}$を以下のタプルで与える
+\begin{align}
+G_{i,\textit{act}}=(S_{i,\textit{act}},\Sigma_{i,\textit{act}},\delta_{i,\textit{act}},s_{\textit{init},i,\textit{act}},s_{\textit{fin},i,\textit{act}},\textit{AP}_{i,\textit{act}},L_{i,\textit{act}})
+\end{align}
+$s_{\textit{fin},i,\textit{act}}\in S_{i,\textit{act}}$はタスクの終了状態を明示的に表す状態とする（注：$s'$ではないです。）。
+また、事象$e_f\in\Sigma_{i,\textit{act}} $は$s_{\textit{fin},i,\textit{act}}$で生起する事象で、lower time とupper timeを以下のように定義する
+\begin{align}
+l_{e_f}=0,\ u_{e_f}=0.\label{eq:e-f}
+\end{align}
+%
+事象$e_f$が生起すると以下の遷移（自己ループ）がおこる。
+\begin{align}
+\delta_{i,act}(s_{\textit{fin},i,\textit{act}},e_f)=s_{\textit{fin},i,\textit{act}}.\label{delta:e-f}
+\end{align}
+\req{eq:e-f}と\req{delta:e-f}より、事象$e_f$が生起できる状態$s_{\textit{fin},i,\textit{act}}$に到達すると、事象$\textit{tick}_i$を生起させることができなくなる。
+
+終了状態を表す原子命題を$F\in \textit{AP}_{i,\textit{act}}$とする。
+$L_{i,\textit{act}}(s_{\textit{fin},i,\textit{act}})=\{F\}$とし、$\forall s'\in S_{i,\textit{act}},s'\neq s_{\textit{fin},i,\textit{act}}$について$L_{i,\textit{act}}(s') \cap \{F\}=\emptyset$とする。すなわち、$F$は$s_{\textit{fin},i,\textit{act}}$にのみ割り当てられる原子命題である。
+
+%
+\section{階層TDESのプランニング方法の変更}
+TACに提出した論文では、Problem 2 の問題設定においてAlgorithm 2を用いて階層TDESのプランニング・動作計画をtop-down的に上位TDESから求めていった。
+%Problem \ref{pbm3} とAlgorithm \ref{alg4}は\rsec{app}に示しています。
+しかし、この手法では以下のような課題が指摘された。
+\begin{itemize}
+\item
+上位TDESと下位TDESの整合性がとれていない。
+\item
+階層TDES全体で何を行っているのかが分かりにくい。
+\end{itemize}
+そこで、階層TDESのプランニングをbottom-up的に下位TDESから行っていくアルゴリズムに修正する。
+
+仕様の与え方を表\ref{spec}のように変更し、bottom-up的にプランニングを行う問題設定を以下のように定式化する。
+%
+\begin{table}[tb]
+\centering
+\caption{仕様の与え方の変更点}
+\label{spec}
+\begin{tabular}{c||c|c}
+ &変更前　&　変更後　\\\hline\hline
+Modular of a specification&導入した&導入しない\\\hline
+パラメータ化される仕様 &下位TDESへの仕様&最も上位のTDESへの仕様
+\end{tabular}
+\end{table}
+%
+\begin{pbm}\label{pbm3}
+Given a two-level hierarchical TDES $\mathcal{G}$, a hard constraint and a set of soft constraints for the pTDES $G$ with parameters determined by executions of cTDESs, a  hard constraint and a set of soft constraints for each cTDES, the length $\Len_i(>0)$ for each $G_i$, and the length $\Len(>0)$ for $G$, find finite executions of cTDESs, then find a finite execution $\pi$ of $G$ with the length $\Len$.
+% while satisfying the hard cons some tasks represented by cTDESs.
+%satisfies all hard constraints and some soft constraints that maximize the sum of the weights.
+%
+\end{pbm}
+%
+以降のsubsectionでは、
+下位TDESのプランニングについて説明した後、上位TDESのプランニングについて説明する。
+%
+\subsection{下位TDESへの制御仕様の与え方とプランニング方法}
+%
+%
+
+%また、上位TDES $G$の単位時間を$\tick_p$、
+
+
+それぞれの下位TDES $G_i$に与えるHard制約を$\phi_i$、Soft制約とその重みのタプルからなる集合を$\Psi_i$と表記する。
+$s_{\textit{fin},i,\textit{act}}$を考慮し、$\phi_i$は以下のように与える。
+\begin{align}
+\phi_i=\Diamond_{[0,\Len_i]}L_i(s_{\textit{fin},i,\textit{act}}) \land \phi_i'.
+\end{align}
+ここで、$L_i$は$G_i$のラベル関数で、$\phi_i'$はHard制約を表したticked LTL${}_f$式である。
+
+
+下位TDESにSoft制約を与えるが、以下の二点を考慮する必要がある。
+\begin{itemize}
+\item
+満たすSoft制約の組み合わせにはバリエーションがある。
+\item
+満たしたSoft制約の重要度の合計と時間（tick）はトレードオフの関係にある。
+\end{itemize}
+%例えば、時間が十分にある、または時間に重きを置かないのなら全てのSoft制約を満たすことができる。一方、時間に制約がある・パスが早く終わることに重きをおくのなら、その制約の中で最適なSoft制約の組み合わせで満たす。
+これらから、トレードオフにある二つの値の重視する比率を変更することで、満たすSoft制約の組み合わせは変わってくる。
+例えば、時間が短いことを重視すればSoft制約はあまり満たすことができないことが考えられる。また、Soft制約の重要度の合計を重視すれば、時間はかかるが多くのSoft制約を満たし、その重要度の合計も大きくなることが考えられる。
+この重視する比率を$\alpha(0\leq\alpha\leq1)$とし、$\alpha=1$のとき、Soft制約を考慮せずに最短時間のパスを求め、$\alpha=0$のとき、時間は考慮せずにSoft制約の重要度の合計を最大化する実行列を求めるとする。
+
+下位TDESのプランニング問題をILP問題（最適化問題）に変換した時、目的関数は$\alpha$を用いて以下のように与えられる。
+\begin{align}\label{obj:alpha}
+\mbox{min:}~\alpha\sum_{k=1}^{\Len_i}z_e(k) + \left\{-(1-\alpha)\sum_{j=1}^{N_i} w_{i,j}\cdot z_{\psi_{i,j}}\right\},~0\leq \alpha\leq 1
+\end{align}
+%
+
+下位TDESの実行列を求めた後、上位TDESの実行列を求める。
+その時、下位TDESがHard制約を満たすために必要な時間を上位TDESに伝える。
+この必要最低限の時間に加え、「$X$だけの時間があれば、追加のタスク$Y$も（下位TDESで）行え、そのタスクを行うことは$Z$だけ重要だ」という情報を上位TDESに与える。$X$は事象$\textit{tick}$の数を表し、$Y$はSoft制約で表現されたタスク、$Z$は満たしたSoft制約の重要度の合計を表す。
+このようにいくつかの選択肢を上位TDESに提供することで、指定された実行列の長さ$\Len$の中で、階層TDES全体でより多くのタスクが行えるようにする。
+
+上記のことを実現するために、複数の比率について下位TDESの実行列を求める。
+与える比率は全ての下位TDESで同じものとし、以下のように与える。
+\begin{align}\label{A}
+A=\{\alpha_1,\alpha_2,\ldots,\alpha_{|A|}\},~
+ 0\leq\alpha_1<\cdots<\alpha_{i}< \alpha_{i+1}<\cdots<\alpha_{|A|}\leq1,~
+ i\in\{1,\ldots,|A|-1\}.
+\end{align}
+%
+それぞれの$\alpha\in A$について実行列を求める。$i$番目のTDES $G_i$の$\alpha(\in A)$を用いて得られた実行列を$\pi_i(\alpha)$と表記する。
+%
+%\subsubsection{上位TDESのパラメーターについて}
+
+ここから、上位TDESの仕様のパラメーターを決める値（上記の$X$と$Z$）について導入していく。
+
+$A$は\req{A}で導入した集合とし、$\alpha\in A$とする。$t_i(\alpha)$と$m_i(\alpha)$を以下のように定義する。
+\begin{align}\label{ti}
+t_i(\alpha)&=\mbox{（$\pi_i(\alpha)$に含まれる事象$\textit{tick}_i$の数）}+1,\\
+m_i(\alpha)&=\left\lceil t_i(\alpha)\frac{\tick_i}{\tick_p} \right\rceil .
+\end{align}
+%
+
+%次に上位TDESに与える仕様について考える。
+%変更後では、上位TDESに与える仕様をパラメータ化する。
+\begin{comment}
+パラメーターを要素としてもつベクトルを$\bm{m}=(m_1,\ldots,m_M)\in\mathbb{Z}_{\geq 0}^M$とする。
+$m_i$は$t_i$によって以下のように値が決まる。
+\begin{align}
+m_i=\left\lceil t_i\frac{\tick_i}{\tick_p} \right\rceil .
+\end{align}
+$\bm{m}$によりパラメータ化されたticked LTL${}_f$式を$\varphi(\bm{m})$と表記する。
+
+\end{comment}
+
+
+%\req{ti}で導入した$t_i$について、どの$\alpha$の値の時に得られたかを明確にするために$t_i(\alpha)$とする。$m_i$も同様に、$m_i(\alpha)$と表記し、
+$m_i(\alpha)$を要素とする集合を以下のように表記する。
+\begin{align}
+%\bm{m}(\alpha)=(m_1(\alpha),\ldots,m_M(\alpha)),~
+%\bm{M}=(\bm{m}(\alpha_1)^\mathsf{T},\ldots,\bm{m}(\alpha_{|A|})^\mathsf{T})
+\mathcal{M}=\{m_i(\alpha)|~i\in\{1,\ldots,M\},\alpha\in A\}.
+\end{align}
+加えて、$\pi_i(\alpha)$におけるSoft制約の重要度の合計を$W_i(\alpha)$とし、それらを要素とする集合を以下のように表記する。
+\begin{align}
+%\bm{W}(\alpha)=(W_1(\alpha),\ldots,W_M(\alpha)),~
+%\bm{W}=(\bm{W}(\alpha_1)^\mathsf{T},\ldots,\bm{W}(\alpha_{|A|})^\mathsf{T})\\
+\mathcal{W}=\{W_i(\alpha)|~i\in\{1,\ldots,M\},\alpha\in A\}.
+\end{align}
+$\mathcal{M}$と$\mathcal{W}$の要素を用いて、上位TDESのパラメータ化された仕様を決定する。
+%
+\subsection{上位TDESの仕様の与え方とプランニング方法}
+%
+%
+%$\bm{M}$と$\bm{W}$に含まれる値を上位TDESの仕様のパラメータに使う。
+
+\begin{comment}
+
+\begin{itemize}
+\item
+実行列に含まれる事象$\textit{tick}$の数+1
+\item
+満たしたSoft制約の重要度の合計
+\end{itemize}
+%下位TDESを制御する際、複数の比率について実行列を求める。それぞれの実行列から、かかった時間$t_i$と。それを上位TDESに選択肢として提示することを考える（日本語）
+
+\end{comment}
+
+集合$S$に含まれる要素によってパラメータ化されたticked LTL${}_f$式を$\varphi(S)$と表す。
+
+上位TDES $G$にはHard制約を表すticked LTL${}_f$式を
+%\begin{align}
+%\phi(\bm{M})=\phi(\bm{m}(\alpha_1))\land\cdots\land\phi(\bm{m}(\alpha_{|A|}))
+%\end{align}
+$\phi(\mathcal{M})$と与え、$N$個のSoft制約を表すticked LTL${}_f$式$\psi_1(\mathcal{M}),\ldots,\psi_N(\mathcal{M})$とその重要度からなるタプルの集合を以下のように与える。
+\begin{align}
+\Psi(\mathcal{M},\mathcal{W})
+=
+\{
+(\psi_j(\mathcal{M}),w_j(\mathcal{W}))|~j\in\{1,\ldots,N\}
+\}
+%\Psi(\bm{M},\bm{W})=\{(\psi_j(\bm{m}),w_j(\bm{W_\alpha}))|\ j\in\{1,\ldots,N\},\bm{m}\in\bm{M},\bm{W_\alpha}\in \bm{W}\}.
+\end{align}
+ここで、$w_j(\mathcal{W})$は$\mathcal{W}$に含まれる要素によって決まるソフト制約$\psi_j$の重要度である。
+
+以下に上位TDESに与える仕様の具体例を示す。
+\begin{exa}
+上位TDESは平面をグリッド状に区切ったものを表現し、
+下位TDESはその位置・場所に対応付けられたタスクを表現しているとする。
+上位TDESの状態（場所）$s_i$には、下位TDES $G_i$で表現されたタスクが存在していることを表す。
+
+前回のミーティングでは、$G$の状態（場所）$s_i$で行うタスクのうち、絶対に行わなければいけないタスクと可能ならば行うタスクの二つに分ける、ということになりました。
+$M'$を$1\leq M'\leq M$を満たす整数とする。
+$i_h\in\{1,\ldots, M'\}$について、$s_{i_h}$で行うタスクは必ずどこかのタイミングで完了しなければならないとする。
+$i_s\in\{M'+1,\ldots, M\}$について、$s_{i_s}$で行うタスクは可能ならば実行するとする。
+また、$A$に含まれる数の最大値は1、最小値は十分小さい数$\epsilon$であるとする。従って、\req{A}において$\alpha_1=\epsilon,\alpha_{|A|}=1$となる。
+
+このような設定にすると、$G$に与えるHard制約とSoft制約は以下のように与えられる。
+\begin{align}
+\phi(\mathcal{M})=&\bigwedge_{i_h=1}^{M'}\Diamond_{[0,\Len]}\Box_{[0,m_{i_h}(1)]}L(s_{i_h}) \land \phi',\\
+\Psi(\mathcal{M},\mathcal{W})
+=&\left\{
+(\Diamond_{[0,\Len]}\Box_{[0,m_{i_h}(\alpha)]}L(s_{i_h}),W_{i_h}(\alpha))|\ i_h\in\left\{1,\ldots, M'\right\}, \alpha\in A\setminus\{1\}
+\right\}
+\notag\\
+&\cup
+\left\{
+(\Diamond_{[0,\Len]}\Box_{[0,m_{i_s}(1)]}L(s_{i_s}),1)|\ i_s\in\left\{M'+1,\ldots, M\right\}
+\right\}
+\notag\\
+&\cup
+\left\{
+(\Diamond_{[0,\Len]}\Box_{[0,m_{i_s}(\alpha)]}L(s_{i_s}),W_{i_s}(\alpha))|\ i_s\in\left\{M'+1,\ldots, M\right\}, \alpha\in A\setminus\{1\}
+\right\}
+\cup \Psi'.
+\end{align}
+ここで、$L$は$G$のラベル関数、$\phi'$はHard制約の一部を表すticked LTL${}_f$式、$\Psi'$はSoft制約の一部とその重みのタプルの集合を表す集合とする。
+\qedwhite
+\end{exa}
+%
+\subsection{新しいアルゴリズムについて}\label{app}
+%
+
+Problem \ref{pbm3}を解くためのアルゴリズムの流れをAlgorithm \ref{alg1}にまとめる。
+
+\begin{algorithm}
+\caption{新しいアルゴリズムの流れ} \label{alg1}
+\begin{algorithmic}
+%
+
+\For{ $i \in \{1,\ldots,M\}$}
+
+	
+	\For{ $\alpha \in A$}
+	
+		\State $\pi_i^\alpha$=Find($G_i,\phi_i,\Psi_,\Len_i,\alpha$)
+		\State $t_i(\alpha)=\textit{count}_{\pi_i^\alpha}(0,\Len_i)+1$
+		\State $m_i(\alpha)=\left\lceil t_i\frac{\tick_i}{\tick_p} \right\rceil $
+		\State $\pi_i^\alpha$から$W_i(\alpha)$の値を得る 
+		
+	\EndFor
+\EndFor
+\State Find($G,\phi(\mathcal{M}),\Psi(\mathcal{M},\mathcal{W}),\Len,\alpha=0$)
+\end{algorithmic}
+\end{algorithm}
+%
+%
+\begin{comment}
+%
+\begin{enumerate}
+\item
+すべての$i\in\{1,\ldots,M\}$について、
+\begin{enumerate}
+\item\label{1-a}
+下位TDES $G_i$のHard制約$\phi_i$を満たす実行列（execution）$\pi_i$を求める。
+\item\label{1-b}
+$\pi_i$から$\phi_i$を満たすのにかかった時間を求め、$t_i$とする
+\end{enumerate}
+\item\label{2}
+それぞれの$i$について、$m_i=\left\lceil t_i\frac{\tick_i}{\tick_p} \right\rceil = \left\lceil \frac{t_i}{K_i}\right\rceil $を求める（$K_i$は提出した論文の式15で導入）
+\item
+$G$の仕様に$\bm{m}$の値を代入
+\item
+$G$の動作計画を行う
+\end{enumerate}
+%
+%
+%
+\end{comment}
+%
+%
+\begin{comment}
+%
+%
+\ref{1-a}で$\pi_i$を求めるために実行列の長さ$\Len_i$を与える。
+最短時間でHard制約を満たすために、$\pi_i$を求める最適化問題の目的関数に
+\begin{align}
+\mbox{min:}~\sum_{k=1}^{\Len_i}z_e(k)
+\end{align}
+を追加する。$z_e(k)$は$\pi_i$の$k$番目の事象が$\textit{tick}_i$なら1、それ以外の事象なら0をとる二値変数である（TACに提出した論文の式6から式9で導入しています）。
+
+また、前回のミーティングではSoft制約を下位TDESには与えない、となりましたが、以下のような形式でSoft制約$\Psi_i=\{(\psi_{i,j},w_{i,j})|\ j\in\{1,\ldots,N_i\}\}$を組み込むことは可能だと感じました。
+\begin{align}\label{obj1}
+\mbox{min:}~\sum_{k=1}^{\Len_i}z_e(k) + \left(-\sum_{j=1}^{N_i} w_{i,j}\cdot z_{\psi_{i,j}}\right)
+\end{align}
+または、
+
+%
+\req{obj1}では、時間とSoft制約のトレードオフ（Soft制約は満たしたいけど、余計な時間がかかる）について、以下のようなことが考えられる。
+\begin{itemize}
+\item
+$w_{i,j}>1$なら１単位時間（$1\tick_i$）を余分にかけて$\psi_{i,j}$を満たす価値がある。
+\item
+$w_{i,j_1}+w_{i,j_2}>3$なら3単位時間（$3\tick_i$）を余分にかけて$\psi_{i,j_1}$と$\psi_{i,j_2}$を満たす価値がある。
+\end{itemize}
+
+\ref{1-b}を行う時、$t_i$を簡単に求めるために、
+\begin{align}
+t_i=\mbox{（$\pi_i$の$s_0$から$s_{\Len_i}$までに含まれる事象$\textit{tick}_i$の数）}+1
+\end{align}
+としたい。
+このとき、表記の方法としては以下の2通りが考えられる。
+\begin{align}
+&t_i=\sum_{k=1}^{\Len_i}z_e(k),\\
+&t_i=\textit{count}_{\pi_i}(0,\Len_i).
+\end{align}
+%
+
+\ref{2}では、上位TDESと下位TDESの単位時間の違いを調整している。
+%
+%
+%
+%
+\end{comment}
+%
+%
+%
+%
+%\begin{comment}
+%
+%
+\begin{algorithm}
+\caption{Find($G,\phi,\Psi,\Len,\alpha$): TDES $G$の実行列を求める} \label{alg_solve_maxsat}
+\begin{algorithmic}
+%
+\Require $G$, $\phi$, $\Psi=\{(\psi_i,weight);\ i\in[1,\ N]\}$, $\Len$, $\alpha$
+\Ensure a finite execution $\pi$ 
+
+\State Get $A$, $\alpha$, $\beta$ from a transition function of $G$
+
+\State Set objective function \req{obj:alpha} （ここを追加しました）
+\State Set (5)-(9) (←TACに提出した論文の式番号です。遷移則などのエンコードした式です)%\req{w}-\req{zek3} 
+\State Convert $\phi$ to \textit{ILP}($\phi$)
+\If{$\Psi$ is not empty}
+
+	\For{ $i \in [1,N]$}
+	\State Convert $\psi_{i}$ to \textit{ILP}($\psi_{i}$) 
+	\State Set $(z_{\psi_i}(0)=1,weight_i)$ as a soft constraint
+	\EndFor
+\EndIf
+\State Find an execution of $G$
+\If{Succeed to find an execution}
+	\State Return the execution 
+\Else
+	\State  Return $\bot$
+\EndIf
+\end{algorithmic}
+\end{algorithm}
+\begin{comment}
+\section{具体例の案}
+前回のミーティングで発案された具体例について定式化します。
+
+上位TDESは平面をグリッド状に区切ったものを表現し、
+下位TDESはその位置・場所に対応付けられたタスクを表現すると想定している。
+上位TDESの状態（場所）$s_i$には、下位TDESで表現されたタスクが存在していることを表す。
+
+$M'$を$1\leq M'\leq M$を満たす整数とする。
+$i_h\in\{1,\ldots, M'\}$について、$s_{i_h}$で行うタスクは必ずどこかのタイミングで完了しなければならないとする。
+$i_s\in\{M'+1,\ldots, M\}$について、$s_{i_s}$で行うタスクは可能ならば実行するとする。
+そうすると、$G$に与えるHard制約とSoft制約は、パラメーター$m_i\in \mathbb{Z}_{\geq 0},i\in\{1,\ldots,M\}$を用いて以下のように与えられる。
+\begin{align}
+\phi(\bm{m})=&\bigwedge_{i_h=1}^{M'}\Diamond_{[0,\Len]}\Box_{[0,m_{i_h}]}L(s_{i_h}) \land \phi',\\
+\Psi(\bm{m})=&\left\{\Diamond_{[0,\Len]}\Box_{[0,m_{i_s}]}L(s_{i_s})|\ i_s\in\left\{M'+1,\ldots, M\right\}\right\}\cup \Psi'.
+\end{align}
+ここで、$L$は$G$のラベル関数、$\phi'$はHard制約の一部を表すticked LTL${}_f$式、$\Psi'$はSoft制約の一部とその重みのタプルの集合を表す集合とする。
+%$m_i$は、先に求めた$G_i$でHard制約を満たすために必要最低限な時間（tick数）によって決められる。
+%
+%
+%
+\end{comment}
+%
+%
+
+%\bibliography{TAC_refine} %hoge.bibから拡張子を外した名前
+%\bibliographystyle{unsrt} 
+
+\end{document}
