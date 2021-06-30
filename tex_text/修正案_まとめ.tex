@@ -35,6 +35,7 @@
 \newcommand{\argmin}{\mathop{\rm arg~min}\limits}
 \newcommand{\Count}{{\sf Count}}
 \newcommand{\tick}{{\sf tick}}
+\newcommand{\ttick}{{\textit tick}}
 \newcommand{\Len}{{\sf L}}
 \renewcommand{\algorithmicrequire}{\textbf{Input:}}
 \renewcommand{\algorithmicensure}{\textbf{Output:}}
@@ -45,13 +46,11 @@
 \setcounter{pbm}{2}
 \setcounter{algorithm}{2}
 
-\title{ミーティング（2021/6/16）のまとめ}
+\title{修正案のまとめ}
 \author{衣川　琢磨}
 
 \begin{document}
 \maketitle
-修正案をまとめます。
-
 集合$S$について、$|S|$は$S$の濃度（要素数）を表すとする。
 
 以下に示す天井関数$\lceil x \rceil$を導入する。
@@ -71,10 +70,10 @@ $i\in\{1,\ldots,M\}$として、$G$の状態$s_i$と$G_i$が対応付けられ�
 
 $i$番目の下位システムをモデル化したDES $G_{i,\textit{act}}$を以下のタプルで与える
 \begin{align}
-G_{i,\textit{act}}=(S_{i,\textit{act}},\Sigma_{i,\textit{act}},\delta_{i,\textit{act}},s_{\textit{init},i,\textit{act}},s_{\textit{fin},i,\textit{act}},\textit{AP}_{i,\textit{act}},L_{i,\textit{act}})
+G_{i,\textit{act}}=(S_{i,\textit{act}},\Sigma_{i,\textit{act}},\delta_{i,\textit{act}},s_{\textit{init},i,\textit{act}},s_{\textit{fin},i,\textit{act}},\textit{AP}_{i,\textit{act}},L_{i,\textit{act}}).
 \end{align}
-$s_{\textit{fin},i,\textit{act}}\in S_{i,\textit{act}}$はタスクの終了状態を明示的に表す状態とする（注：$s'$ではないです。）。
-また、事象$e_f\in\Sigma_{i,\textit{act}} $は$s_{\textit{fin},i,\textit{act}}$で生起する事象で、lower time とupper timeを以下のように定義する
+$s_{\textit{fin},i,\textit{act}}\in S_{i,\textit{act}}$はタスクの終了状態を明示的に表す状態とする（注：前の資料では$s'$でした）。
+事象$e_f\in\Sigma_{i,\textit{act}} $は$s_{\textit{fin},i,\textit{act}}$で生起する事象で、lower time とupper timeを以下のように定義する。
 \begin{align}
 l_{e_f}=0,\ u_{e_f}=0.\label{eq:e-f}
 \end{align}
@@ -115,7 +114,7 @@ Modular of a specification&導入した&導入しない\\\hline
 \end{table}
 %
 \begin{pbm}\label{pbm3}
-Given a two-level hierarchical TDES $\mathcal{G}$, a hard constraint and a set of soft constraints for the pTDES $G$ with parameters determined by executions of cTDESs, a  hard constraint and a set of soft constraints for each cTDES, the length $\Len_i(>0)$ for each $G_i$, and the length $\Len(>0)$ for $G$, find finite executions of cTDESs, then find a finite execution $\pi$ of $G$ with the length $\Len$.
+Given a two-level hierarchical TDES $\mathcal{G}$, a hard constraint and a set of soft constraints for the pTDES $G$ with parameters determined by executions of cTDESs, a  hard constraint and a set of soft constraints for each cTDES, the length $\Len(>0)$ for $G$, and the length $\Len_i(>0)$ for each $G_i$, find finite executions of cTDESs, then find a finite execution $\pi$ of $G$ with the length $\Len$.
 % while satisfying the hard cons some tasks represented by cTDESs.
 %satisfies all hard constraints and some soft constraints that maximize the sum of the weights.
 %
@@ -131,7 +130,7 @@ Given a two-level hierarchical TDES $\mathcal{G}$, a hard constraint and a set o
 %また、上位TDES $G$の単位時間を$\tick_p$、
 
 
-それぞれの下位TDES $G_i$に与えるHard制約を$\phi_i$、Soft制約とその重みのタプルからなる集合を$\Psi_i$と表記する。
+それぞれの下位TDES $G_i$に与えるHard制約を$\phi_i$、Soft制約とその重みのタプルからなる集合を$\Psi_i=\{(\psi_{i,j},w_{i,j})|~j\in\{1,\ldots,N_i\}\}$と表記する。
 $s_{\textit{fin},i,\textit{act}}$を考慮し、$\phi_i$は以下のように与える。
 \begin{align}
 \phi_i=\Diamond_{[0,\Len_i]}L_i(s_{\textit{fin},i,\textit{act}}) \land \phi_i'.
@@ -144,14 +143,14 @@ $s_{\textit{fin},i,\textit{act}}$を考慮し、$\phi_i$は以下のように与
 \item
 満たすSoft制約の組み合わせにはバリエーションがある。
 \item
-満たしたSoft制約の重要度の合計と時間（tick）はトレードオフの関係にある。
+満たしたSoft制約の重要度の合計と時間の短さ（$\ttick_i$の少なさ）はトレードオフの関係にある。
 \end{itemize}
 %例えば、時間が十分にある、または時間に重きを置かないのなら全てのSoft制約を満たすことができる。一方、時間に制約がある・パスが早く終わることに重きをおくのなら、その制約の中で最適なSoft制約の組み合わせで満たす。
 これらから、トレードオフにある二つの値の重視する比率を変更することで、満たすSoft制約の組み合わせは変わってくる。
-例えば、時間が短いことを重視すればSoft制約はあまり満たすことができないことが考えられる。また、Soft制約の重要度の合計を重視すれば、時間はかかるが多くのSoft制約を満たし、その重要度の合計も大きくなることが考えられる。
+例えば、時間の短さを重視すればSoft制約はあまり満たせないことが考えられる。また、Soft制約の重要度の合計を重視すれば、時間はかかるが多くのSoft制約を満たし、その重要度の合計も大きくなることが考えられる。
 この重視する比率を$\alpha(0\leq\alpha\leq1)$とし、$\alpha=1$のとき、Soft制約を考慮せずに最短時間のパスを求め、$\alpha=0$のとき、時間は考慮せずにSoft制約の重要度の合計を最大化する実行列を求めるとする。
 
-下位TDESのプランニング問題をILP問題（最適化問題）に変換した時、目的関数は$\alpha$を用いて以下のように与えられる。
+下位TDESのプランニング問題をILP問題（最適化問題）に変換した時、目的関数は$\alpha$を用いて以下のように与えられる。ただし、$z_e(k)$は実行列の$k$番目の事象が$\ttick_i$なら1、そうでなければ0をとる二値変数とする。
 \begin{align}\label{obj:alpha}
 \mbox{min:}~\alpha\sum_{k=1}^{\Len_i}z_e(k) + \left\{-(1-\alpha)\sum_{j=1}^{N_i} w_{i,j}\cdot z_{\psi_{i,j}}\right\},~0\leq \alpha\leq 1
 \end{align}
@@ -159,7 +158,7 @@ $s_{\textit{fin},i,\textit{act}}$を考慮し、$\phi_i$は以下のように与
 
 下位TDESの実行列を求めた後、上位TDESの実行列を求める。
 その時、下位TDESがHard制約を満たすために必要な時間を上位TDESに伝える。
-この必要最低限の時間に加え、「$X$だけの時間があれば、追加のタスク$Y$も（下位TDESで）行え、そのタスクを行うことは$Z$だけ重要だ」という情報を上位TDESに与える。$X$は事象$\textit{tick}$の数を表し、$Y$はSoft制約で表現されたタスク、$Z$は満たしたSoft制約の重要度の合計を表す。
+この必要最低限の時間に加え、「$X$だけの時間があれば、追加のタスク$Y$も（下位TDESで）行え、そのタスクを行うことは$Z$だけ重要だ」という情報を上位TDESに与える。$X$は事象$\textit{tick}_i$の数を表し、$Y$はSoft制約で表現されたタスク、$Z$は満たしたSoft制約の重要度の合計を表す。
 このようにいくつかの選択肢を上位TDESに提供することで、指定された実行列の長さ$\Len$の中で、階層TDES全体でより多くのタスクが行えるようにする。
 
 上記のことを実現するために、複数の比率について下位TDESの実行列を求める。
@@ -251,32 +250,44 @@ $\phi(\mathcal{M})$と与え、$N$個のSoft制約を表すticked LTL${}_f$式$\
 下位TDESはその位置・場所に対応付けられたタスクを表現しているとする。
 上位TDESの状態（場所）$s_i$には、下位TDES $G_i$で表現されたタスクが存在していることを表す。
 
-前回のミーティングでは、$G$の状態（場所）$s_i$で行うタスクのうち、絶対に行わなければいけないタスクと可能ならば行うタスクの二つに分ける、ということになりました。
+前回のミーティングでは、$G$の状態で行うタスクを
+\begin{itemize}
+\item
+絶対に行わなければいけないタスク
+\item
+可能ならば行うタスク
+\end{itemize}
+の二つに分ける、ということになりましたので、その設定で考えていきます。
 $M'$を$1\leq M'\leq M$を満たす整数とする。
 $i_h\in\{1,\ldots, M'\}$について、$s_{i_h}$で行うタスクは必ずどこかのタイミングで完了しなければならないとする。
 $i_s\in\{M'+1,\ldots, M\}$について、$s_{i_s}$で行うタスクは可能ならば実行するとする。
-また、$A$に含まれる数の最大値は1、最小値は十分小さい数$\epsilon$であるとする。従って、\req{A}において$\alpha_1=\epsilon,\alpha_{|A|}=1$となる。
+また、$A$に含まれる数の最大値は1、最小値は十分小さい数$\epsilon(>0)$であるとする。従って、\req{A}において$\alpha_1=\epsilon,\alpha_{|A|}=1$となる。
 
 このような設定にすると、$G$に与えるHard制約とSoft制約は以下のように与えられる。
 \begin{align}
-\phi(\mathcal{M})=&\bigwedge_{i_h=1}^{M'}\Diamond_{[0,\Len]}\Box_{[0,m_{i_h}(1)]}L(s_{i_h}) \land \phi',\\
+\phi(\mathcal{M})=&\bigwedge_{i_h=1}^{M'}\Diamond_{[0,\Len]}\Box_{[0,m_{i_h}(1)]}L(s_{i_h}) \land \phi'(\mathcal{M}),\\
+%
 \Psi(\mathcal{M},\mathcal{W})
 =&\left\{
-(\Diamond_{[0,\Len]}\Box_{[0,m_{i_h}(\alpha)]}L(s_{i_h}),W_{i_h}(\alpha))|\ i_h\in\left\{1,\ldots, M'\right\}, \alpha\in A\setminus\{1\}
+\left(\Diamond_{[0,\Len]}\Box_{[0,m_{i_h}(\alpha)]}L(s_{i_h}),W_{i_h}(\alpha)
+\right)|\ i_h\in\left\{1,\ldots, M'\right\}, \alpha\in A\setminus\{1\}
 \right\}
 \notag\\
 &\cup
 \left\{
-(\Diamond_{[0,\Len]}\Box_{[0,m_{i_s}(1)]}L(s_{i_s}),1)|\ i_s\in\left\{M'+1,\ldots, M\right\}
+\left(\Diamond_{[0,\Len]}\Box_{[0,m_{i_s}(1)]}L(s_{i_s}),1
+\right)|\ i_s\in\left\{M'+1,\ldots, M\right\}
 \right\}
 \notag\\
 &\cup
 \left\{
-(\Diamond_{[0,\Len]}\Box_{[0,m_{i_s}(\alpha)]}L(s_{i_s}),W_{i_s}(\alpha))|\ i_s\in\left\{M'+1,\ldots, M\right\}, \alpha\in A\setminus\{1\}
+\left(\Diamond_{[0,\Len]}\Box_{[0,m_{i_s}(\alpha)]}L(s_{i_s}),W_{i_s}(\alpha)
+\right)|\ i_s\in\left\{M'+1,\ldots, M\right\}, \alpha\in A\setminus\{1\}
 \right\}
-\cup \Psi'.
+\notag \\
+&\cup \Psi'(\mathcal{M},\mathcal{W}).
 \end{align}
-ここで、$L$は$G$のラベル関数、$\phi'$はHard制約の一部を表すticked LTL${}_f$式、$\Psi'$はSoft制約の一部とその重みのタプルの集合を表す集合とする。
+ここで、$L$は$G$のラベル関数、$\phi'(\mathcal{M},\mathcal{W})$はHard制約の一部を表すticked LTL${}_f$式、$\Psi'(\mathcal{M},\mathcal{W})$はSoft制約の一部とその重みのタプルの集合を表す集合とする。（潮先生が提案されていたUntil演算子での表現でも問題ないと思います）
 \qedwhite
 \end{exa}
 %
@@ -284,7 +295,7 @@ $i_s\in\{M'+1,\ldots, M\}$について、$s_{i_s}$で行うタスクは可能な
 %
 
 Problem \ref{pbm3}を解くためのアルゴリズムの流れをAlgorithm \ref{alg1}にまとめる。
-
+ただし、Find2($G,\phi,\Psi,\Len,\alpha$)は、TACに提出した論文のAlgorithm 1の処理において、目的関数を\req{obj:alpha}に変更したものです。
 \begin{algorithm}
 \caption{新しいアルゴリズムの流れ} \label{alg1}
 \begin{algorithmic}
@@ -295,14 +306,14 @@ Problem \ref{pbm3}を解くためのアルゴリズムの流れをAlgorithm \ref
 	
 	\For{ $\alpha \in A$}
 	
-		\State $\pi_i^\alpha$=Find($G_i,\phi_i,\Psi_,\Len_i,\alpha$)
-		\State $t_i(\alpha)=\textit{count}_{\pi_i^\alpha}(0,\Len_i)+1$
+		\State $\pi_i(\alpha)$=Find2($G_i,\phi_i,\Psi_,\Len_i,\alpha$)
+		\State $t_i(\alpha)=\textit{count}_{\pi_i(\alpha)}(0,\Len_i)+1$
 		\State $m_i(\alpha)=\left\lceil t_i\frac{\tick_i}{\tick_p} \right\rceil $
-		\State $\pi_i^\alpha$から$W_i(\alpha)$の値を得る 
+		\State $\pi_i(\alpha)$から$W_i(\alpha)$の値を得る 
 		
 	\EndFor
 \EndFor
-\State Find($G,\phi(\mathcal{M}),\Psi(\mathcal{M},\mathcal{W}),\Len,\alpha=0$)
+\State Find2($G,\phi(\mathcal{M}),\Psi(\mathcal{M},\mathcal{W}),\Len,\alpha=0$)
 \end{algorithmic}
 \end{algorithm}
 %
@@ -378,7 +389,7 @@ t_i=\mbox{（$\pi_i$の$s_0$から$s_{\Len_i}$までに含まれる事象$\texti
 %
 %
 %
-%\begin{comment}
+\begin{comment}
 %
 %
 \begin{algorithm}
@@ -408,7 +419,7 @@ t_i=\mbox{（$\pi_i$の$s_0$から$s_{\Len_i}$までに含まれる事象$\texti
 \EndIf
 \end{algorithmic}
 \end{algorithm}
-\begin{comment}
+%\begin{comment}
 \section{具体例の案}
 前回のミーティングで発案された具体例について定式化します。
 
