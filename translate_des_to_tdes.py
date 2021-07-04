@@ -9,16 +9,16 @@ import class_tdes
 MaxEvent = 5
 
 
-def refine(TDES):
+def refine(TDES, DES):
 
     OpenList = []
     ClosedList = []
     EventCheck = []
-    index_istate = TDES.s_with_clock.index(TDES.istate)
+    index_istate = TDES.s.index(TDES.istate)
 
     OpenList.append('{}'.format(index_istate))
     #print(OpenList)
-    print("start to search reachablity of TDES\n")
+    #print("start to search reachablity of TDES\n")
     start = time.time()
     while(1):
         if len(OpenList) == 0:
@@ -29,33 +29,34 @@ def refine(TDES):
         OpenList.pop(0)
         ClosedList.append(now)
         
-        for i in range(len(TDES.trans[now])):
+        for i in range(len(TDES.delta[now])):
             
-            if TDES.trans[now][i][0] not in ClosedList:
-                OpenList.append(TDES.trans[now][i][0])
+            if TDES.delta[now][i][0] not in ClosedList:
+                OpenList.append(TDES.delta[now][i][0])
 
-            if TDES.trans[now][i][1] not in EventCheck:
-                EventCheck.append(TDES.trans[now][i][1])
+            if TDES.delta[now][i][1] not in EventCheck:
+                EventCheck.append(TDES.delta[now][i][1])
 
-    t = time.time() - start
-    print('finish refining, time={}'.format(t))
+    #t = time.time() - start
+    #print('finish refining, time={}'.format(t))
 
     #ClosedList.sort()
 
-    list1 = list(range(len(TDES.s_with_clock)))
+    list1 = list(range(len(TDES.s)))
     list1.reverse()
     for i in list1:
 
         if str(i) not in ClosedList:
 
-            TDES.s_with_clock.pop(i)
+            TDES.s.pop(i)
             
-    TDES.trans = defaultdict(list)
-    TDES.trans_act2trans()
+    TDES.delta = defaultdict(list)
+    TDES.delta = get_transition_func_of_tdes(TDES.s, DES.trans_act, DES.timed_event)
 
-    print('size of s={}'.format(len( TDES.s_with_clock )))
-    print('size of trans={}'.format(len( TDES.trans)))
+    #print('size of s={}'.format(len( TDES.s)))
+    #print('size of trans={}'.format(len( TDES.delta)))
 
+    #print(TDES.event)
     list2 = list(range(len(TDES.event)))
     list2.reverse()
     for j in list2:
@@ -70,7 +71,7 @@ def refine(TDES):
 
 def get_state_of_tdes(s_act, trans_act, timed_event, initial_state_act):
     
-    s=[]
+    s_for_tdes=[]
     initial_s = [initial_state_act]
 
     for i in range(len(s_act)):
@@ -80,7 +81,7 @@ def get_state_of_tdes(s_act, trans_act, timed_event, initial_state_act):
         trans_from_s = copy.copy(trans_act[s])
         flag4istate=0
         if s == initial_s[0]:
-            flag4istate=1
+            flag4istate = 1
             
         T_sigma = []
         for j in range( len(trans_from_s) ):
@@ -105,7 +106,7 @@ def get_state_of_tdes(s_act, trans_act, timed_event, initial_state_act):
                 list_new=[]
                 list_new.append(s)
                 list_new.append(timer0[t])
-                s.append(list_new)
+                s_for_tdes.append(list_new)
                 
         elif len(T_sigma)==2:
             timer0 = T_sigma[0]    
@@ -117,7 +118,7 @@ def get_state_of_tdes(s_act, trans_act, timed_event, initial_state_act):
                 list_new=[]
                 list_new.append(s)
                 list_new.extend(timer)
-                s.append(list_new)
+                s_for_tdes.append(list_new)
                 
         elif len(T_sigma)==3:
             timer0 = T_sigma[0]    
@@ -130,7 +131,7 @@ def get_state_of_tdes(s_act, trans_act, timed_event, initial_state_act):
                 list_new=[]
                 list_new.append(s)
                 list_new.extend(timer)
-                s.append(list_new)
+                s_for_tdes.append(list_new)
                 
         elif len(T_sigma)==4:
             timer0 = T_sigma[0]    
@@ -144,7 +145,7 @@ def get_state_of_tdes(s_act, trans_act, timed_event, initial_state_act):
                 list_new=[]
                 list_new.append(s)
                 list_new.extend(timer)
-                s.append(list_new)
+                s_for_tdes.append(list_new)
                 
         elif len(T_sigma)==5:
             timer0 = T_sigma[0]    
@@ -159,23 +160,23 @@ def get_state_of_tdes(s_act, trans_act, timed_event, initial_state_act):
                 list_new=[]
                 list_new.append(s)
                 list_new.extend(timer)
-                s.append(list_new)
+                s_for_tdes.append(list_new)
                 #print('s_with_clock <-{}'.format(s[-1]))
         
         else:
             print("error. there are too many event occurred in a state")
 
-    if initial_s not in s:
+    if initial_s not in s_for_tdes:
         print('\nistate:{}'.format(initial_s))
         print("there is no istate")
     
-    return (s, initial_s)
+    return (s_for_tdes, initial_s)
 
 def get_transition_func_of_tdes(s, trans_act, timed_event):
     
     delta = defaultdict(list)
     
-    print('trans_act2trans')
+    #print('trans_act2trans')
     for i in range(len(s)):
         occurable_event_at_s = []
         
@@ -279,10 +280,14 @@ def get_TDES(DES):
     TDES = class_tdes.TDES()
     TDES.name = DES.name
     (TDES.s, TDES.istate) = get_state_of_tdes(DES.s_act, DES.trans_act, DES.timed_event, DES.istate_act)
-    TDES.event = DES.event.append("tick")    
+    #print(TDES.event)
+    #print(DES.event_act)
+    TDES.event = DES.event_act + ['tick']    
+    #print(TDES.event)
     TDES.delta = get_transition_func_of_tdes(TDES.s, DES.trans_act, DES.timed_event)
-    TDES = refine(TDES)
-    TDES.ap = copy.copy(DES.ap)
-    TDES.label = copy.copy(DES.label)
+    TDES = refine(TDES, DES)
+    TDES.ap = copy.copy(DES.ap_act)
+    TDES.label = copy.copy(DES.label_act)
+   
     TDES.time_ratio = DES.time_ratio #pTDESは-1の値を持つ
     return TDES

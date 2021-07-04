@@ -45,7 +45,7 @@ def get_DES():
     des.ap_act = [    'A', 
             'B', 
             'C',                
-            'm_ab', 'm_ac', 'm_bc', 'm_ba', 'm_ca', 'm_cb'] 
+            'm_ab', 'm_ac', 'm_bc', 'm_ba', 'm_ca', 'm_cb', '1', '2', '3', '5'] 
     des.label_act = {    des.s_act[0]:[des.ap_act[0]],
                 des.s_act[1]:[des.ap_act[3]],
                 des.s_act[2]:[des.ap_act[4]],

@@ -11,7 +11,7 @@ class DES():
 
     def __init__(self):
 
-        self.name
+        self.name = ''
         self.s_act = []
         self.event_act = []
         self.trans_act = defaultdict(list)
@@ -20,4 +20,4 @@ class DES():
         self.label_act = defaultdict(list)
         self.timed_event = defaultdict(list)
         
-        self.time_ratio
+        self.time_ratio = 0

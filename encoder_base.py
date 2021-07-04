@@ -14,23 +14,24 @@ class EncoderBasis(object):
     def __init__(self, formula):
         
         self.formula = formula
-        self.z
+        self.z = 0
         
     """
     formulaがHard制約を表すならば、二値変数zについて制約を加える
     """
-    def set_constraint_for_variable(self, m, HORIZON):
+    def set_constraint_for_variable(self, m):
         
         
-        self.z = m.addMVar((len(self.formula), HORIZON),vtype=gp.GRB.BINARY, name = "z")
+        #self.z = m.addMVar((len(self.formula), HORIZON),vtype=gp.GRB.BINARY)#, name = "z")
         if type(self.formula[-1])==list:
             m.addConstr(self.z[-2,0] == 1) #L.index(self.ell)=self.ell
         else:
             m.addConstr(self.z[-1,0] == 1)
         
         
-    def start_encodeing(self, m, HORIZON, TDES, label_matrix, z_e, w):
+    def start_encodeing(self, m, HORIZON, TDES, label_matrix, z_e, w, ap):
         
+        self.z = m.addMVar((len(self.formula), HORIZON),vtype=gp.GRB.BINARY)
         
         len_fml = len(self.formula)
         
@@ -41,8 +42,11 @@ class EncoderBasis(object):
             
         for i in range(len_fml):    #i represent subfomula
             
-            
+            #print(self.formula[i])
                
+            if type(self.formula[i]) is list:
+                continue
+            
             if self.formula[i] == '!':
                 if stack == False :
                     print ("SYNTAX ERROR: '!' at {}th element in self.formula.".format(i))
@@ -102,8 +106,9 @@ class EncoderBasis(object):
                 if type(self.formula[i+1]) != list:
                     print("SYNTAX ERROR at {}th element in self.formula.".format(i))
                     print("There is no interval after temporal operator")
-                m = self.global2smt(m, HORIZON,
-                                    self.z[i], self.z[stack[-1]],self.formula[i+1]
+                    
+                m = self.global2smt(m, HORIZON, self.z[i], self.z[stack[-1]],
+                                    self.formula[i+1], i, z_e
                                     )
                 stack = self.stack_manage(stack, del_list=[stack[-1]], set_list=[i])
                 
@@ -119,8 +124,8 @@ class EncoderBasis(object):
                     print("SYNTAX ERROR at {}th element in self.formula.".format(i))
                     print("There is no interval after temporal operator")
                     
-                m = self.eventually2smt(m, HORIZON,
-                                        self.z[i], self.z[stack[-1]],self.formula[i+1]
+                m = self.eventually2smt(m, HORIZON, self.z[i], self.z[stack[-1]], 
+                                        self.formula[i+1], i, z_e
                                         )
                 self.stack_manage(stack, del_list=[stack[-1]], set_list=[i])
                 
@@ -131,12 +136,16 @@ class EncoderBasis(object):
                 
             #atomic propositionの時
             else:
+                m = self.ap2smt(m, self.formula[i], HORIZON,  self.z[i], 
+                                label_matrix, len(TDES.s), w, ap)
+                """
                 if int(self.formula[i]) == 0:
-                    m.addConstrs(self.z[i, h] ==1 for h in range(HORIZON))
+                    m.addConstrs(self.z[i, h] == 1 for h in range(HORIZON))
                 else:    
-                    m = self.ap2smt(m, HORIZON, self.formula[i], self.z[i], 
-                                    label_matrix, len(TDES.s), w)
-                    
+                    m = self.ap2smt(m, self.formula[i], HORIZON,  self.z[i], 
+                                    label_matrix, len(TDES.s), w, ap)
+                   
+                """
                 stack = self.stack_manage(stack, del_list=[], set_list=[i])
     
         if len(stack) != 1 :

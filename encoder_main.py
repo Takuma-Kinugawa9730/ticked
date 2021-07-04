@@ -9,23 +9,25 @@ import encoder_base
 import gurobipy as gp#
 
 epsilon = 0.01
+M = 100
 
 class EncoderBool(encoder_base.EncoderBasis):
 
-    def ap2smt(self, m, target_ap, HORIZON, z_curr, label_matrix, size_of_state, w):
+    def ap2smt(self, m, target_ap, HORIZON, z_curr, label_matrix, size_of_state, w, ap):
         #T_w= [[0 for k in range(self.size)] for j in range(self.size)] 
         #T_w = list(map(list, zip(*self.w)))
-        index = self.AP.index(target_ap)
-        for h in range(HORIZON):    #h is horizon
+       # print(target_ap)
+        index = ap.index(target_ap)
+        for t in range(HORIZON):    #h is horizon
             Sum = 0
             for j in range(size_of_state):
-                Sum += label_matrix[index][j]*w[h][j]
-            m.add(z_curr <= Sum )
+                Sum += label_matrix[index][j]*w[t][j]
+            m.addConstr(z_curr[t] <= Sum )
             
             """
             ここ注意。epsilonを入れている            
             """
-            m.add(z_curr + 1 - epsilon >= Sum)
+            m.addConstr(z_curr[t] + 1 - epsilon >= Sum)
         
         return m
 
@@ -103,9 +105,13 @@ class EncoderBool(encoder_base.EncoderBasis):
                 else :
                     m.addConstr(zz_psi1[x][y] == 1)
 
+                m.addConstr(l - M <= Sum[x] - M*zz_l[x][y])
+                m.addConstr(Sum[x] - M*zz_l[x][y] <= l - epsilon)
+                m.addConstr(r + epsilon <= Sum[x] + M*zz_r1[x][y])
+                m.addConstr(Sum[x] + M*zz_r1[x][y] <= r + M)
                 
-                m.addConstr(zz_l[x][y] == (l <= Sum[x]))
-                m.addConstr(zz_r1[x][y] == (Sum[x] <= r))
+                #m.addConstr(zz_l[x][y] == (l <= Sum[x]))
+                #m.addConstr(zz_r1[x][y] == (Sum[x] <= r))
                 
                 
                 
@@ -139,7 +145,7 @@ class EncoderBool(encoder_base.EncoderBasis):
 
     
     def eventually2smt(self, m, HORIZON,z_curr,z_target1,
-                       interval, position_in_formula):
+                       interval, position_in_formula, z_e):
 
 
         l = interval[0]
@@ -167,11 +173,18 @@ class EncoderBool(encoder_base.EncoderBasis):
 
                 if y > x :
 
-                    Sum[x] += self.e[y-1]
+                    Sum[x] += z_e[y-1]
             
                     
-                m.addConstr(zz_l[x][y] == (l <= Sum[x]))
-                m.addConstr(zz_r1[x][y] == (Sum[x] <= r))
+                #m.addConstr(zz_l[x][y] == (l <= Sum[x]))
+                #m.addConstr(zz_r1[x][y] == (Sum[x] <= r))
+                
+                m.addConstr(l - M <= Sum[x] - M*zz_l[x][y])
+                m.addConstr(Sum[x] - M*zz_l[x][y] <= l - epsilon)
+                m.addConstr(r + epsilon <= Sum[x] + M*zz_r1[x][y])
+                m.addConstr(Sum[x] + M*zz_r1[x][y] <= r + M)
+                
+                
                 m.addConstr(zz_and[x][y] <= zz_l[x][y])
                 m.addConstr(zz_and[x][y] <= zz_r1[x][y])
                 m.addConstr(zz_and[x][y] >= -1 + zz_r1[x][y] + zz_l[x][y])
@@ -197,8 +210,8 @@ class EncoderBool(encoder_base.EncoderBasis):
     
         return m
 
-    def grobal2smt(self, m, HORIZON,z_curr,z_target1,
-                       interval, position_in_formula):
+    def global2smt(self, m, HORIZON,z_curr,z_target1,
+                       interval, position_in_formula, z_e):
        
         l = interval[0]
         r = interval[1]
@@ -221,7 +234,7 @@ class EncoderBool(encoder_base.EncoderBasis):
 
             if l > HORIZON-1-x:
 
-                m.addConstr(self.z[x] == 0)
+                m.addConstr(z_curr[x] == 0)
                 continue
 
             for y in range(x, HORIZON):
@@ -231,11 +244,18 @@ class EncoderBool(encoder_base.EncoderBasis):
 
                 if y > x :
 
-                    Sum[x] += self.e[y-1]
+                    Sum[x] += z_e[y-1]
             
                     
-                m.addConstr(zz_l[x][y] == (l <= Sum[x]))
-                m.addConstr(zz_r1[x][y] == (Sum[x] <= r))
+                #m.addConstr(zz_l[x][y] == (l <= Sum[x]))
+                #m.addConstr(zz_r1[x][y] == (Sum[x] <= r))
+                
+                
+                m.addConstr(l - M <= Sum[x] - M*zz_l[x][y])
+                m.addConstr(Sum[x] - M*zz_l[x][y] <= l - epsilon)
+                m.addConstr(r + epsilon <= Sum[x] + M*zz_r1[x][y])
+                m.addConstr(Sum[x] + M*zz_r1[x][y] <= r + M)
+                
                 m.addConstr(zz_and[x][y] <= zz_l[x][y])
                 m.addConstr(zz_and[x][y] <= zz_r1[x][y])
                 m.addConstr(zz_and[x][y] >= -1 + zz_r1[x][y] + zz_l[x][y])

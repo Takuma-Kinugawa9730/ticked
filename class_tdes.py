@@ -12,7 +12,7 @@ class TDES():
     
     def __init__(self):
         
-        self.name
+        self.name = ''
         self.s = []
         #self.s = []
         self.event = []#copy.copy(tMap_G_act.event_act)
@@ -20,11 +20,11 @@ class TDES():
         #self.istate = [tMap_G_act.istate_act]
         self.istate = []
         self.ap = []#copy.copy(tMap_G_act.ap_act)
-        self.label_s = []#copy.copy(tMap_G_act.label_act)
+        self.label = defaultdict(list)#copy.copy(tMap_G_act.label_act)
         #self.ref_timer = defaultdict(list)
         #self.h=H
         #self.G_act = tMap_G_act
-        self.time_ratio
+        self.time_ratio = 0
             
     
     def get_label_matrix(self):
@@ -34,7 +34,7 @@ class TDES():
         for k in range( len(self.s)):
             li = self.s[k]
     
-            set_ap = self.label_s[li[0]]
+            set_ap = self.label[li[0]]
             
             for j in range(len(set_ap)):
     
