@@ -14,16 +14,11 @@ class TDES():
         
         self.name = ''
         self.s = []
-        #self.s = []
-        self.event = []#copy.copy(tMap_G_act.event_act)
+        self.event = []
         self.delta = defaultdict(list)
-        #self.istate = [tMap_G_act.istate_act]
         self.istate = []
-        self.ap = []#copy.copy(tMap_G_act.ap_act)
-        self.label = defaultdict(list)#copy.copy(tMap_G_act.label_act)
-        #self.ref_timer = defaultdict(list)
-        #self.h=H
-        #self.G_act = tMap_G_act
+        self.ap = []
+        self.label = defaultdict(list)
         self.time_ratio = 0
             
     
@@ -54,7 +49,6 @@ class TDES():
     
         Mtrans_func = [[0 for i in range(len(self.s))] for j in range(len(self.s))]
     
-        #num_state = len(self.s)
         M_event =  [[0 for j in range(len(self.s))]for j in range(len(self.s))]
     
         for i in range( len(self.s)):
@@ -62,7 +56,6 @@ class TDES():
             trans_from_i = self.delta['{}'.format(i)]
             for j in range( len(trans_from_i) ):
     
-                # list1 is [next state from i, event]
                 list1 = copy.copy(trans_from_i[j])
                 next_state = int(list1[0])
                 event = list1[1]

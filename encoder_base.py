@@ -21,8 +21,6 @@ class EncoderBasis(object):
     """
     def set_constraint_for_variable(self, m):
         
-        
-        #self.z = m.addMVar((len(self.formula), HORIZON),vtype=gp.GRB.BINARY)#, name = "z")
         if type(self.formula[-1])==list:
             m.addConstr(self.z[-2,0] == 1) #L.index(self.ell)=self.ell
         else:
@@ -42,8 +40,6 @@ class EncoderBasis(object):
             
         for i in range(len_fml):    #i represent subfomula
             
-            #print(self.formula[i])
-               
             if type(self.formula[i]) is list:
                 continue
             
@@ -138,14 +134,7 @@ class EncoderBasis(object):
             else:
                 m = self.ap2smt(m, self.formula[i], HORIZON,  self.z[i], 
                                 label_matrix, len(TDES.s), w, ap)
-                """
-                if int(self.formula[i]) == 0:
-                    m.addConstrs(self.z[i, h] == 1 for h in range(HORIZON))
-                else:    
-                    m = self.ap2smt(m, self.formula[i], HORIZON,  self.z[i], 
-                                    label_matrix, len(TDES.s), w, ap)
-                   
-                """
+                
                 stack = self.stack_manage(stack, del_list=[], set_list=[i])
     
         if len(stack) != 1 :

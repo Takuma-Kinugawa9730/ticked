@@ -2,7 +2,6 @@ from collections import defaultdict
 
 import copy
 import itertools
-import time
 import class_tdes
 
 
@@ -17,9 +16,7 @@ def refine(TDES, DES):
     index_istate = TDES.s.index(TDES.istate)
 
     OpenList.append('{}'.format(index_istate))
-    #print(OpenList)
-    #print("start to search reachablity of TDES\n")
-    start = time.time()
+    
     while(1):
         if len(OpenList) == 0:
 
@@ -37,11 +34,6 @@ def refine(TDES, DES):
             if TDES.delta[now][i][1] not in EventCheck:
                 EventCheck.append(TDES.delta[now][i][1])
 
-    #t = time.time() - start
-    #print('finish refining, time={}'.format(t))
-
-    #ClosedList.sort()
-
     list1 = list(range(len(TDES.s)))
     list1.reverse()
     for i in list1:
@@ -53,10 +45,6 @@ def refine(TDES, DES):
     TDES.delta = defaultdict(list)
     TDES.delta = get_transition_func_of_tdes(TDES.s, DES.trans_act, DES.timed_event)
 
-    #print('size of s={}'.format(len( TDES.s)))
-    #print('size of trans={}'.format(len( TDES.delta)))
-
-    #print(TDES.event)
     list2 = list(range(len(TDES.event)))
     list2.reverse()
     for j in list2:
@@ -161,8 +149,7 @@ def get_state_of_tdes(s_act, trans_act, timed_event, initial_state_act):
                 list_new.append(s)
                 list_new.extend(timer)
                 s_for_tdes.append(list_new)
-                #print('s_with_clock <-{}'.format(s[-1]))
-        
+              
         else:
             print("error. there are too many event occurred in a state")
 
@@ -176,7 +163,6 @@ def get_transition_func_of_tdes(s, trans_act, timed_event):
     
     delta = defaultdict(list)
     
-    #print('trans_act2trans')
     for i in range(len(s)):
         occurable_event_at_s = []
         
@@ -241,29 +227,23 @@ def get_transition_func_of_tdes(s, trans_act, timed_event):
                 else:
                     continue
 
-            #print('trans_from_s[j][0]={0},\nlist1={1}'.format(trans_from_s[j][0],list1))
-            # decide timer of j
             destinate_clock = []
             for k in range( len(list1) ):
                 
-                #print('{}'.format(list1[k][1]))
-                # if there is a share event in s_i and s_j (in G_act)
                 if list1[k][1] in occurable_event_at_s:
                     index = occurable_event_at_s.index(list1[k][1])
                     destinate_clock.append(s_clock[index])
 
                 else:
-                    # list[k][1] (occurable event at j) is remote event
                     if timed_event[list1[k][1]][1] == -1:
                         destinate_clock.append(timed_event[list1[k][1]][0])
 
-                    # list[k][1] (occurable event at j) is prospective event
                     else :
                         destinate_clock.append(timed_event[list1[k][1]][1])
 
             destination = copy.copy([trans_from_s[j][0]])
             destination.extend(destinate_clock)
-            #print('')
+           
             str_destination = '{}'.format(s.index(destination))
             str_event = '{}'.format(trans_from_s[j][1])
             delta['{}'.format(i)].append([str_destination,str_event])
@@ -280,10 +260,7 @@ def get_TDES(DES):
     TDES = class_tdes.TDES()
     TDES.name = DES.name
     (TDES.s, TDES.istate) = get_state_of_tdes(DES.s_act, DES.trans_act, DES.timed_event, DES.istate_act)
-    #print(TDES.event)
-    #print(DES.event_act)
-    TDES.event = DES.event_act + ['tick']    
-    #print(TDES.event)
+    DES.event = DES.event_act + ['tick']    
     TDES.delta = get_transition_func_of_tdes(TDES.s, DES.trans_act, DES.timed_event)
     TDES = refine(TDES, DES)
     TDES.ap = copy.copy(DES.ap_act)

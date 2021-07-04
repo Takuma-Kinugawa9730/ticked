@@ -14,11 +14,9 @@ M = 100
 class EncoderBool(encoder_base.EncoderBasis):
 
     def ap2smt(self, m, target_ap, HORIZON, z_curr, label_matrix, size_of_state, w, ap):
-        #T_w= [[0 for k in range(self.size)] for j in range(self.size)] 
-        #T_w = list(map(list, zip(*self.w)))
-       # print(target_ap)
+        
         index = ap.index(target_ap)
-        for t in range(HORIZON):    #h is horizon
+        for t in range(HORIZON):    
             Sum = 0
             for j in range(size_of_state):
                 Sum += label_matrix[index][j]*w[t][j]
@@ -110,11 +108,6 @@ class EncoderBool(encoder_base.EncoderBasis):
                 m.addConstr(r + epsilon <= Sum[x] + M*zz_r1[x][y])
                 m.addConstr(Sum[x] + M*zz_r1[x][y] <= r + M)
                 
-                #m.addConstr(zz_l[x][y] == (l <= Sum[x]))
-                #m.addConstr(zz_r1[x][y] == (Sum[x] <= r))
-                
-                
-                
                 m.addConstr(zz_and[x][y] <= zz_l[x][y])
                 m.addConstr(zz_and[x][y] <= zz_r1[x][y])
                 m.addConstr(zz_and[x][y] >= -1 + zz_r1[x][y] + zz_l[x][y])
@@ -176,9 +169,6 @@ class EncoderBool(encoder_base.EncoderBasis):
                     Sum[x] += z_e[y-1]
             
                     
-                #m.addConstr(zz_l[x][y] == (l <= Sum[x]))
-                #m.addConstr(zz_r1[x][y] == (Sum[x] <= r))
-                
                 m.addConstr(l - M <= Sum[x] - M*zz_l[x][y])
                 m.addConstr(Sum[x] - M*zz_l[x][y] <= l - epsilon)
                 m.addConstr(r + epsilon <= Sum[x] + M*zz_r1[x][y])
@@ -230,8 +220,6 @@ class EncoderBool(encoder_base.EncoderBasis):
     
         for x in range(HORIZON):
 
-            #print("\n\n{}".format(x))
-
             if l > HORIZON-1-x:
 
                 m.addConstr(z_curr[x] == 0)
@@ -245,12 +233,7 @@ class EncoderBool(encoder_base.EncoderBasis):
                 if y > x :
 
                     Sum[x] += z_e[y-1]
-            
-                    
-                #m.addConstr(zz_l[x][y] == (l <= Sum[x]))
-                #m.addConstr(zz_r1[x][y] == (Sum[x] <= r))
-                
-                
+                            
                 m.addConstr(l - M <= Sum[x] - M*zz_l[x][y])
                 m.addConstr(Sum[x] - M*zz_l[x][y] <= l - epsilon)
                 m.addConstr(r + epsilon <= Sum[x] + M*zz_r1[x][y])

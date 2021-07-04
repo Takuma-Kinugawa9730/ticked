@@ -19,5 +19,4 @@ class DES():
         self.ap_act = []
         self.label_act = defaultdict(list)
         self.timed_event = defaultdict(list)
-        
         self.time_ratio = 0

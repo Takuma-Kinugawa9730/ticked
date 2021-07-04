@@ -1,6 +1,4 @@
 
-#from INFO import DATA_G_base_5 as DATA_G_base
-
 import class_des
         
 def get_DES():

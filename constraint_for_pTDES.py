@@ -6,10 +6,7 @@ Created on Fri Jul  2 15:15:46 2021
 """
 HORIZON = 5
 def get_constraint(M, W):
-    """
-    原子命題　0　は、Trueを表す
-    """
-    
+   
     """
     M[i,j]はi番目のcTDESのj番目のαの値の時の、（実行列に含まれる事象tickの数）+1
     """

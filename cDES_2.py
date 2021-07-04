@@ -4,10 +4,6 @@ Created on Sat Jul  3 09:52:24 2021
 
 @author: takuma
 """
-
-
-#from INFO import DATA_G_base_5 as DATA_G_base
-
 import class_des
         
 def get_DES():

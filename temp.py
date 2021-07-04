@@ -57,17 +57,14 @@ def get_variable_for_execution(m, HORIZON, size_of_state,
         for j in range(size_of_state):
             
             for k in range(size_of_state):
-                #print(i,k,j)
+                
                 sum1 += w[i,k]*tick_matrix[k][j]
                 sum2 += w[i+1,k]*tick_matrix[j][k]
-            #Sum2 += Sum1*W[i+1][j]
-
-        
+            
         m.addConstr(z_e[i] <= sum1)
         m.addConstr(z_e[i] <= sum2)
         m.addConstr(z_e[i] >= -1 + sum1 + sum2)
-        #s.add(E[i] <= Sum2, Sum2 < E[i] + 1 )
-        
+       
     """
     二値変数wについて制約を加える
     """
@@ -100,32 +97,26 @@ def main(TDES, hard_constraint, soft_constraint_list, HORIZON, alpha, dir_path):
     α（0以上1以下）を要素にもつAを値が大きい順にソートする.
     ただし、Aには1が必ず含まれるとする
     """
-    """
-    A.sort(reverse=True)
-    if A[0] != 1:
-        print("ERROR. There is not the value of 1 in A \n")
-    """
+    
     m = gp.Model("Planning for TDES:{0} alpha:{1}".format(TDES.name, alpha))
 
-    #print("get matrix of label")
+    
     label_matrix = TDES.get_label_matrix()
 
-    #print("get matrix of transition")
     (adjacency_matrix, tick_matrix) = TDES.get_transition_matrix()
 
     (z_e, w) = get_variable_for_execution(m, HORIZON, len(TDES.s),adjacency_matrix, tick_matrix)
     print(hard_constraint)
         
     encoder_hard = encoder_main.EncoderBool(hard_constraint)
-    #encoder_hard.set_constraint_for_variable(m, HORIZON)
-  
+    
     start = time.time()
     encoder_hard.start_encodeing(m, HORIZON, TDES, label_matrix, z_e, w, TDES.ap)
     finish = time.time() - start
     f_record.write("time to encode hard constraint, {}\n".format(finish))
     
     if type(hard_constraint[-1])==list:
-        m.addConstr(encoder_hard.z[-2,0] == 1) #L.index(self.ell)=self.ell
+        m.addConstr(encoder_hard.z[-2,0] == 1) 
     else:
         m.addConstr(encoder_hard.z[-1,0] == 1)
       
@@ -149,17 +140,8 @@ def main(TDES, hard_constraint, soft_constraint_list, HORIZON, alpha, dir_path):
         
     m.update() 
     
-    
-    #list_m = []
-    #list_w = []
-    #for alpha in A:
     """
     目的関数のみを変更させるので、コピーを行う
-    """
-    """
-    copy_model = m.copy()
-    copy_model.setObjective(alpha*(z_e.sum()) - (1-alpha)*part_of_obj_function, 
-                   gp.GRB.MINIMIZE)
     """
     m.setObjective(alpha*(z_e.sum()) - (1-alpha)*part_of_obj_function, 
                    gp.GRB.MINIMIZE)
@@ -177,10 +159,8 @@ def main(TDES, hard_constraint, soft_constraint_list, HORIZON, alpha, dir_path):
     print("-"*40)
         
     # 最適解が得られた場合、結果を出力
-    #if copy_model.Status == gp.GRB.OPTIMAL:        
-    #    copy_model.update() 
     if m.Status == gp.GRB.OPTIMAL: 
-        #print("opt")
+        
         m.update() 
         
         """
@@ -213,18 +193,17 @@ def main(TDES, hard_constraint, soft_constraint_list, HORIZON, alpha, dir_path):
         """
         
         if TDES.time_ratio != -1: #TDESがcTDESであるときに以下の処理を行う
-            #print(z_e.x)
-            #list_m.append(np.ceil((z_e.X.sum()+1)*TDES.time_ratio))
+            
             z_e_sum = 0
             for t in range(HORIZON-1):
                 z_e_sum += z_e[t].x
-            #print(z_e_sum[0])
+           
             mm = np.ceil((z_e_sum[0]+1)*TDES.time_ratio)
             if alpha != 1:
-                #list_w.append((alpha*(z_e.sum()) - m.ObjVal)/(1-alpha))
+                
                 ww = (alpha*(z_e_sum[0]) - m.ObjVal)/(1-alpha)
             else:
-#                list_w.append(1)
+
                 ww = 1               
              
             
@@ -288,8 +267,7 @@ if    __name__ == '__main__':
         for alpha in A:
             (m, w) = main(p_f.TDES, p_f.hard_constraint, p_f.soft_constraint_list, 
             p_f.HORIZON, alpha, dir_path)
-            #M.append(list_m)
-            #W.append(list_w)    
+             
             list_m.append(m)
             list_w.append(w)    
         M.append(list_m) 
