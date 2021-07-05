@@ -17,6 +17,7 @@ class TDES():
         self.event = []
         self.delta = defaultdict(list)
         self.istate = []
+        self.fin_state_act = 'hoge'
         self.ap = []
         self.label = defaultdict(list)
         self.time_ratio = 0

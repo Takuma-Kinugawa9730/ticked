@@ -20,8 +20,12 @@ cDES
 """
 import cDES_1
 import cDES_2
+import cDES_3
+import cDES_4
 import constr_for_cTDES_1
 import constr_for_cTDES_2
+import constr_for_cTDES_3
+import constr_for_cTDES_4
 
 
 
@@ -280,6 +284,17 @@ if    __name__ == '__main__':
     problem_formulation = ProblemFormulation(translate_des_to_tdes.get_TDES(cDES_2.get_DES()), 
                                              constr_for_cTDES_2.get_hard_constraint(), constr_for_cTDES_2.get_soft_constraint(), 
                                              constr_for_cTDES_2.HORIZON)
+    p_f_list.append(problem_formulation)
+    
+    problem_formulation = ProblemFormulation(translate_des_to_tdes.get_TDES(cDES_3.get_DES()), 
+                                             constr_for_cTDES_3.get_hard_constraint(), constr_for_cTDES_3.get_soft_constraint(), 
+                                             constr_for_cTDES_3.HORIZON)
+    p_f_list.append(problem_formulation)
+    
+    
+    problem_formulation = ProblemFormulation(translate_des_to_tdes.get_TDES(cDES_4.get_DES()), 
+                                             constr_for_cTDES_4.get_hard_constraint(), constr_for_cTDES_4.get_soft_constraint(), 
+                                             constr_for_cTDES_4.HORIZON)
     p_f_list.append(problem_formulation)
     
     

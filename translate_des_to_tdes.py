@@ -263,6 +263,7 @@ def get_TDES(DES):
     DES.event = DES.event_act + ['tick']    
     TDES.delta = get_transition_func_of_tdes(TDES.s, DES.trans_act, DES.timed_event)
     TDES = refine(TDES, DES)
+    TDES.fin_state = DES.fin_state_act
     TDES.ap = copy.copy(DES.ap_act)
     TDES.label = copy.copy(DES.label_act)
    

@@ -16,6 +16,7 @@ class DES():
         self.event_act = []
         self.trans_act = defaultdict(list)
         self.istate_act = 'hoge'
+        self.fin_state_act = 'hoge'
         self.ap_act = []
         self.label_act = defaultdict(list)
         self.timed_event = defaultdict(list)
