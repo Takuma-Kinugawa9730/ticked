@@ -1,0 +1,6 @@
+time to encode hard constraint, 0.05881381034851074
+time to encode soft constraint, 0.2642934322357178
+time to encode soft constraint, 0.05884242057800293
+time to optimize with 0.01, 0.01044321060180664
+time to optimize with 0.5, 0.010984182357788086
+time to optimize with 1, 0.01196599006652832

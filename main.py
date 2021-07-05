@@ -80,7 +80,7 @@ def get_variable_for_execution(m, HORIZON, size_of_state, index_initial_state,
             
     return z_e, w
       
-def output_result(TDES, z_e, w, len_hard_constraint, encoder_hard):
+def output_result(HORIZON, TDES, z_e, w, len_hard_constraint, encoder_hard, c):
 
     """
     実行列をテキストファイルで出力
@@ -102,7 +102,8 @@ def output_result(TDES, z_e, w, len_hard_constraint, encoder_hard):
     """
     二値変数zの値を出力
     """
-    with open(dir_path + TDES.name + '_c-{}_'.format(c) + 'z.csv', 'w') as f:
+    os.makedirs(dir_path + 'output_binary_variable/', exist_ok=True)
+    with open(dir_path + 'output_binary_variable/' +  TDES.name + '_c-{}_'.format(c) + 'z.csv', 'w') as f:
         writer = csv.writer(f)
         for index_fml in range(len_hard_constraint):
             writer.writerow(encoder_hard.z[index_fml].X)
@@ -110,25 +111,26 @@ def output_result(TDES, z_e, w, len_hard_constraint, encoder_hard):
     """
     二値変数z_eの値を出力
     """
-    with open(dir_path + TDES.name + '_c-{}_'.format(c) + 'z_e.csv', 'w') as f:
-        writer = csv.writer(f)
-        for index_fml in range(len_hard_constraint):
-            writer.writerow(z_e.X)
-      
+    f=open(dir_path + '/output_binary_variable/' + TDES.name + '_c-{}_'.format(c) + 'z_e.txt', 'w')
+    for t in range(len(z_e.X)):
+        f.write("{}, ".format(z_e.X[t]))
+    f.close()
         
 """
 実際の実行列を求める
 戻り値＝（事象tickの数：m、Soft制約の重要度の合計：w）
 """
 
-def get_execution(TDES, hard_constraint, soft_constraint_list, HORIZON, c, dir_path):
+def get_execution(TDES, hard_constraint, soft_constraint_list, HORIZON, C, dir_path):
     
     LARGE_NUMBER = 100
     
     f_record=open(dir_path + TDES.name + '_time_record.txt', 'w')
     
     
-    m = gp.Model("Planning for TDES:{0} c:{1}".format(TDES.name, c))
+    #m = gp.Model("Planning for TDES:{0} c:{1}".format(TDES.name, c))
+    m = gp.Model("Planning for TDES:{0}".format(TDES.name))
+    
     m.Params.LogFile = dir_path +"Log.txt"
 
     """
@@ -192,59 +194,65 @@ def get_execution(TDES, hard_constraint, soft_constraint_list, HORIZON, c, dir_p
     sum_z_e = 0
     for t in range(HORIZON-1):
         sum_z_e += z_e[t]
-    
-    """
-    目的関数をセットする
-    """
-    m.setObjective(c*(sum_z_e) - (1-c)*part_of_obj_function, 
-                   gp.GRB.MINIMIZE)
-    #解く
-    print("-"*40 + "\n" + "-"*15 + " c = {} ".format(c) + "-"*15 + "\n" + "-"*40 )
-    start = time.time()
-    m.update()
-    m.optimize()
-    finish = time.time() - start
-    f_record.write("time to optimize with {0}, {1}\n".format(c, finish))
-           
-    f_record.close() 
-    
-    print("-"*40)
         
-    
-    if m.Status != gp.GRB.OPTIMAL: 
-        return 0, -LARGE_NUMBER
         
-    # 最適解が得られた場合、結果を出力
-    else:
-        
-        m.update() 
-        output_result(TDES, z_e, w, len(hard_constraint), encoder_hard)
-        
+    list_m = []
+    list_w = []
+    for c in C:
         """
-        pTDESのパラメータになる値m,wを取得する
+        目的関数をセットする
         """
-        if TDES.time_ratio == -1:
-            return
-        else: #TDESがcTDESであるときに以下の処理を行う
-            
-            z_e_sum = 0
-            for t in range(HORIZON-1):
-                z_e_sum += z_e[t].x
-           
-            mm = np.ceil((z_e_sum[0]+1)*TDES.time_ratio)
-            if c != 1: 
-                ww = (c*(z_e_sum[0]) - m.ObjVal)/(1-c)
-            else:
-                ww = 1               
+        m.setObjective(c*(sum_z_e) - (1-c)*part_of_obj_function, 
+                       gp.GRB.MINIMIZE)
+        #解く
+        print("-"*40 + "\n" + "-"*15 + " c = {} ".format(c) + "-"*15 + "\n" + "-"*40 )
+        start = time.time()
+        m.update()
+        m.optimize()
+        finish = time.time() - start
+        f_record.write("time to optimize with {0}, {1}\n".format(c, finish))
              
+        print("-"*40)
+            
+        
+        if m.Status != gp.GRB.OPTIMAL: 
+            #return 0, -LARGE_NUMBER
+            list_m.append(0)
+            list_w.append(-LARGE_NUMBER)
+        # 最適解が得られた場合、結果を出力
+        else:
+            
+            m.update() 
+            output_result(HORIZON, TDES, z_e, w, len(hard_constraint), encoder_hard, c)
             
             """
-            念のため、リセットして、ILP制約を消した状態で次のTDESに進む
+            pTDESのパラメータになる値m,wを取得する
             """
-            m.reset(0)         
-            return mm, ww
-
+            if TDES.time_ratio == -1:
+                return
+            else: #TDESがcTDESであるときに以下の処理を行う
+                
+                z_e_sum = 0
+                for t in range(HORIZON-1):
+                    z_e_sum += z_e[t].x
+               
+                list_m.append(np.ceil((z_e_sum[0]+1)*TDES.time_ratio))
+                
+                if c != 1: 
+                    list_w.append((c*(z_e_sum[0]) - m.ObjVal)/(1-c))
+                else:
+                    list_w.append(1)               
+                 
+                
+                """
+                念のため、リセットして、ILP制約を消した状態で次のTDESに進む
+                """
+                #m.reset(0)         
+                #return list_m, list_w
+  
+    f_record.close() 
         
+    return list_m, list_w     
         
 if    __name__ == '__main__':
     
@@ -279,8 +287,8 @@ if    __name__ == '__main__':
     αの集合
     """
     
-    #A=[0.01, 0.5, 1]
-    A=[0.5]
+    C=[0.01, 0.5, 1]
+    #C=[0.5]
     
     
     """
@@ -291,13 +299,15 @@ if    __name__ == '__main__':
     for p_f in p_f_list:
         print("\n" + "*"*40 + "\n" + "*"*15 + "  " + p_f.TDES.name + "  " + "*"*15 + "\n" + "*"*40 + "\n")
         #print(p_f.HORIZON)
-        list_m = []
-        list_w = []
-        for c in A:
-            (m, w) = get_execution(p_f.TDES, p_f.hard_constraint, p_f.soft_constraint_list, p_f.HORIZON, c, dir_path)
+        
+        (list_m, list_w) = get_execution(p_f.TDES, p_f.hard_constraint, p_f.soft_constraint_list, p_f.HORIZON, C, dir_path)
+        """
+        for c in C:
+            (m, w) = get_execution(p_f.TDES, p_f.hard_constraint, p_f.soft_constraint_list, p_f.HORIZON, C, dir_path)
              
             list_m.append(m)
-            list_w.append(w)    
+            list_w.append(w)   
+        """
         M.append(list_m) 
         W.append(list_w)
         p_f.TDES.output(dir_path)
@@ -320,7 +330,7 @@ if    __name__ == '__main__':
     HORIZON = constraint_for_pTDES.HORIZON
     
     
-    get_execution(pTDES, p_hard_constraint, p_soft_constraint_list, HORIZON, 0, dir_path)
+    get_execution(pTDES, p_hard_constraint, p_soft_constraint_list, HORIZON, [0], dir_path)
     
     
     """
