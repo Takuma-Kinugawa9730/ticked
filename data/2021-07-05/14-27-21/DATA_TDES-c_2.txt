@@ -1,0 +1,15 @@
+s:[state, clock for 1st event(clock1), clock for 2nd event(clock2), ...]
+[['a0', 0, 0], ['a0', 1, 1], ['ab', 0], ['ab', 1], ['ab', 2], ['ac', 0], ['ac', 1], ['ac', 2], ['b0', 0, 0], ['b0', 1, 1], ['bc', 0], ['bc', 1], ['bc', 2], ['ba', 0], ['ba', 1], ['ba', 2], ['c0', 0, 0], ['c0', 1, 1], ['ca', 0], ['ca', 1], ['ca', 2], ['cb', 0], ['cb', 1], ['cb', 2]]
+
+event
+[]
+
+istate
+['a0', 1, 1]
+
+label:{atomic proposition:[states which satisfy the atomic proposition]}
+{'a0': ['A'], 'ab': ['m_ab'], 'ac': ['m_ac'], 'b0': ['B'], 'bc': ['m_bc'], 'ba': ['m_ba'], 'c0': ['C'], 'ca': ['m_ca'], 'cb': ['m_cb']}
+
+ap
+['A', 'B', 'C', 'm_ab', 'm_ac', 'm_bc', 'm_ba', 'm_ca', 'm_cb', '1', '2', '3', '5']
+

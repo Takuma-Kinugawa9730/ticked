@@ -1,0 +1,175 @@
+
+Gurobi 9.1.1 (win64) logging started Mon Jul  5 13:39:39 2021
+
+Changed value of parameter LogFile to data/2021-07-05/13-39-39/Log.txt
+   Prev:   Default: 
+Gurobi Optimizer version 9.1.1 build v9.1.1rc0 (win64)
+Thread count: 6 physical cores, 6 logical processors, using up to 6 threads
+Optimize a model with 244 rows, 215 columns and 850 nonzeros
+Model fingerprint: 0x769f160c
+Variable types: 0 continuous, 215 integer (215 binary)
+Coefficient statistics:
+  Matrix range     [1e+00, 1e+02]
+  Objective range  [1e-02, 3e+00]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [1e+00, 1e+02]
+Presolve removed 83 rows and 187 columns
+Presolve time: 0.00s
+
+Explored 0 nodes (0 simplex iterations) in 0.00 seconds
+Thread count was 1 (of 6 available processors)
+
+Solution count 0
+
+Model is infeasible
+Best objective -, best bound -, gap -
+
+Gurobi 9.1.1 (win64) logging started Mon Jul  5 13:39:41 2021
+
+Changed value of parameter LogFile to data/2021-07-05/13-39-39/Log.txt
+   Prev:   Default: 
+Gurobi Optimizer version 9.1.1 build v9.1.1rc0 (win64)
+Thread count: 6 physical cores, 6 logical processors, using up to 6 threads
+Optimize a model with 244 rows, 215 columns and 850 nonzeros
+Model fingerprint: 0x7e78d640
+Variable types: 0 continuous, 215 integer (215 binary)
+Coefficient statistics:
+  Matrix range     [1e+00, 1e+02]
+  Objective range  [5e-01, 2e+00]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [1e+00, 1e+02]
+Presolve removed 83 rows and 187 columns
+Presolve time: 0.00s
+
+Explored 0 nodes (0 simplex iterations) in 0.00 seconds
+Thread count was 1 (of 6 available processors)
+
+Solution count 0
+
+Model is infeasible
+Best objective -, best bound -, gap -
+
+Gurobi 9.1.1 (win64) logging started Mon Jul  5 13:39:43 2021
+
+Changed value of parameter LogFile to data/2021-07-05/13-39-39/Log.txt
+   Prev:   Default: 
+Gurobi Optimizer version 9.1.1 build v9.1.1rc0 (win64)
+Thread count: 6 physical cores, 6 logical processors, using up to 6 threads
+Optimize a model with 244 rows, 215 columns and 850 nonzeros
+Model fingerprint: 0x1698098f
+Variable types: 0 continuous, 215 integer (215 binary)
+Coefficient statistics:
+  Matrix range     [1e+00, 1e+02]
+  Objective range  [1e+00, 1e+00]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [1e+00, 1e+02]
+Presolve removed 83 rows and 187 columns
+Presolve time: 0.00s
+
+Explored 0 nodes (0 simplex iterations) in 0.01 seconds
+Thread count was 1 (of 6 available processors)
+
+Solution count 0
+
+Model is infeasible
+Best objective -, best bound -, gap -
+
+Gurobi 9.1.1 (win64) logging started Mon Jul  5 13:39:46 2021
+
+Changed value of parameter LogFile to data/2021-07-05/13-39-39/Log.txt
+   Prev:   Default: 
+Gurobi Optimizer version 9.1.1 build v9.1.1rc0 (win64)
+Thread count: 6 physical cores, 6 logical processors, using up to 6 threads
+Optimize a model with 352 rows, 299 columns and 1203 nonzeros
+Model fingerprint: 0x1a6f2bb9
+Variable types: 0 continuous, 299 integer (299 binary)
+Coefficient statistics:
+  Matrix range     [1e+00, 1e+02]
+  Objective range  [1e-02, 3e+00]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [1e+00, 1e+02]
+Presolve removed 112 rows and 252 columns
+Presolve time: 0.00s
+
+Explored 0 nodes (0 simplex iterations) in 0.00 seconds
+Thread count was 1 (of 6 available processors)
+
+Solution count 0
+
+Model is infeasible
+Best objective -, best bound -, gap -
+
+Gurobi 9.1.1 (win64) logging started Mon Jul  5 13:39:49 2021
+
+Changed value of parameter LogFile to data/2021-07-05/13-39-39/Log.txt
+   Prev:   Default: 
+Gurobi Optimizer version 9.1.1 build v9.1.1rc0 (win64)
+Thread count: 6 physical cores, 6 logical processors, using up to 6 threads
+Optimize a model with 352 rows, 299 columns and 1203 nonzeros
+Model fingerprint: 0x6d077c13
+Variable types: 0 continuous, 299 integer (299 binary)
+Coefficient statistics:
+  Matrix range     [1e+00, 1e+02]
+  Objective range  [5e-01, 2e+00]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [1e+00, 1e+02]
+Presolve removed 112 rows and 252 columns
+Presolve time: 0.00s
+
+Explored 0 nodes (0 simplex iterations) in 0.00 seconds
+Thread count was 1 (of 6 available processors)
+
+Solution count 0
+
+Model is infeasible
+Best objective -, best bound -, gap -
+
+Gurobi 9.1.1 (win64) logging started Mon Jul  5 13:39:52 2021
+
+Changed value of parameter LogFile to data/2021-07-05/13-39-39/Log.txt
+   Prev:   Default: 
+Gurobi Optimizer version 9.1.1 build v9.1.1rc0 (win64)
+Thread count: 6 physical cores, 6 logical processors, using up to 6 threads
+Optimize a model with 352 rows, 299 columns and 1203 nonzeros
+Model fingerprint: 0x78ecd1a5
+Variable types: 0 continuous, 299 integer (299 binary)
+Coefficient statistics:
+  Matrix range     [1e+00, 1e+02]
+  Objective range  [1e+00, 1e+00]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [1e+00, 1e+02]
+Presolve removed 112 rows and 252 columns
+Presolve time: 0.00s
+
+Explored 0 nodes (0 simplex iterations) in 0.00 seconds
+Thread count was 1 (of 6 available processors)
+
+Solution count 0
+
+Model is infeasible
+Best objective -, best bound -, gap -
+
+Gurobi 9.1.1 (win64) logging started Mon Jul  5 13:39:55 2021
+
+Changed value of parameter LogFile to data/2021-07-05/13-39-39/Log.txt
+   Prev:   Default: 
+Gurobi Optimizer version 9.1.1 build v9.1.1rc0 (win64)
+Thread count: 6 physical cores, 6 logical processors, using up to 6 threads
+Optimize a model with 365 rows, 299 columns and 1228 nonzeros
+Model fingerprint: 0xdb49251b
+Variable types: 0 continuous, 299 integer (299 binary)
+Coefficient statistics:
+  Matrix range     [1e+00, 1e+02]
+  Objective range  [1e+02, 1e+02]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [1e-02, 1e+02]
+Presolve removed 158 rows and 286 columns
+Presolve time: 0.00s
+
+Explored 0 nodes (0 simplex iterations) in 0.00 seconds
+Thread count was 1 (of 6 available processors)
+
+Solution count 0
+
+Model is infeasible
+Best objective -, best bound -, gap -

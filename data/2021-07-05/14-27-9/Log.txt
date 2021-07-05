@@ -1,0 +1,5 @@
+
+Gurobi 9.1.1 (win64) logging started Mon Jul  5 14:27:09 2021
+
+Changed value of parameter LogFile to data/2021-07-05/14-27-9/Log.txt
+   Prev:   Default: 

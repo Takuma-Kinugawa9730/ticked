@@ -1,0 +1,5 @@
+h:0, state(DES):a0, state(TDES):['a0', 0, 0]
+h:1, state(DES):ac, state(TDES):['ac', 2]
+h:2, state(DES):ac, state(TDES):['ac', 1]
+h:3, state(DES):ac, state(TDES):['ac', 0]
+h:4, state(DES):c0, state(TDES):['c0', 1, 1]

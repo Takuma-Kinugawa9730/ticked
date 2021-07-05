@@ -1,0 +1,84 @@
+
+Gurobi 9.1.1 (win64) logging started Mon Jul  5 14:21:18 2021
+
+Changed value of parameter LogFile to data/2021-07-05/14-21-18/Log.txt
+   Prev:   Default: 
+Gurobi Optimizer version 9.1.1 build v9.1.1rc0 (win64)
+Thread count: 6 physical cores, 6 logical processors, using up to 6 threads
+Optimize a model with 352 rows, 299 columns and 1083 nonzeros
+Model fingerprint: 0x17cb913d
+Variable types: 0 continuous, 299 integer (299 binary)
+Coefficient statistics:
+  Matrix range     [1e+00, 1e+02]
+  Objective range  [5e-01, 2e+00]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [1e+00, 1e+02]
+Presolve removed 352 rows and 299 columns
+Presolve time: 0.00s
+Presolve: All rows and columns removed
+
+Explored 0 nodes (0 simplex iterations) in 0.00 seconds
+Thread count was 1 (of 6 available processors)
+
+Solution count 1: -2.5 
+No other solutions better than -2.5
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective -2.500000000000e+00, best bound -2.500000000000e+00, gap 0.0000%
+Discarded solution information
+
+Gurobi 9.1.1 (win64) logging started Mon Jul  5 14:21:19 2021
+
+Changed value of parameter LogFile to data/2021-07-05/14-21-18/Log.txt
+   Prev:   Default: 
+Gurobi Optimizer version 9.1.1 build v9.1.1rc0 (win64)
+Thread count: 6 physical cores, 6 logical processors, using up to 6 threads
+Optimize a model with 352 rows, 299 columns and 1083 nonzeros
+Model fingerprint: 0x17cb913d
+Variable types: 0 continuous, 299 integer (299 binary)
+Coefficient statistics:
+  Matrix range     [1e+00, 1e+02]
+  Objective range  [5e-01, 2e+00]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [1e+00, 1e+02]
+Presolve removed 352 rows and 299 columns
+Presolve time: 0.00s
+Presolve: All rows and columns removed
+
+Explored 0 nodes (0 simplex iterations) in 0.00 seconds
+Thread count was 1 (of 6 available processors)
+
+Solution count 1: -2.5 
+No other solutions better than -2.5
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective -2.500000000000e+00, best bound -2.500000000000e+00, gap 0.0000%
+Discarded solution information
+
+Gurobi 9.1.1 (win64) logging started Mon Jul  5 14:21:21 2021
+
+Changed value of parameter LogFile to data/2021-07-05/14-21-18/Log.txt
+   Prev:   Default: 
+Gurobi Optimizer version 9.1.1 build v9.1.1rc0 (win64)
+Thread count: 6 physical cores, 6 logical processors, using up to 6 threads
+Optimize a model with 352 rows, 299 columns and 1083 nonzeros
+Model fingerprint: 0x8cb339e2
+Variable types: 0 continuous, 299 integer (299 binary)
+Coefficient statistics:
+  Matrix range     [1e+00, 1e+02]
+  Objective range  [5e+00, 8e+00]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [1e+00, 1e+02]
+Presolve removed 352 rows and 299 columns
+Presolve time: 0.00s
+Presolve: All rows and columns removed
+
+Explored 0 nodes (0 simplex iterations) in 0.00 seconds
+Thread count was 1 (of 6 available processors)
+
+Solution count 1: -13 
+No other solutions better than -13
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective -1.300000000000e+01, best bound -1.300000000000e+01, gap 0.0000%
+Discarded solution information

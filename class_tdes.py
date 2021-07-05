@@ -48,8 +48,9 @@ class TDES():
     def get_transition_matrix(self):
     
         Mtrans_func = [[0 for i in range(len(self.s))] for j in range(len(self.s))]
-    
-        M_event =  [[0 for j in range(len(self.s))]for j in range(len(self.s))]
+        alpha = [0 for j in range(len(self.s))]
+        beta = [0 for j in range(len(self.s))]
+        #M_event =  [[0 for j in range(len(self.s))]for j in range(len(self.s))]
     
         for i in range( len(self.s)):
     
@@ -62,14 +63,18 @@ class TDES():
                 
                 Mtrans_func[i][next_state] = 1
                 if event == 'tick':
-                    M_event[i][next_state] = 1
+                    #M_event[i][next_state] = 1
+                    if alpha[i] == 0:
+                        alpha[i] = 1
+                    if beta[next_state] == 0:
+                        beta[next_state] = 1
                     
     
-        return (Mtrans_func, M_event)        
+        return (Mtrans_func, alpha, beta)        
         
        
     def output(self, dir_path):
-        file1 = open(dir_path + 'DATA_G.txt', 'w')
+        file1 = open(dir_path + 'DATA_TDES-{}.txt'.format(self.name), 'w')
         file1.write('s:[state, clock for 1st event(clock1), clock for 2nd event(clock2), ...]\n')
         file1.write('{}\n\n'.format(self.s))
         file1.write('event\n')
@@ -83,8 +88,8 @@ class TDES():
         
         file1.close()
     
-        file1 = open(dir_path+ 'DATA_G_trans.txt', 'w')
-        file1.write('length of trans:{}'.format(len(self.trans)))
+        file1 = open(dir_path+ 'DATA_TDES-{}_delta.txt'.format(self.name), 'w')
+        file1.write('length of trans:{}'.format(len(self.delta)))
         
         file1.write('trans:{state of departure:[clock1,...,state of termination, event]}\n')
         for i in range(len(self.delta)):
