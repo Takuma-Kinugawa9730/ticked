@@ -140,6 +140,7 @@ def get_execution(TDES, hard_constraint, soft_constraint_list, HORIZON, C, dir_p
     """
     ラベル関数の行列、遷移関数の行列、事象tickに関するベクトルを手に入れる
     """    
+    print("encode TDES")
     label_matrix = TDES.get_label_matrix()
     (adjacency_matrix, alpha, beta) = TDES.get_transition_matrix()
 
@@ -209,7 +210,7 @@ def get_execution(TDES, hard_constraint, soft_constraint_list, HORIZON, C, dir_p
         m.setObjective(c*(sum_z_e) - (1-c)*part_of_obj_function, 
                        gp.GRB.MINIMIZE)
         #解く
-        print("-"*40 + "\n" + "-"*15 + " c = {} ".format(c) + "-"*15 + "\n" + "-"*40 )
+        print("-"*40 + "\n" + "-"*15 + " c = {0} (TDES:{1}) ".format(c, TDES.name) + "-"*15 + "\n" + "-"*40 )
         start = time.time()
         m.update()
         m.optimize()
@@ -302,7 +303,7 @@ if    __name__ == '__main__':
     αの集合
     """
     
-    C=[0.01, 0.5, 1]
+    C=[1, 0.5, 0.01]
     #C=[0.5]
     
     
@@ -316,17 +317,11 @@ if    __name__ == '__main__':
         #print(p_f.HORIZON)
         
         (list_m, list_w) = get_execution(p_f.TDES, p_f.hard_constraint, p_f.soft_constraint_list, p_f.HORIZON, C, dir_path)
-        """
-        for c in C:
-            (m, w) = get_execution(p_f.TDES, p_f.hard_constraint, p_f.soft_constraint_list, p_f.HORIZON, C, dir_path)
-             
-            list_m.append(m)
-            list_w.append(w)   
-        """
+        
         M.append(list_m) 
         W.append(list_w)
         p_f.TDES.output(dir_path)
-    
+        
     """
     MとWをテキストファイルに出力
     """
@@ -335,12 +330,13 @@ if    __name__ == '__main__':
     f=open(dir_path + 'W.txt', 'w')
     f.write("{}".format(W))
     f.close()
-
+    
     """
     上位TDESのプランニング
     """
+    print("\n" + "*"*40 + "\n" + "*"*15 + "  " + "pTDES.name" + "  " + "*"*15 + "\n" + "*"*40 + "\n")
+    
     pTDES = translate_des_to_tdes.get_TDES(pDES.get_DES())
-    print("\n" + "*"*40 + "\n" + "*"*15 + "  " + pTDES.name + "  " + "*"*15 + "\n" + "*"*40 + "\n")
     (p_hard_constraint, p_soft_constraint_list) = constraint_for_pTDES.get_constraint(M, W)
     HORIZON = constraint_for_pTDES.HORIZON
     

@@ -17,7 +17,12 @@ def refine(TDES, DES):
 
     OpenList.append('{}'.format(index_istate))
     
+    counter = 0
     while(1):
+        counter += 1
+        if counter % 1000 == 0:
+            print("counter={}".format(counter))
+    
         if len(OpenList) == 0:
 
             break
@@ -28,12 +33,24 @@ def refine(TDES, DES):
         
         for i in range(len(TDES.delta[now])):
             
-            if TDES.delta[now][i][0] not in ClosedList:
-                OpenList.append(TDES.delta[now][i][0])
+            if TDES.time_ratio == -1:
+                if TDES.delta[now][i][0] not in ClosedList:
+                    #print(TDES.delta[now][i][0])
+                    OpenList.append(TDES.delta[now][i][0])
+    
+                if TDES.delta[now][i][1] not in EventCheck:
+                    #print(TDES.delta[now][i][1])
+                    EventCheck.append(TDES.delta[now][i][1])
+            else:
+                if TDES.delta[now][i][0] not in ClosedList:
+                    
+                    OpenList.append(TDES.delta[now][i][0])
+    
+                if TDES.delta[now][i][1] not in EventCheck:
+                
+                    EventCheck.append(TDES.delta[now][i][1])
 
-            if TDES.delta[now][i][1] not in EventCheck:
-                EventCheck.append(TDES.delta[now][i][1])
-
+    print("counter={}".format(counter))
     list1 = list(range(len(TDES.s)))
     list1.reverse()
     for i in list1:
@@ -156,7 +173,7 @@ def get_state_of_tdes(s_act, trans_act, timed_event, initial_state_act):
     if initial_s not in s_for_tdes:
         print('\nistate:{}'.format(initial_s))
         print("there is no istate")
-    
+    #print(s_for_tdes)
     return (s_for_tdes, initial_s)
 
 def get_transition_func_of_tdes(s, trans_act, timed_event):
@@ -259,10 +276,11 @@ def get_TDES(DES):
     
     TDES = class_tdes.TDES()
     TDES.name = DES.name
+    DES.event = DES.event_act + ['tick'] 
     (TDES.s, TDES.istate) = get_state_of_tdes(DES.s_act, DES.trans_act, DES.timed_event, DES.istate_act)
-    DES.event = DES.event_act + ['tick']    
+       
     TDES.delta = get_transition_func_of_tdes(TDES.s, DES.trans_act, DES.timed_event)
-    TDES = refine(TDES, DES)
+    #TDES = refine(TDES, DES)
     TDES.fin_state = DES.fin_state_act
     TDES.ap = copy.copy(DES.ap_act)
     TDES.label = copy.copy(DES.label_act)

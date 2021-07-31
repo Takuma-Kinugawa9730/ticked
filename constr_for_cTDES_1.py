@@ -9,7 +9,7 @@ def get_hard_constraint():
     
     
     hard_constraint = ['FIN', 'F', [0, HORIZON],
-                       'c', '!', 'b', 'U', [0, HORIZON]]
+                       'c', '!', 'b', 'U', [0, HORIZON], "&"]
 
     return hard_constraint
 
