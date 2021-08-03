@@ -29,25 +29,25 @@ def get_DES():
     des.fin_state_act = des.s_act[-1]
     des.ap_act = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'FIN'] 
     des.label_act = {   
-                des.s_act[0]:[des.ap_act[0], des.ap_act[8]],
+                des.s_act[0]:[des.ap_act[0]],
                 des.s_act[1]:[des.ap_act[1], des.ap_act[8]],
                 des.s_act[2]:[des.ap_act[2], des.ap_act[8]],
                 
                 des.s_act[3]:[des.ap_act[3]],
                 des.s_act[4]:[des.ap_act[4]],
-                des.s_act[5]:[des.ap_act[5]]
+                des.s_act[5]:[des.ap_act[-1]]
         }
     
     des.timed_event = {    
-                des.event_act[0]:[1,-1],
-                des.event_act[1]:[1,2],
-                des.event_act[2]:[1, -1],
-                des.event_act[3]:[1,2],
+                des.event_act[0]:[0,-1],
+                des.event_act[1]:[2,-1],
+                des.event_act[2]:[2, 3],
+                des.event_act[3]:[1,-1],
                 des.event_act[4]:[1,-1],
-                des.event_act[5]:[1,2],
-                des.event_act[6]:[1,-1],
-                des.event_act[7]:[1,2],
-                des.event_act[8]:[1,-1],
+                des.event_act[5]:[2,2],
+                des.event_act[6]:[2,-1],
+                des.event_act[7]:[1,-1],
+                des.event_act[8]:[3,-1],
                 des.event_act[9]:[0,0]
                     }
     
@@ -62,5 +62,5 @@ def get_DES():
     上位TDESとの単位時間のずれ
     0以上1以下の数になる
     """
-    des.time_ratio = 0.5
+    des.time_ratio = 0.75
     return des

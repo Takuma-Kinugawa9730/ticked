@@ -18,14 +18,14 @@ class EncoderBasis(object):
         
     """
     formulaがHard制約を表すならば、二値変数zについて制約を加える
-    """
+    
     def set_constraint_for_variable(self, m):
         
         if type(self.formula[-1])==list:
             m.addConstr(self.z[-2,0] == 1) #L.index(self.ell)=self.ell
         else:
             m.addConstr(self.z[-1,0] == 1)
-        
+    """   
         
     def start_encodeing(self, m, HORIZON, TDES, label_matrix, z_e, w, ap):
         

@@ -8,17 +8,14 @@ def get_DES():
     des.name = "c_1"
     des.s_act = ['0', '1', '2', '3']
 
-    des.event_act =['01', '02', '10', '12', '13', '20', '21', '23', 'finish']
+    des.event_act =['01', '02', '12', '13', '23', 'finish']
 
     des.trans_act={
             des.s_act[0]:[[des.s_act[1],des.event_act[0]],
                           [des.s_act[2],des.event_act[1]]],
-            des.s_act[1]:[[des.s_act[0],des.event_act[2]],
-                          [des.s_act[2],des.event_act[3]],
-                          [des.s_act[3],des.event_act[4]]],
-            des.s_act[2]:[[des.s_act[0],des.event_act[5]],
-                          [des.s_act[1],des.event_act[6]],
-                          [des.s_act[3],des.event_act[7]]],
+            des.s_act[1]:[[des.s_act[2],des.event_act[2]],
+                          [des.s_act[3],des.event_act[3]]],
+            des.s_act[2]:[[des.s_act[3],des.event_act[4]]],
             
             des.s_act[3]:[[des.s_act[3],des.event_act[-1]]]
             }
@@ -39,12 +36,9 @@ def get_DES():
                 des.event_act[0]:[1,-1],
                 des.event_act[1]:[1,2],
                 des.event_act[2]:[1, -1],
-                des.event_act[3]:[1,2],
-                des.event_act[4]:[1,-1],
-                des.event_act[5]:[1,2],
-                des.event_act[6]:[1,-1],
-                des.event_act[7]:[1,2],
-                des.event_act[8]:[0,0]
+                des.event_act[3]:[1,4],
+                des.event_act[4]:[1,4],
+                des.event_act[5]:[0,0]
                     }
     
     """
@@ -59,5 +53,5 @@ def get_DES():
     上位TDESとの単位時間のずれ
     0以上1以下の数になる
     """
-    des.time_ratio = 0.25
+    des.time_ratio = 0.5
     return des

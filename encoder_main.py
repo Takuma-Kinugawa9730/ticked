@@ -51,8 +51,7 @@ class EncoderBool(encoder_base.EncoderBasis):
         return m
     
     def or2smt(self, m, HORIZON,
-                     z_curr, z_target_list,
-                     len_L):
+                     z_curr, z_target_list):
         
         for z_target in z_target_list:
             m.addConstrs(z_curr[t] >= z_target[t] for t in range(HORIZON) )
