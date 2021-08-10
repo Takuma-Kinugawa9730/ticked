@@ -3,17 +3,21 @@
     原子命題　0　は、Trueを表す
 """
 
-HORIZON = 6
+HORIZON = 15
 
 def get_hard_constraint():
     
     
-    hard_constraint = ['A']
+    hard_constraint = ['FIN', 'F', [0, HORIZON],
+                      ]
 
     return hard_constraint
 
 def get_soft_constraint():
 
-    soft_constraint = [(['A', 'G', [1,2]], 2), (['A'], 3)]
+    soft_constraint = [(['c', 'F', [0,HORIZON]], 3), 
+                       (['b', 'G', [0,2], 'F', [0,HORIZON]], 2),
+                       (['c', 'G', [0,3], 'F', [0,HORIZON]], 1), 
+                       (['c', '!', 'b', 'U', [0, HORIZON]], 2)]
     
     return soft_constraint
