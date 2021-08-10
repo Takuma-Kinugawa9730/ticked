@@ -3,7 +3,7 @@
     原子命題　0　は、Trueを表す
 """
 
-HORIZON = 10
+HORIZON = 15
 
 def get_hard_constraint():
     

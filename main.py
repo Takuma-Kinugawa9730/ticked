@@ -90,6 +90,12 @@ def output_result(HORIZON, TDES, z_e, w, len_hard_constraint, encoder_hard, c, l
     満たしたSoft制約を出力と、実行列をテキストファイルで出力
     """
     f=open(dir_path + TDES.name + "_c-{}_".format(c) + 'satisfied_soft_constr_and_execution_state.txt', 'w')
+    if type(encoder_hard.formula[-1])==list:
+        if encoder_hard.z.X[-2,0] == 1:
+            f.write("HArd\nsat: {}\n\nSoft\n".format(encoder_hard.formula))
+        else:
+            f.write("HArd\nunsat: {}\n\nSoft\n".format(encoder_hard.formula))
+            
     for encoder in list_encoders_for_soft:
         
         if type(encoder.formula[-1])==list:
@@ -306,7 +312,7 @@ if    __name__ == '__main__':
                                              constr_for_cTDES_1.HORIZON)
     p_f_list.append(problem_formulation)
     
-    
+   
     problem_formulation = ProblemFormulation(translate_des_to_tdes.get_TDES(cDES_2.get_DES()), 
                                              constr_for_cTDES_2.get_hard_constraint(), constr_for_cTDES_2.get_soft_constraint(), 
                                              constr_for_cTDES_2.HORIZON)
@@ -323,7 +329,7 @@ if    __name__ == '__main__':
                                              constr_for_cTDES_4.get_hard_constraint(), constr_for_cTDES_4.get_soft_constraint(), 
                                              constr_for_cTDES_4.HORIZON)
     p_f_list.append(problem_formulation)
-    
+   
     
     """
     αの集合

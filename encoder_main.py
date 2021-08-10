@@ -219,7 +219,7 @@ class EncoderBool(encoder_base.EncoderBasis):
     
         for x in range(HORIZON):
 
-            if l > HORIZON-1-x:
+            if r + x > HORIZON-1:
 
                 m.addConstr(z_curr[x] == 0)
                 continue
@@ -246,7 +246,9 @@ class EncoderBool(encoder_base.EncoderBasis):
                 m.addConstr(zz_total1[x][y] <= zz_and[x][y])
                 m.addConstr(zz_total1[x][y] <= (1-z_target1[y]))
                 m.addConstr(zz_total1[x][y] >= 1-3+zz_psi1[x][y]+zz_and[x][y]+ (1-z_target1[y]))
-    
+                
+                m.addConstr(1-z_curr[x] >= zz_total1[x][y])
+                """
                 if y > x :
 
                     m.addConstr(zz_total2[x][y] >= zz_total1[x][y])
@@ -256,11 +258,14 @@ class EncoderBool(encoder_base.EncoderBasis):
                 else:
 
                     m.addConstr(zz_total2[x][y] == zz_total1[x][y])
-
+                """
+            """
             if y==HORIZON-1:
 
                 m.addConstr(z_curr[x] == (1-zz_total2[x][HORIZON-1]))
-    
+            """
+            m.addConstr(1 -z_curr[x] <= zz_total1[x].sum())
+            
         return m
 
    
