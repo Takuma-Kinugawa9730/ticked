@@ -4,8 +4,8 @@ import class_des
 def get_DES():
     
     
-    SIZE_OF_H = 3
-    SIZE_OF_V = 3
+    SIZE_OF_H = 6
+    SIZE_OF_V = 6
     
     des = class_des.DES()
     

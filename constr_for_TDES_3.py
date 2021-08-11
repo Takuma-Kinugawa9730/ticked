@@ -8,7 +8,7 @@ def get_hard_constraint():
     
     
     hard_constraint = ['3_6', 'F', [0, HORIZON],
-                       '3_5',  '!', 'G', [4, 6],'&']
+                       '3_5',  '!', 'G', [3, 5],'&']
 
     return hard_constraint
 

@@ -15,7 +15,6 @@ def get_DES():
             des.s_act[0]:[[des.s_act[1],des.event_act[0]]],
             des.s_act[1]:[[des.s_act[2],des.event_act[1]]],
             des.s_act[2]:[[des.s_act[1],des.event_act[2]],
-                          [des.s_act[2],des.event_act[3]],
                           [des.s_act[3],des.event_act[4]]],
             
             des.s_act[3]:[[des.s_act[3],des.event_act[-1]]]

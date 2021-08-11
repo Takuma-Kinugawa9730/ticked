@@ -179,7 +179,7 @@ class EncoderBasis(object):
                                  for k in range(HORIZON) )
                     
                     m = self.global2smt(m, HORIZON, global_z_large[ap_R, index_ratio], z_p[ap_R, index_ratio],
-                                    [0,M[ap_R][index_ratio]], -1, z_e
+                                    [0,M[ap_R][index_ratio]], -ap_R, z_e
                                     )
                     
                     m.addConstrs(global_z[ap_R, index_ratio, k] <= global_z_large[ap_R, index_ratio, k]
@@ -191,10 +191,10 @@ class EncoderBasis(object):
                     m.addConstrs(tilde_z[ap_R,index_ratio, 0, k] == global_z[ap_R, index_ratio, k] for k in range(HORIZON)) 
                     m = self.negation2milp(m, HORIZON, tilde_z[ap_R,index_ratio, 1], tilde_z[ap_R,index_ratio, 0])
                     m.addConstrs(tilde_z[ap_R,index_ratio, 2, k] == global_z[ap_R, index_ratio, k] for k in range(HORIZON))
-                    m = self.eventually2smt(m, HORIZON, tilde_z[ap_R,index_ratio, 3] , tilde_z[ap_R,index_ratio, 2], [1,M[ap_R][index_ratio]], -1, z_e)
+                    m = self.eventually2smt(m, HORIZON, tilde_z[ap_R,index_ratio, 3] , tilde_z[ap_R,index_ratio, 2], [1,M[ap_R][index_ratio]], -ap_R, z_e)
                     m = self.negation2milp(m, HORIZON, tilde_z[ap_R,index_ratio, 5], tilde_z[ap_R,index_ratio, 3])
                     m = self.or2smt(m, HORIZON, tilde_z[ap_R,index_ratio, 6] , [tilde_z[ap_R,index_ratio, 1], tilde_z[ap_R,index_ratio, 5]])
-                    m = self.global2smt(m, HORIZON, tilde_z[ap_R,index_ratio, 7] , tilde_z[ap_R,index_ratio, 6], [0, HORIZON], -1, z_e)
+                    m = self.global2smt(m, HORIZON, tilde_z[ap_R,index_ratio, 7] , tilde_z[ap_R,index_ratio, 6], [0, HORIZON], -ap_R, z_e)
                                     
                     m.addConstr(tilde_z[ap_R,index_ratio, 7, 0] == 1)
                     

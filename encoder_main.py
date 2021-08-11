@@ -203,7 +203,7 @@ class EncoderBool(encoder_base.EncoderBasis):
                        interval, position_in_formula, z_e):
        
         l = interval[0]
-        r = interval[1]-1
+        r = interval[1] -1
         
         at_location = "_i{}".format(position_in_formula)
         

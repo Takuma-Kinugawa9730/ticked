@@ -12,6 +12,10 @@ import csv
 from collections import defaultdict
 import problem_formulation
 
+"""
+比較検討のためのproblem_formulation、平らなDES
+"""
+#import problem_formulation_for_compare_plane as problem_formulation
 
 num_ratio = 3
 
@@ -306,7 +310,7 @@ def get_execution(TDES, hard_constraint, soft_constraint_list, HORIZON, list_rat
         m.update()
         m.optimize()
         finish = time.time() - start
-        f_record.write("time to optimize with {0}, {1}\n".format(ratio, finish))
+        f_record.write("time to optimize with {0}: {1}\n".format(ratio, finish))
              
         print("-"*40)
             
@@ -334,8 +338,8 @@ def get_execution(TDES, hard_constraint, soft_constraint_list, HORIZON, list_rat
                
                 list_m.append(np.ceil((z_e_sum[0]+1)*TDES.time_ratio))
                 
-                #list_w.append(sum_of_w.x)
-                list_w.append(m.ObjVal)
+                list_w.append(sum_of_w.x)
+                #list_w.append(m.ObjVal)
                 
   
     f_record.close() 
@@ -359,6 +363,7 @@ if    __name__ == '__main__':
     """
     start_all = time.time() 
     
+    print("get problem_formulation")
     p_f_list = problem_formulation.set_problem_formulation()
     
     """
@@ -368,7 +373,7 @@ if    __name__ == '__main__':
     #C=[0.5]
     Kappa = [[1], [0.5], [0.01]]
 #    Lambda = [[0.5,0.5], [0.33, 0.33], [0.2,0.3]]
-    Lambda = [[1,0], [0.33, 0.33], [0.2,0.3]]
+    Lambda = [[1,0], [0.33, 0.33], [0.1,0.1]]
     Mu = [[1], [0.5], [0.01]]
     M = defaultdict(list)
     W = defaultdict(list)
@@ -376,6 +381,7 @@ if    __name__ == '__main__':
         
         for p_f in p_f_list_for_level:
             if p_f.TDES.have_refined_state == -1:
+                print("get execution")
                 (list_m, list_w) = get_execution(p_f.TDES, p_f.hard_constraint, p_f.soft_constraint_list, 
                                                  p_f.HORIZON, Kappa, dir_path, [[0]], [[0]])
             elif p_f.TDES.have_refined_state == 1:

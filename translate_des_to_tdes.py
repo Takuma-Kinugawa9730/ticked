@@ -281,7 +281,7 @@ def get_TDES(DES):
     (TDES.s, TDES.istate) = get_state_of_tdes(DES.s_act, DES.trans_act, DES.timed_event, DES.istate_act)
        
     TDES.delta = get_transition_func_of_tdes(TDES.s, DES.trans_act, DES.timed_event)
-    #TDES = refine(TDES, DES)
+    TDES = refine(TDES, DES)
     TDES.fin_state = DES.fin_state_act
     TDES.ap = copy.copy(DES.ap_act)
     TDES.AP_R = copy.copy(DES.AP_R)

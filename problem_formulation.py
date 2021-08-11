@@ -63,7 +63,7 @@ def set_problem_formulation():
                                              constr_for_TDES_1_1.HORIZON)
     p_f_list_for_lowest.append(problem_formulation)
     
-    """
+    
     problem_formulation = ProblemFormulation(translate_des_to_tdes.get_TDES(DES_2_1.get_DES()), 
                                              constr_for_TDES_2_1.get_hard_constraint(), constr_for_TDES_2_1.get_soft_constraint(), 
                                              constr_for_TDES_2_1.HORIZON)
@@ -80,7 +80,7 @@ def set_problem_formulation():
                                              constr_for_TDES_3_2.get_hard_constraint(), constr_for_TDES_3_2.get_soft_constraint(), 
                                              constr_for_TDES_3_2.HORIZON)
     p_f_list_for_lowest.append(problem_formulation)
-    """
+    
     
     
     p_f_list.append(p_f_list_for_lowest)
@@ -97,7 +97,7 @@ def set_problem_formulation():
                                              constr_for_TDES_1.HORIZON)
     p_f_list_for_middle.append(problem_formulation)
     
-    """
+    
     problem_formulation = ProblemFormulation(translate_des_to_tdes.get_TDES(DES_2.get_DES()), 
                                              constr_for_TDES_2.get_hard_constraint(), constr_for_TDES_2.get_soft_constraint(), 
                                              constr_for_TDES_2.HORIZON)
@@ -108,7 +108,7 @@ def set_problem_formulation():
                                              constr_for_TDES_3.get_hard_constraint(), constr_for_TDES_3.get_soft_constraint(), 
                                              constr_for_TDES_3.HORIZON)
     p_f_list_for_middle.append(problem_formulation)
-    """
+    
     
     p_f_list.append(p_f_list_for_middle)
     
