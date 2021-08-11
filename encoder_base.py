@@ -9,6 +9,8 @@ import gurobipy as gp
 import numpy as np
 import matplotlib.pyplot as plt
 
+num_ratio = 3
+
 class EncoderBasis(object):
     
     def __init__(self, formula):
@@ -27,7 +29,7 @@ class EncoderBasis(object):
             m.addConstr(self.z[-1,0] == 1)
     """   
         
-    def start_encodeing(self, m, HORIZON, TDES, label_matrix, z_e, w, ap):
+    def start_encodeing(self, m, HORIZON, TDES, label_matrix, z_e, w, ap, AP_R, M):
         
         self.z = m.addMVar((len(self.formula), HORIZON),vtype=gp.GRB.BINARY)
         
@@ -135,12 +137,43 @@ class EncoderBasis(object):
                 m = self.ap2smt(m, self.formula[i], HORIZON,  self.z[i], 
                                 label_matrix, len(TDES.s), w, ap)
                 
+                #if TDES.have_refined_state==1 and (self.formula[i] in AP_R):
+                    #z_p = m.addMVar((len(AP_R), HORIZON, 3)
+               #     m.addConstrs(z_p[AP_R.index(self.formula[i]), ratio, k] <= self.z[i,k]
+                #                 for k in range(HORIZON) for ratio in range(3))
+                
                 stack = self.stack_manage(stack, del_list=[], set_list=[i])
     
         if len(stack) != 1 :
             print("SYNTAX ERROR: len(stack)={0},stack={1}".format(len(stack),stack))
     
         m.update()
+        
+        if TDES.have_refined_state ==-1:
+            return 0, 0
+        else:
+            
+            z_dummy = m.addMVar((len(AP_R),HORIZON),vtype=gp.GRB.BINARY, name = "z_dummy_{}".format(TDES.name))
+            
+            
+            z_p = m.addMVar((len(AP_R), num_ratio, HORIZON),vtype=gp.GRB.BINARY, name = "z_p_{}".format(TDES.name))
+            tilde_z = m.addMVar((len(AP_R), num_ratio, HORIZON),vtype=gp.GRB.BINARY, name = "tilde_z_{}".format(TDES.name))
+            
+            for ap_R in range(len(AP_R)):
+                m = self.ap2smt(m, AP_R[ap_R], HORIZON,  z_dummy[ap_R], 
+                                label_matrix, len(TDES.s), w, ap)
+                
+                for index_ratio in range(num_ratio):
+                    m.addConstrs(z_p[ap_R, index_ratio, k] <= z_dummy[ap_R,k]
+                                 for k in range(HORIZON) )
+                    
+                    m = self.global2smt(m, HORIZON, tilde_z[ap_R, index_ratio], z_p[ap_R, index_ratio],
+                                    [0,M[ap_R][index_ratio]], -1, z_e
+                                    )
+                    
+            m.addConstrs(z_p[ap_R, :, k].sum() <= 1 for ap_R in range(len(AP_R)) for k in range(HORIZON))
+            
+            return tilde_z, z_p
     
     #stack_manage よりもupdate_stack の方がいいかも
     def stack_manage(self, stack, del_list, set_list):

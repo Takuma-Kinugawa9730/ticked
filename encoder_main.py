@@ -211,7 +211,7 @@ class EncoderBool(encoder_base.EncoderBasis):
         zz_r1 = m.addMVar((HORIZON,HORIZON),vtype=gp.GRB.BINARY, name ="zz_r1"+at_location)
         zz_and = m.addMVar((HORIZON,HORIZON),vtype=gp.GRB.BINARY, name ="zz_and"+at_location)
         zz_total1 = m.addMVar((HORIZON,HORIZON),vtype=gp.GRB.BINARY, name ="zz_total1"+at_location)
-        zz_total2 = m.addMVar((HORIZON,HORIZON),vtype=gp.GRB.BINARY, name ="zz_total2"+at_location)
+        
         zz_psi1 = m.addMVar((HORIZON,HORIZON),vtype=gp.GRB.BINARY, name ="zz_psi1"+at_location)
         
 

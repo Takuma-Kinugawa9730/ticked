@@ -13,12 +13,14 @@ class TDES():
     def __init__(self):
         
         self.name = ''
+        self.have_refined_state = -1
         self.s = []
         self.event = []
         self.delta = defaultdict(list)
         self.istate = []
         self.fin_state_act = 'hoge'
         self.ap = []
+        self.AP_R = []
         self.label = defaultdict(list)
         self.time_ratio = 0
             

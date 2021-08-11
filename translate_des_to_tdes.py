@@ -276,6 +276,7 @@ def get_TDES(DES):
     
     TDES = class_tdes.TDES()
     TDES.name = DES.name
+    TDES.have_refined_state = DES.have_refined_state
     DES.event = DES.event_act + ['tick'] 
     (TDES.s, TDES.istate) = get_state_of_tdes(DES.s_act, DES.trans_act, DES.timed_event, DES.istate_act)
        
@@ -283,6 +284,7 @@ def get_TDES(DES):
     #TDES = refine(TDES, DES)
     TDES.fin_state = DES.fin_state_act
     TDES.ap = copy.copy(DES.ap_act)
+    TDES.AP_R = copy.copy(DES.AP_R)
     TDES.label = copy.copy(DES.label_act)
    
     TDES.time_ratio = DES.time_ratio #pTDESは-1の値を持つ

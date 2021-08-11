@@ -4,12 +4,13 @@ import class_des
 def get_DES():
     
     
-    SIZE_OF_H = 8
-    SIZE_OF_V = 8
+    SIZE_OF_H = 3
+    SIZE_OF_V = 3
     
     des = class_des.DES()
     
     des.name = "p"
+    des.have_refined_state = 1
     for i in range(SIZE_OF_H* SIZE_OF_V):
         des.s_act.append(str(i))
    
@@ -64,24 +65,29 @@ def get_DES():
     des.istate_act = des.s_act[0]
     
     #ラベル0はダミーラベル
-    des.ap_act = ['1', '2', '3', '4', 'goal', 'start', '0', '-1'] 
-    
+    des.ap_act = ['1', '2', '3', '4', '5'] 
+    des.AP_R =["1", "2"]
     for i in range(SIZE_OF_H* SIZE_OF_V):
-        des.label_act[des.s_act[i]]=['0']
+        
+        des.label_act[des.s_act[i]]=['5']
         
     
     des.label_act[des.s_act[0]].append('start')
     des.label_act[des.s_act[-1]].append('goal')
             
-    
-    target_place = [[34,14], [12,30], [33,50], [47,62]] # 8×8のグリッドの時
-    #target_place = [[0], [1], [2], [3]] # 2×2のグリッドの時
+    if SIZE_OF_H == 6:
+        target_place = [[4,16,31], [19,33], [3,4,5,10,11,17]] # 6×6のグリッドの時
+
+    else:
+        target_place = [[2,5], [6],  [2]] # 3×3のグリッドの時
+        
     for number_tp in range(len(target_place)):
         for tp in target_place[number_tp]:
             des.label_act[des.s_act[tp]].append(des.ap_act[number_tp])
     
     for v in range(SIZE_OF_V):
-        des.label_act[des.s_act[4 + v*8]].append(des.ap_act[-1])
+        des.label_act[des.s_act[1 + v*SIZE_OF_H]].append(des.ap_act[-2])
+    
     
     for e in range(len(des.event_act)):
         des.timed_event[des.event_act[e]].extend([1,-1])
