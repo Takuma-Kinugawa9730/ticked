@@ -60,7 +60,7 @@ def get_variable_for_execution(m, HORIZON, size_of_state, index_initial_state,
             
     return z_e, w
       
-def output_result(HORIZON, TDES, z_e, w, len_hard_constraint, encoder_hard, ratio, list_encoders_for_soft, ObjVal, tilde_z, z_p):
+def output_result(HORIZON, TDES, z_e, w, len_hard_constraint, encoder_hard, ratio, list_encoders_for_soft, ObjVal, tilde_z, z_p, z_dummy):
 
     """
     満たしたSoft制約を出力と、実行列をテキストファイルで出力
@@ -138,7 +138,7 @@ def output_result(HORIZON, TDES, z_e, w, len_hard_constraint, encoder_hard, rati
         print("error")
     
     for t in range(len(z_e.X)):
-        f.write("{}\n ".format(z_e.X[t]))
+        f.write("{}\n".format(z_e.X[t]))
     f.close()
     
      
@@ -154,10 +154,14 @@ def output_result(HORIZON, TDES, z_e, w, len_hard_constraint, encoder_hard, rati
         print("error")
     for ap_R in range(len(TDES.AP_R)):
         f.write("{}-th ap_R \n".format(ap_R))
+        #print("{}-th ap_R \n".format(ap_R))
         for index_ratio in range(num_ratio):
-            f.write("{}-th index of ratio \ntilde_z, z_p".format(index_ratio))
+            f.write("{}-th index of ratio \ntilde_z, z_p, z_dummy\n".format(index_ratio))
+            #print("{}-th index of ratio \ntilde_z, z_p".format(index_ratio))
             for k in range(HORIZON):
-                f.write("  {0},  {1} \n".format(tilde_z.X[ap_R, index_ratio, k], z_p.X[ap_R, index_ratio, k]))
+                f.write("  {0},   {1},   {2}\n".format(tilde_z.X[ap_R, index_ratio, k], z_p.X[ap_R, index_ratio, k], z_dummy.X[ap_R, k]))
+                #print("  {0},  {1} \n".format(tilde_z.X[ap_R, index_ratio, k], z_p.X[ap_R, index_ratio, k]))
+                
     f.close()
         
 """
@@ -211,7 +215,8 @@ def get_execution(TDES, hard_constraint, soft_constraint_list, HORIZON, list_rat
     #tilde_z = m.addMVar((len(AP_R), 3, HORIZON),vtype=gp.GRB.BINARY, name = "tilde_z")
     tilde_z = 0
     z_p = 0
-    tilde_z, z_p = encoder_hard.start_encodeing(m, HORIZON, TDES, label_matrix, z_e, w, TDES.ap, TDES.AP_R, M)
+    z_dummy = 0
+    tilde_z, z_p, z_dummy = encoder_hard.start_encodeing(m, HORIZON, TDES, label_matrix, z_e, w, TDES.ap, TDES.AP_R, M)
     finish = time.time() - start
     f_record.write("time to encode hard constraint, {}\n".format(finish))
     
@@ -283,7 +288,7 @@ def get_execution(TDES, hard_constraint, soft_constraint_list, HORIZON, list_rat
                            gp.GRB.MAXIMIZE)    
             
         elif level == 1:
-            print("*\n"*2+ "p obj")
+            
             sum_for_obj = 0
             for ap_R in range(len(TDES.AP_R)):
                 for index_ratio in range(num_ratio):
@@ -314,7 +319,7 @@ def get_execution(TDES, hard_constraint, soft_constraint_list, HORIZON, list_rat
         else:
             
             m.update() 
-            output_result(HORIZON, TDES, z_e, w, len(hard_constraint), encoder_hard, ratio, list_encoders_for_soft, m.ObjVal, tilde_z, z_p)
+            output_result(HORIZON, TDES, z_e, w, len(hard_constraint), encoder_hard, ratio, list_encoders_for_soft, m.ObjVal, tilde_z, z_p, z_dummy)
             
             """
             pTDESのパラメータになる値m,wを取得する

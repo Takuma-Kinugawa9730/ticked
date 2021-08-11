@@ -150,14 +150,25 @@ class EncoderBasis(object):
         m.update()
         
         if TDES.have_refined_state ==-1:
-            return 0, 0
+            return 0, 0, 0
         else:
             
+            """
+            z_dummy はAP_R（refine する原子命題の集合）に含まれる原子命題をエンコードする
+            """
             z_dummy = m.addMVar((len(AP_R),HORIZON),vtype=gp.GRB.BINARY, name = "z_dummy_{}".format(TDES.name))
             
             
             z_p = m.addMVar((len(AP_R), num_ratio, HORIZON),vtype=gp.GRB.BINARY, name = "z_p_{}".format(TDES.name))
-            tilde_z = m.addMVar((len(AP_R), num_ratio, HORIZON),vtype=gp.GRB.BINARY, name = "tilde_z_{}".format(TDES.name))
+            global_z = m.addMVar((len(AP_R), num_ratio, HORIZON),vtype=gp.GRB.BINARY, name = "global_z_{}".format(TDES.name))
+            global_z_large = m.addMVar((len(AP_R), num_ratio, HORIZON),vtype=gp.GRB.BINARY, name = "global_z_large_{}".format(TDES.name))
+            global_z = m.addMVar((len(AP_R), num_ratio, HORIZON),vtype=gp.GRB.BINARY, name = "global_z_{}".format(TDES.name))
+            
+            """
+            tilde_phi = [global_z, !, global_z, F, [0, M], !, |, G, [0,L]]をエンコードするための変数
+            """
+            tilde_z = m.addMVar((len(AP_R), num_ratio, 9, HORIZON),vtype=gp.GRB.BINARY)
+        
             
             for ap_R in range(len(AP_R)):
                 m = self.ap2smt(m, AP_R[ap_R], HORIZON,  z_dummy[ap_R], 
@@ -167,13 +178,29 @@ class EncoderBasis(object):
                     m.addConstrs(z_p[ap_R, index_ratio, k] <= z_dummy[ap_R,k]
                                  for k in range(HORIZON) )
                     
-                    m = self.global2smt(m, HORIZON, tilde_z[ap_R, index_ratio], z_p[ap_R, index_ratio],
+                    m = self.global2smt(m, HORIZON, global_z_large[ap_R, index_ratio], z_p[ap_R, index_ratio],
                                     [0,M[ap_R][index_ratio]], -1, z_e
                                     )
                     
+                    m.addConstrs(global_z[ap_R, index_ratio, k] <= global_z_large[ap_R, index_ratio, k]
+                                 for k in range(HORIZON) )
+                    
+                    """
+                    tilde_phiをエンコード
+                    """
+                    m.addConstrs(tilde_z[ap_R,index_ratio, 0, k] == global_z[ap_R, index_ratio, k] for k in range(HORIZON)) 
+                    m = self.negation2milp(m, HORIZON, tilde_z[ap_R,index_ratio, 1], tilde_z[ap_R,index_ratio, 0])
+                    m.addConstrs(tilde_z[ap_R,index_ratio, 2, k] == global_z[ap_R, index_ratio, k] for k in range(HORIZON))
+                    m = self.eventually2smt(m, HORIZON, tilde_z[ap_R,index_ratio, 3] , tilde_z[ap_R,index_ratio, 2], [1,M[ap_R][index_ratio]], -1, z_e)
+                    m = self.negation2milp(m, HORIZON, tilde_z[ap_R,index_ratio, 5], tilde_z[ap_R,index_ratio, 3])
+                    m = self.or2smt(m, HORIZON, tilde_z[ap_R,index_ratio, 6] , [tilde_z[ap_R,index_ratio, 1], tilde_z[ap_R,index_ratio, 5]])
+                    m = self.global2smt(m, HORIZON, tilde_z[ap_R,index_ratio, 7] , tilde_z[ap_R,index_ratio, 6], [0, HORIZON], -1, z_e)
+                                    
+                    m.addConstr(tilde_z[ap_R,index_ratio, 7, 0] == 1)
+                    
             m.addConstrs(z_p[ap_R, :, k].sum() <= 1 for ap_R in range(len(AP_R)) for k in range(HORIZON))
             
-            return tilde_z, z_p
+            return global_z, z_p, z_dummy
     
     #stack_manage よりもupdate_stack の方がいいかも
     def stack_manage(self, stack, del_list, set_list):

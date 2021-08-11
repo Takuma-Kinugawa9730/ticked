@@ -67,6 +67,7 @@ def get_DES():
     #ラベル0はダミーラベル
     des.ap_act = ['1', '2', '3', '4', '5'] 
     des.AP_R =["1", "2"]
+    
     for i in range(SIZE_OF_H* SIZE_OF_V):
         
         des.label_act[des.s_act[i]]=['5']
@@ -77,10 +78,12 @@ def get_DES():
             
     if SIZE_OF_H == 6:
         target_place = [[4,16,31], [19,33], [3,4,5,10,11,17]] # 6×6のグリッドの時
-
+        des.AP_R =["1", "2"]
+    
     else:
         target_place = [[2,5], [6],  [2]] # 3×3のグリッドの時
-        
+        des.AP_R =["1"]
+    
     for number_tp in range(len(target_place)):
         for tp in target_place[number_tp]:
             des.label_act[des.s_act[tp]].append(des.ap_act[number_tp])
