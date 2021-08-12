@@ -48,5 +48,5 @@ def get_DES():
     上位TDESとの単位時間のずれ
     0以上1以下の数になる
     """
-    des.time_ratio = 0.75
+    des.time_ratio = 0.875
     return des

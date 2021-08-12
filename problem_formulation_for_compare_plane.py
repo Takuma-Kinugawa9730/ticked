@@ -17,7 +17,7 @@ HORIZON = 40
 def get_hard_constraint(AP):
     
     
-    hard_constraint = ['0', 'F', [0, HORIZON]]
+    hard_constraint = ['3', 'F', [0, HORIZON]]
 
     return hard_constraint
 
@@ -34,7 +34,7 @@ def get_soft_constraint(AP):
                        (['2_0_1', '!', '2_0_1', 'U', [0, HORIZON]], 1),
                        (['2_1_1', '!', '2_1_0', 'U', [0, HORIZON]], 1),
                        ]
-    """
+    
     soft_constraint = [(['1_1', '!', '1_0', 'U', [0, HORIZON]], 1),
                        (['1_0_1', '!', '1_0_1', 'U', [0, HORIZON]], 1),
                        (['1_1_1', '!', '1_1_0', 'U', [0, HORIZON]], 1),
@@ -42,8 +42,13 @@ def get_soft_constraint(AP):
                        (['0_0_1', '!', '0_0_0', 'U', [0, HORIZON]], 1),
                        (['0_1_1', '!', '0_1_0', 'U', [0, HORIZON]], 1),
                        ]
+    """
+    soft_constraint = []
     for index_ap in range(1, len(AP)):
-        soft_constraint.append( ([AP(index_ap), 'F', [0, HORIZON]], 1) )
+        if AP[index_ap] == '3':
+            continue
+        
+        soft_constraint.append( ([AP[index_ap], 'F', [0, HORIZON]], 1) )
     
 
     return soft_constraint

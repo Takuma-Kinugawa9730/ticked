@@ -91,7 +91,6 @@ def get_state_of_tdes(s_act, trans_act, timed_event, initial_state_act):
         T_sigma = []
         for j in range( len(trans_from_s) ):
             list1 = trans_from_s[j]
-            
             if timed_event[list1[1]][1] == -1:    #if remote event
                 T_sigma.append(list(range(timed_event[list1[1]][0]+1)))
                 

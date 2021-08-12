@@ -43,18 +43,10 @@ def get_DES():
                 des.event_act[5]:[0,0]
                     }
     
-    """
-    タスクを終了したことを表す状態des.fin_state_actにおける挙動を追加（上書き）
-    もし忘れていたときのために
-    """
-    """
-    des.trans_act[des.fin_state_act].append([des.fin_state_act, des.event_act[-1]])
-    des.label_act[des.fin_state_act].append(des.ap_act[-1])
-    des.timed_event[des.event_act[-1]] = [0,0]
-    """
+    
     """
     上位TDESとの単位時間のずれ
     0以上1以下の数になる
     """
-    des.time_ratio = 0.7
+    des.time_ratio = 0.8
     return des

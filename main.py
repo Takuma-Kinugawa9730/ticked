@@ -11,11 +11,13 @@ import numpy as np
 import csv
 from collections import defaultdict
 import problem_formulation
-
+flag_comparison = False
 """
 比較検討のためのproblem_formulation、平らなDES
 """
 #import problem_formulation_for_compare_plane as problem_formulation
+#flag_comparison = True
+
 
 num_ratio = 3
 
@@ -371,10 +373,14 @@ if    __name__ == '__main__':
     """
     #C=[[1], [0.5], [0.01]]
     #C=[0.5]
-    Kappa = [[1], [0.5], [0.01]]
-#    Lambda = [[0.5,0.5], [0.33, 0.33], [0.2,0.3]]
-    Lambda = [[1,0], [0.33, 0.33], [0.1,0.1]]
-    Mu = [[1], [0.5], [0.01]]
+    if flag_comparison:
+        Kappa = [[1],[0]]
+    else:
+        Kappa = [[1], [0.5], [0.01]]
+    #    Lambda = [[0.5,0.5], [0.33, 0.33], [0.2,0.3]]
+        Lambda = [[1,0], [0.33, 0.33], [0.1,0.1]]
+        Mu = [[1], [0.5], [0.01]]
+        
     M = defaultdict(list)
     W = defaultdict(list)
     for p_f_list_for_level in p_f_list:
