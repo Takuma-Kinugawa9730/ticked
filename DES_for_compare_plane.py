@@ -19,9 +19,11 @@ def get_DES():
     list_connected_states.append(['11','110'])
     list_connected_states.append(['113','11'])
     
+    
     all_states.append(['120', '121', '122', '123'])
     list_connected_states.append(['12','120'])
     list_connected_states.append(['123','12'])
+    
     
     all_states.append(['20', '21', '22', '23'])
     list_connected_states.append(['2','20'])
@@ -30,17 +32,17 @@ def get_DES():
     all_states.append(['210', '211', '212', '213'])
     list_connected_states.append(['21','210'])
     list_connected_states.append(['213','21'])
-    
+    """HORIZON
     all_states.append(['220', '221', '222', '223'])
     list_connected_states.append(['22','220'])
     list_connected_states.append(['223','22'])
-    
+    """
     for states in all_states:
         
         if len(states[0]) == 1: 
-            lower_time = 4
-        elif len(states[0]) == 2: 
             lower_time = 2
+        elif len(states[0]) == 2: 
+            lower_time = 1
         elif len(states[0]) == 3: 
             lower_time = 1
         else:
@@ -50,7 +52,19 @@ def get_DES():
             
             des.s_act.append(from_s)
             
+            if from_s[-1] == '3':
+                des.event_act.append(from_s + "-" + from_s)    
+                if from_s in des.trans_act:
+                    print("*\n error at final state: {}\n*\n".format(states[0]))
+                else :
+                    des.trans_act[from_s] = [[from_s, des.event_act[-1]]]
+                
+                des.timed_event[des.event_act[-1]] = [0, -1]
+            
             for to_s in states:
+                if from_s == to_s:
+                    continue
+                
                 des.event_act.append(from_s + "-" + to_s)    
                 if from_s in des.trans_act:
                     des.trans_act[from_s].append([to_s, des.event_act[-1]])
