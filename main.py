@@ -10,13 +10,13 @@ import encoder_main
 import numpy as np
 import csv
 from collections import defaultdict
-import problem_formulation
-flag_comparison = False
+#import problem_formulation
+#flag_comparison = False
 """
 比較検討のためのproblem_formulation、平らなDES
 """
-#import problem_formulation_for_compare_plane as problem_formulation
-#flag_comparison = True
+import problem_formulation_for_compare_plane as problem_formulation
+flag_comparison = True
 
 
 num_ratio = 3
@@ -441,8 +441,12 @@ if    __name__ == '__main__':
     
     f_record_all.write("\n" + "*"*40 + "\n" + "*"*10 + "  " + 
                        "ratio used in objective function" + "  " + "*"*10 + "\n" + "*"*40 + "\n")
-        
-    f_record_all.write("kappa:{0},\n lambda:{1},\n mu:{2}\n".format(Kappa,Lambda,Mu))
+      
+    if flag_comparison:
+        f_record_all.write("kappa:{0},\n ".format(Kappa))
+    
+    else:
+        f_record_all.write("kappa:{0},\n lambda:{1},\n mu:{2}\n".format(Kappa,Lambda,Mu))
     
     
     for p_f_list_for_level in p_f_list:

@@ -165,9 +165,30 @@ def get_state_of_tdes(s_act, trans_act, timed_event, initial_state_act):
                 list_new.append(s)
                 list_new.extend(timer)
                 s_for_tdes.append(list_new)
-              
+      
         else:
             print("error. there are too many event occurred in a state")
+
+
+       
+        """
+        elif len(T_sigma)==6:
+            timer0 = T_sigma[0]    
+            timer1 = T_sigma[1]    
+            timer2 = T_sigma[2]    
+            timer3 = T_sigma[3]    
+            timer4 = T_sigma[4]    
+            timer5 = T_sigma[5]    
+            product = list(itertools.product(timer0,timer1,timer2,timer3,timer4,timer5))
+            
+            for k in range(len(product)):
+                timer = list(product[k])
+                list_new=[]
+                list_new.append(s)
+                list_new.extend(timer)
+                s_for_tdes.append(list_new)
+        
+        """
 
     if initial_s not in s_for_tdes:
         print('\nistate:{}'.format(initial_s))

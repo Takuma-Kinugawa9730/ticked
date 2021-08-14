@@ -12,11 +12,12 @@ pDES(top-level DES)
 import DES_for_compare_plane as DES
 
 
-HORIZON = 40
+HORIZON = 12 + 6*2 + 6*3
 
 def get_hard_constraint(AP):
     
-    
+    if HORIZON != (int(len(AP)/4) - 1) * 6 + 12:
+        print("*\n+\n ERROR horizon \n*\n*\n")
     hard_constraint = ['3', 'F', [0, HORIZON]]
 
     return hard_constraint
