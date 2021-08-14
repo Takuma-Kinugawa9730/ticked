@@ -203,7 +203,7 @@ class EncoderBool(encoder_base.EncoderBasis):
                        interval, position_in_formula, z_e):
        
         l = interval[0]
-        r = interval[1] -1
+        r = interval[1] 
         
         at_location = "_i{}".format(position_in_formula)
         
@@ -219,7 +219,7 @@ class EncoderBool(encoder_base.EncoderBasis):
     
         for x in range(HORIZON):
 
-            if r + x > HORIZON-1:
+            if r  + x >= HORIZON-1 and r != HORIZON:
 
                 m.addConstr(z_curr[x] == 0)
                 continue

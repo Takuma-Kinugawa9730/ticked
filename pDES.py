@@ -76,7 +76,7 @@ def get_DES():
     des.label_act[des.s_act[-1]].append('goal')
             
     if SIZE_OF_H == 6:
-        target_place = [[10,19], [3,4,5,10,11,17], [31,34] ] # 6×6のグリッドの時
+        target_place = [[10,19], [10,11,17], [31,34] ] # 6×6のグリッドの時  del;3,4,5,
         des.AP_R =["1", "2", "3"]
     
     else:
@@ -88,7 +88,7 @@ def get_DES():
             des.label_act[des.s_act[tp]].append(des.ap_act[number_tp])
     
     for v in range(SIZE_OF_V):
-        des.label_act[des.s_act[1 + v*SIZE_OF_H]].append(des.ap_act[-2])
+        des.label_act[des.s_act[2 + v*SIZE_OF_H]].append(des.ap_act[-2])
     
     
     for e in range(len(des.event_act)):
