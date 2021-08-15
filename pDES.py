@@ -76,7 +76,7 @@ def get_DES():
     des.label_act[des.s_act[-1]].append('goal')
             
     if SIZE_OF_H == 6:
-        target_place = [[10,19], [10,11,17], [31,34] ] # 6×6のグリッドの時  del;3,4,5,
+        target_place = [[10,19], [3,4,5,10,11,17], [31,34] ] # 6×6のグリッドの時  del;
         des.AP_R =["1", "2", "3"]
     
     else:

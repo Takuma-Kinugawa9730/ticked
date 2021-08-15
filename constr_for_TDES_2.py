@@ -13,8 +13,8 @@ def get_hard_constraint():
 
 def get_soft_constraint():
 
-    soft_constraint = [(['2_3', 'G', [0,4], 'F', [0, HORIZON]], 4), 
-                       (['2_1', '!', 'G', [0,4], 'F', [0, HORIZON]], 3), 
-                       (['2_3', '!', '2_1', 'F', [0, HORIZON], '!', '|', 'G', [0, HORIZON]], 3)]
+    soft_constraint = [(['2_3', 'G', [0,4], 'F', [0, HORIZON]], 2), 
+                       (['2_1', '!', 'G', [0,4], 'F', [0, HORIZON]], 1), 
+                       (['2_3', '!', '2_1', 'F', [0, HORIZON], '!', '|', 'G', [0, HORIZON]], 1)]
     
     return soft_constraint

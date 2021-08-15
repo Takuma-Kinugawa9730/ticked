@@ -162,42 +162,61 @@ class EncoderBasis(object):
             z_p = m.addMVar((len(AP_R), num_ratio, HORIZON),vtype=gp.GRB.BINARY, name = "z_p_{}".format(TDES.name))
             global_z = m.addMVar((len(AP_R), num_ratio, HORIZON),vtype=gp.GRB.BINARY, name = "global_z_{}".format(TDES.name))
             global_z_large = m.addMVar((len(AP_R), num_ratio, HORIZON),vtype=gp.GRB.BINARY, name = "global_z_large_{}".format(TDES.name))
-            global_z = m.addMVar((len(AP_R), num_ratio, HORIZON),vtype=gp.GRB.BINARY, name = "global_z_{}".format(TDES.name))
+            #global_z = m.addMVar((len(AP_R), num_ratio, HORIZON),vtype=gp.GRB.BINARY, name = "global_z_{}".format(TDES.name))
+            #zp_flag = m.addMVar((len(AP_R), num_ratio, HORIZON),vtype=gp.GRB.BINARY, name = "zp_flag_{}".format(TDES.name))
+            #zp_counter = m.addMVar((len(AP_R), num_ratio, HORIZON),vtype=gp.GRB.INTEGER, name = "zp_counter_{}".format(TDES.name))
+            
+            #z_p_and_flag = m.addMVar((len(AP_R), HORIZON),vtype=gp.GRB.BINARY, name = "z_p_and_flag{}".format(TDES.name))
+            
             
             """
             tilde_phi = [global_z, !, global_z, F, [0, M], !, |, G, [0,L]]をエンコードするための変数
             """
-            tilde_z = m.addMVar((len(AP_R), num_ratio, 9, HORIZON),vtype=gp.GRB.BINARY)
+            #tilde_z = m.addMVar((len(AP_R), num_ratio, 11, HORIZON),vtype=gp.GRB.BINARY)
         
             
             for ap_R in range(len(AP_R)):
                 m = self.ap2smt(m, AP_R[ap_R], HORIZON,  z_dummy[ap_R], 
                                 label_matrix, len(TDES.s), w, ap)
-                
+           
                 for index_ratio in range(num_ratio):
                     m.addConstrs(z_p[ap_R, index_ratio, k] <= z_dummy[ap_R,k]
                                  for k in range(HORIZON) )
                     
+                    
+                    
+                    
                     m = self.global2smt(m, HORIZON, global_z_large[ap_R, index_ratio], z_p[ap_R, index_ratio],
-                                    [0,M[ap_R][index_ratio]], -ap_R, z_e
+                                    [0,M[ap_R][index_ratio]], -(ap_R*10+index_ratio), z_e
                                     )
                     
                     m.addConstrs(global_z[ap_R, index_ratio, k] <= global_z_large[ap_R, index_ratio, k]
                                  for k in range(HORIZON) )
-                    
                     """
-                    tilde_phiをエンコード
-                    """
-                    m.addConstrs(tilde_z[ap_R,index_ratio, 0, k] == global_z[ap_R, index_ratio, k] for k in range(HORIZON)) 
-                    m = self.negation2milp(m, HORIZON, tilde_z[ap_R,index_ratio, 1], tilde_z[ap_R,index_ratio, 0])
-                    m.addConstrs(tilde_z[ap_R,index_ratio, 2, k] == global_z[ap_R, index_ratio, k] for k in range(HORIZON))
-                    m = self.eventually2smt(m, HORIZON, tilde_z[ap_R,index_ratio, 3] , tilde_z[ap_R,index_ratio, 2], [1,M[ap_R][index_ratio]], -ap_R, z_e)
-                    m = self.negation2milp(m, HORIZON, tilde_z[ap_R,index_ratio, 5], tilde_z[ap_R,index_ratio, 3])
-                    m = self.or2smt(m, HORIZON, tilde_z[ap_R,index_ratio, 6] , [tilde_z[ap_R,index_ratio, 1], tilde_z[ap_R,index_ratio, 5]])
-                    m = self.global2smt(m, HORIZON, tilde_z[ap_R,index_ratio, 7] , tilde_z[ap_R,index_ratio, 6], [0, HORIZON], -ap_R, z_e)
-                                    
-                    m.addConstr(tilde_z[ap_R,index_ratio, 7, 0] == 1)
+                    m.addConstrs                        (tilde_z[ap_R,index_ratio, 0, k] == global_z[ap_R, index_ratio, k] for k in range(HORIZON)) 
+                    m = self.negation2milp  (m, HORIZON, tilde_z[ap_R,index_ratio, 1], tilde_z[ap_R,index_ratio, 0])
+                    m.addConstrs                        (tilde_z[ap_R,index_ratio, 2, k] == global_z[ap_R, index_ratio, k] for k in range(HORIZON)) 
+                    m = self.negation2milp  (m, HORIZON, tilde_z[ap_R,index_ratio, 3], tilde_z[ap_R,index_ratio, 2])
+                    m = self.global2smt_next(m, HORIZON, tilde_z[ap_R,index_ratio, 4] , tilde_z[ap_R,index_ratio,3], [0, int(M[ap_R][index_ratio])], -(ap_R*10 + index_ratio), z_e)
+                    m = self.or2smt         (m, HORIZON, tilde_z[ap_R,index_ratio, 5] , [tilde_z[ap_R,index_ratio, 4], tilde_z[ap_R,index_ratio, 1]])
+                    m = self.global2smt     (m, HORIZON, tilde_z[ap_R,index_ratio, 6] ,tilde_z[ap_R,index_ratio, 5], [0, HORIZON], -(ap_R*10+index_ratio), z_e)
                     
+                    
+                    m.addConstr(tilde_z[ap_R,index_ratio, 6, 0] == 1)
+                    """
+                    
+                    tilde_z = m.addMVar((11, HORIZON),vtype=gp.GRB.BINARY, name='tilde_z_ap:{0}_ratio:{1}'.format(ap_R, index_ratio))
+                    m.addConstrs                        (tilde_z[0, k] == global_z[ap_R, index_ratio, k] for k in range(HORIZON)) 
+                    m = self.negation2milp  (m, HORIZON, tilde_z[1], tilde_z[0])
+                    m.addConstrs                        (tilde_z[2, k] == global_z[ap_R, index_ratio, k] for k in range(HORIZON)) 
+                    m = self.negation2milp  (m, HORIZON, tilde_z[3], tilde_z[2])
+                    m = self.global2smt_next(m, HORIZON, tilde_z[4] , tilde_z[3], [0, int(M[ap_R][index_ratio])], -(ap_R*10 + index_ratio), z_e)
+                    m = self.or2smt         (m, HORIZON, tilde_z[5] , [tilde_z[4], tilde_z[1]])
+                    m = self.global2smt     (m, HORIZON, tilde_z[6] ,tilde_z[5], [0, HORIZON], -(ap_R*10+index_ratio), z_e)
+                    
+                    
+                    m.addConstr(tilde_z[6, 0] == 1)
+             
             m.addConstrs(z_p[ap_R, :, k].sum() <= 1 for ap_R in range(len(AP_R)) for k in range(HORIZON))
             
             return global_z, z_p, z_dummy

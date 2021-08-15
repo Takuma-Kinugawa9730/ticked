@@ -219,12 +219,82 @@ class EncoderBool(encoder_base.EncoderBasis):
     
         for x in range(HORIZON):
 
-            if r  + x >= HORIZON-1 and r != HORIZON:
+            if r  + x > HORIZON-1 and r != HORIZON:
 
                 m.addConstr(z_curr[x] == 0)
                 continue
 
             for y in range(x, HORIZON):
+    
+
+                m.addConstr(zz_psi1[x][y] == 1)
+
+                if y > x :
+
+                    Sum[x] += z_e[y-1]
+                            
+                m.addConstr(l - M <= Sum[x] - M*zz_l[x][y])
+                m.addConstr(Sum[x] - M*zz_l[x][y] <= l - epsilon)
+                m.addConstr(r + epsilon <= Sum[x] + M*zz_r1[x][y])
+                m.addConstr(Sum[x] + M*zz_r1[x][y] <= r + M)
+                
+                m.addConstr(zz_and[x][y] <= zz_l[x][y])
+                m.addConstr(zz_and[x][y] <= zz_r1[x][y])
+                m.addConstr(zz_and[x][y] >= -1 + zz_r1[x][y] + zz_l[x][y])
+    
+                m.addConstr(zz_total1[x][y] <= zz_psi1[x][y])
+                m.addConstr(zz_total1[x][y] <= zz_and[x][y])
+                m.addConstr(zz_total1[x][y] <= (1-z_target1[y]))
+                m.addConstr(zz_total1[x][y] >= 1-3+zz_psi1[x][y]+zz_and[x][y]+ (1-z_target1[y]))
+                
+                m.addConstr(1-z_curr[x] >= zz_total1[x][y])
+                """
+                if y > x :
+
+                    m.addConstr(zz_total2[x][y] >= zz_total1[x][y])
+                    m.addConstr(zz_total2[x][y] >= zz_total2[x][y-1])
+                    m.addConstr(zz_total2[x][y] <= zz_total1[x][y]+zz_total2[x][y-1])
+
+                else:
+
+                    m.addConstr(zz_total2[x][y] == zz_total1[x][y])
+                """
+            """
+            if y==HORIZON-1:
+
+                m.addConstr(z_curr[x] == (1-zz_total2[x][HORIZON-1]))
+            """
+            m.addConstr(1 -z_curr[x] <= zz_total1[x].sum())
+            
+        return m
+
+   
+    def global2smt_next(self, m, HORIZON,z_curr,z_target1,
+                       interval, position_in_formula, z_e):
+       
+        l = interval[0]
+        r = interval[1] 
+        
+        at_location = "_i{}_next".format(position_in_formula)
+        
+        zz_l = m.addMVar((HORIZON,HORIZON),vtype=gp.GRB.BINARY, name ="zz_psi1"+at_location)
+        zz_r1 = m.addMVar((HORIZON,HORIZON),vtype=gp.GRB.BINARY, name ="zz_r1"+at_location)
+        zz_and = m.addMVar((HORIZON,HORIZON),vtype=gp.GRB.BINARY, name ="zz_and"+at_location)
+        zz_total1 = m.addMVar((HORIZON,HORIZON),vtype=gp.GRB.BINARY, name ="zz_total1"+at_location)
+        
+        zz_psi1 = m.addMVar((HORIZON,HORIZON),vtype=gp.GRB.BINARY, name ="zz_psi1"+at_location)
+        
+
+        Sum = [0 for z in range(HORIZON)]
+    
+        for x in range(HORIZON):
+
+            if r  + x > HORIZON-1 and r != HORIZON:
+
+                m.addConstr(z_curr[x] == 0)
+                continue
+
+            for y in range(x+1, HORIZON):
     
 
                 m.addConstr(zz_psi1[x][y] == 1)

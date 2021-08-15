@@ -10,13 +10,13 @@ import encoder_main
 import numpy as np
 import csv
 from collections import defaultdict
-#import problem_formulation
-#flag_comparison = False
+import problem_formulation
+flag_comparison = False
 """
 比較検討のためのproblem_formulation、平らなDES
 """
-import problem_formulation_for_compare_plane as problem_formulation
-flag_comparison = True
+#import problem_formulation_for_compare_plane as problem_formulation
+#flag_comparison = True
 
 
 num_ratio = 3
@@ -219,10 +219,10 @@ def get_execution(TDES, hard_constraint, soft_constraint_list, HORIZON, list_rat
     
     start = time.time()
     #tilde_z = m.addMVar((len(AP_R), 3, HORIZON),vtype=gp.GRB.BINARY, name = "tilde_z")
-    tilde_z = 0
+    global_z = 0
     z_p = 0
     z_dummy = 0
-    tilde_z, z_p, z_dummy = encoder_hard.start_encodeing(m, HORIZON, TDES, label_matrix, z_e, w, TDES.ap, TDES.AP_R, M)
+    global_z, z_p, z_dummy = encoder_hard.start_encodeing(m, HORIZON, TDES, label_matrix, z_e, w, TDES.ap, TDES.AP_R, M)
     finish = time.time() - start
     f_record.write("time to encode hard constraint, {}\n".format(finish))
     
@@ -288,7 +288,7 @@ def get_execution(TDES, hard_constraint, soft_constraint_list, HORIZON, list_rat
             for ap_R in range(len(TDES.AP_R)):
                 for index_ratio in range(num_ratio):
                     for k in range(HORIZON):
-                        sum_for_obj += tilde_z[ap_R, index_ratio, k].tolist()[0]*W[ap_R][index_ratio]
+                        sum_for_obj += global_z[ap_R, index_ratio, k].tolist()[0]*W[ap_R][index_ratio]
                         
             m.setObjective(-ratio[0]*(sum_z_e) +ratio[1]*(sum_for_obj) + (1-ratio[0]-ratio[1])*sum_of_w, 
                            gp.GRB.MAXIMIZE)    
@@ -299,7 +299,7 @@ def get_execution(TDES, hard_constraint, soft_constraint_list, HORIZON, list_rat
             for ap_R in range(len(TDES.AP_R)):
                 for index_ratio in range(num_ratio):
                     for k in range(HORIZON):
-                        sum_for_obj += tilde_z[ap_R, index_ratio, k].tolist()[0]*W[ap_R][index_ratio]
+                        sum_for_obj += global_z[ap_R, index_ratio, k].tolist()[0]*W[ap_R][index_ratio]
                         
             m.setObjective(ratio[0]*(sum_for_obj) + (1-ratio[0])*sum_of_w, 
                            gp.GRB.MAXIMIZE)          
@@ -325,7 +325,7 @@ def get_execution(TDES, hard_constraint, soft_constraint_list, HORIZON, list_rat
         else:
             
             m.update() 
-            output_result(HORIZON, TDES, z_e, w, len(hard_constraint), encoder_hard, ratio, list_encoders_for_soft, m.ObjVal, tilde_z, z_p, z_dummy)
+            output_result(HORIZON, TDES, z_e, w, len(hard_constraint), encoder_hard, ratio, list_encoders_for_soft, m.ObjVal, global_z, z_p, z_dummy)
             
             """
             pTDESのパラメータになる値m,wを取得する
