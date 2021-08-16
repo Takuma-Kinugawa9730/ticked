@@ -3,12 +3,13 @@
     原子命題　0　は、Trueを表す
 """
 
-HORIZON = 30
+HORIZON = 50
 
 def get_hard_constraint():
     
     
-    hard_constraint = ['1', 'G', [0, 2], 'F', [0, HORIZON], '3', 'G', [0, 3], 'F', [0, HORIZON] , '&', '3', '!', '1', 'U', [0, HORIZON], '&']
+    #hard_constraint = ['1', 'G', [0, 2], 'F', [0, HORIZON], '3', 'G', [0, 3], 'F', [0, HORIZON] , '&', '3', '!', '1', 'U', [0, HORIZON], '&']
+    hard_constraint = [ '3', '!', '1', 'U', [0, HORIZON]]
 
     return hard_constraint
 

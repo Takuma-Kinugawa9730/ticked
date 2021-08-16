@@ -65,15 +65,13 @@ def get_DES():
     des.istate_act = des.s_act[0]
     
     #ラベル0はダミーラベル
-    des.ap_act = ['1', '2', '3', '4', '5'] 
+    des.ap_act = ['0', '1', '2', '3', '4', '5'] 
     
-    for i in range(SIZE_OF_H* SIZE_OF_V):
-        
-        des.label_act[des.s_act[i]]=['5']
+    for i in range(SIZE_OF_H* SIZE_OF_V): 
+        des.label_act[des.s_act[i]]=['0']
         
     
-    des.label_act[des.s_act[0]].append('start')
-    des.label_act[des.s_act[-1]].append('goal')
+    des.label_act[des.s_act[-1]].append('5')
             
     if SIZE_OF_H == 6:
         target_place = [[10,19], [3,4,5,10,11,17], [31,34] ] # 6×6のグリッドの時  del;
@@ -88,7 +86,7 @@ def get_DES():
             des.label_act[des.s_act[tp]].append(des.ap_act[number_tp])
     
     for v in range(SIZE_OF_V):
-        des.label_act[des.s_act[2 + v*SIZE_OF_H]].append(des.ap_act[-2])
+        des.label_act[des.s_act[2 + v*SIZE_OF_H]].append('4')
     
     
     for e in range(len(des.event_act)):

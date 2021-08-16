@@ -2,7 +2,7 @@
 """
     原子命題　0　は、Trueを表す
 """
-HORIZON = 20
+HORIZON = 30
 
 def get_hard_constraint():
     

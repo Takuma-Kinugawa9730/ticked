@@ -214,6 +214,21 @@ def get_execution(TDES, hard_constraint, soft_constraint_list, HORIZON, list_rat
     """
     Hard制約をエンコード
     """    
+    
+    """
+    下位タスクを実行するために最低限必要な時間を考慮する制約を追加する
+    """
+    if TDES.have_refined_state != -1:
+        for ap_r in range(len(TDES.AP_R)):
+            #hard_constraint = hard_constraint + [TDES.AP_R[ap_r], '!', TDES.AP_R[ap_r], 'G', [0, M[ap_r][0]], '|', 'G', [0, HORIZON], '&']
+            hard_constraint = hard_constraint + [TDES.AP_R[ap_r], 'G', [0, M[ap_r][0]], 'F', [0, HORIZON], '&']
+            """
+            hard_constraint = hard_constraint + [TDES.AP_R[ap_r], 
+                                                 TDES.AP_R[ap_r], '!', TDES.AP_R[ap_r], 'G', [0, M[ap_r][0]], TDES.ap[-1], '|', 'U', [0, HORIZON],
+                                                 '|', 'G', [0, HORIZON], '&']
+            """
+            #hard_constraint = hard_constraint + [TDES.AP_R[ap_r], 'G', [0, M[ap_r][0]], TDES.ap[-1], '|', 'F', [0, HORIZON], 'G', [0, HORIZON], '&']
+            
     print(hard_constraint)    
     encoder_hard = encoder_main.EncoderBool(hard_constraint)
     
