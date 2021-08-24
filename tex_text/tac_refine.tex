@@ -203,12 +203,13 @@ In Section 7, we apply the proposed method to a path planning problem of a mobil
 Section 8 provides a summary of the paper and future research directions.
 %
 %
-\section{Timed discrete event system}\label{tdes}
+\section{Preliminary}
+\subsection{Timed discrete event system}\label{tdes}
 %
 In this section, we review a timed discrete event system proposed by Brandin and Wonham\cite{BW1994}, where temporal information is modeled by a special event {\sl tick}. First, let us define an untimed discrete event system (DES) by a transition system.
 %
 \begin{dfn}[Untimed DES] \label{def:G_act}
-An untimed DES is a tuple $G_{act}=(S_{act}, \Sigma_{act}, \delta_{act}, s_{0,act}, L_{act}, A_{act})$ where $S_{act}$ is a set of states, $\Sigma_{act}$ is a set of events, $\delta_{act} : S_{act} \times \Sigma_{act} \rightarrow S_{act}$ is a transition function, $s_{0,act}$ is the initial state, $AP_{act}$ is a set of atomic propositions and $L_{act} : S_{act} \rightarrow 2^{AP_{act}}$ is a labeling function. \qedwhite
+An untimed DES is a tuple $G_{act}=(S_{act}, \Sigma_{act}, \delta_{act}, s_{init,act}, L_{act}, A_{act})$ where $S_{act}$ is a set of states, $\Sigma_{act}$ is a set of events, $\delta_{act} : S_{act} \times \Sigma_{act} \rightarrow S_{act}$ is a transition function, $s_{init,act}$ is the initial state, $AP_{act}$ is a set of atomic propositions, and $L_{act} : S_{act} \rightarrow 2^{AP_{act}}$ is a labeling function. \qedwhite
 \end{dfn}
 
 Next, we incorporate some \textit{timing} properties in $G_{act}$. 
@@ -228,11 +229,12 @@ T_{\sigma}= \left\{
 \end{array} \right.
 \end{equation}	 
 %
+\red{We denote a tuple of a DES $G_{act}$, its unit time $\tick$, and the corresponding timer intervals $T_{\sigma}$ ($\sigma\in \Sigma_{act}$) as $\overline{G}\coloneqq (G_{act},{\tick},\{T_{\sigma} |~\sigma\in \Sigma_{act} \})$.}
 We introduce a special event \textit{tick}, which represents the global clock and will be utilized as an additional event to $\Sigma_{act}$. 
-Based on the above definition, a timed DES corresponding to $G_{act}$ is defined as follows: 
+Based on the above definition, a timed DES corresponding to  is defined as follows: 
 
 \begin{dfn}[Timed DES]\label{def:G}
-A timed DES (TDES) corresponding to $G_{act}$ is a tuple $G=(S, \Sigma, \delta, s_0,AP, L)$ where $S = S_{act} \times \prod_{\sigma\in \Sigma_{act}} T_{\sigma}$ is a set of states, $\Sigma= \Sigma_{act} \bigcup \{\textit{tick}\}$ is a set of events, $s_0 \in S$ is the initial state where $s_0 = (s_{0,act}, \{ t_{\sigma,0} | \sigma \in \Sigma_{act} \})$ and $t_{\sigma,0}$ is given by
+A timed DES (TDES) corresponding to $G_{act}$ is a tuple $G=(S, \Sigma, \delta, s_0,AP, L)$ where $S = S_{act} \times \prod_{\sigma\in \Sigma_{act}} T_{\sigma}$ is a set of states, $\Sigma= \Sigma_{act} \bigcup \{\textit{tick}\}$ is a set of events, $s_0 \in S$ is the initial state where $s_0 = (s_{init,act}, \{ t_{\sigma,0} | \sigma \in \Sigma_{act} \})$ and $t_{\sigma,0}$ is given by
 					\begin{equation}
 						t_{\sigma, 0} \coloneqq \left\{
 						\begin{array}{ll}  
@@ -240,9 +242,9 @@ A timed DES (TDES) corresponding to $G_{act}$ is a tuple $G=(S, \Sigma, \delta, 
 							\ l_{\sigma} & \mbox{if } {\sigma } \in \Sigma_{rem}, \\
 						\end{array} \right.
 					\end{equation}	
-$AP = AP_{act} $ is a set of  atomic propositions and $L  : S \rightarrow 2^{AP} $ is a labeling function, where $L(s)=L_{act}(a)$ and $s = (a, \{ t_\sigma | \sigma \in \Sigma_{act} \}) \in S$. \qedwhite \end{dfn}
+$AP = AP_{act} $ is a set of  atomic propositions and $L  : S \rightarrow 2^{AP} $ is a labeling function, where $L(s)=L_{act}(a)$ \red{for all} $s = (a, \{ t_\sigma | \sigma \in \Sigma_{act} \}) \in S$. \qedwhite \end{dfn}
 %
-The concrete definition of the transition function $\delta$ is omitted in this paper and the reader is referred to \cite{BW1994} for details.
+The concrete definition of the transition function $\delta:~S\times \Sigma \to S$ is omitted in this paper and the reader is referred to \cite{BW1994} for details.
 %
 %
 %
@@ -252,7 +254,7 @@ A \textit{finite execution $\pi$ of} $G$ is a finite sequence of alternating sta
 \pi = s(0)e(1)s(1)\ldots e(\Len) s(\Len), 
 \end{align}
 where $\Len \in \mathbb{N}_{> 0}$, 
-$s(k) \in S$ with $s(0) = s_0$, $\forall k\in[0,\ \Len]$, $e(k') \in \Sigma$, $\forall k' \in [1,\ \Len]$ and $(s({l-1}), e({l}), s(l)) \in \delta$, $\forall l\in [1,\ \Len]$. 
+$s(k) \in S$ with $s(0) = s_0$, $\forall k\in[0,\ \Len]$, $e(k') \in \Sigma$, $\forall k' \in [1,\ \Len]$ and \red{$s(l)= \delta(s({l-1}), e({l}))$}, $\forall l\in [1,\ \Len]$. 
 Here, $\Len$ is called the \textit{length} of $\pi$.
 Moreover, the corresponding sequence of states 
 \begin{align}
@@ -268,7 +270,7 @@ i.e., $\pi(k...)$ denotes the $k$-th suffix of $\pi$. Moreover, for given $k, j\
 \pi(k...j) = s(k) e({k+1}) s({k+1}) \ldots e({j}) s({j}). \notag 
 \end{align}
 Moreover, for given \req{execution} and $k, j\in [0,\ \Len]$ with $k \leq j \leq \Len$, let $count_\pi(k,j)$ denote the number of the event \textit{tick} included in $\pi(k...j)$.
-\red{Note that it takes $count_{\pi}(0, {\Len})+1$ unit times to complete the execution $\pi$ and we call this time \textit{the time for $\pi$}.}
+Note that it takes $count_{\pi}(0, {\Len})+1$ unit times to complete the execution $\pi$ and we call this time \textit{the time for $\pi$}.
 %
 For example, if $\pi=a,\textit{tick},a,\sigma,b,\textit{tick},a$ with $S=\{a,b\}$ and $\Sigma = \{\sigma\}\cup \{\textit{tick}\}$, we have $count_\pi(0,3) = 2$, $count_\pi (1, 3) = 1$ since $\pi(0...3) = a,\textit{tick},a,\sigma,b,\textit{tick},a$ and $\pi(1...3) = a,\sigma,b,\textit{tick},a$. Note that we have $count_\pi(k, k)=0$, $\forall k \in [ 0, \ \Len ]$, since $\pi(k...k) = s(k)$ and so no events occur in $\pi(k...k)$.
 %
@@ -287,7 +289,7 @@ where $x  \in S  \cup \Sigma $.
 $\Pr : S \cup \Sigma \to S_{act} \cup \Sigma$ is extended to $\Pr : (S  \cup \Sigma )^* \to  (S_{act} \cup \Sigma )^*$ in the usual way.
 %
 %
-\section{ticked linear temporal logic}
+\subsection{ticked linear temporal logic}
 We now introduce a fragment of linear temporal logic called ticked LTL$_f$ over a TDES\cite{KHU2020}.
 As will be seen below, this formula is interpreted over a finite execution \req{execution}, and provides an extension of the LTL$_f$ formulas\cite{Zhu2017} in the sense that we incorporate some timing properties via the event ${\textit{tick}}$\footnote{By the similar way, we can define ticked LTL, but we consider ticked LTL$_{f}$ in this paper since we deal with planning over a finite length.}.
 First, we define its syntax as follows.
@@ -324,7 +326,7 @@ Given a finite execution $\pi = s(0) e(1)$$s(1) \ldots e(\Len) s(\Len)$, the sat
 	\end{dfn}
 
 Intuitively, the formula $\phi_1 U_{[m,n]}  \phi_2$ indicates that $\phi_1$ holds true until $\phi_2$ holds true during the interval such that the number of ticked events is between $m$ and $n$. 
-Note that we do not include the operator $\bigcirc$ (next) in the syntax, which will not be utilized to express the specification in this paper. In prospective of tick, $F_{[1,1]}$ can be used as $\bigcirc$. 
+Note that we do not include the operator $\bigcirc$ (next) in the \red{syntax since, by the meaning of tick,} $F_{[1,1]}$ can be used as $\bigcirc$. 
 We denote by $\pi \models \phi$ if and only if $\pi (0...) \models \phi$.
 
 \begin{exa}
@@ -338,25 +340,30 @@ and a ticked LTL$_f$ formula $\phi=ap_1 U_{[1,3]} ap_2$ with $AP=\{ap_1,ap_2\}$,
 
 
 
-\section{Planning under ticked LTL$_f$ constraints}\label{sec4}
+%\section{Planning under ticked LTL$_f$ constraints}\label{sec4}
 %
-In general, for a planning problem with a modular specification consisting of several subspecifications, no execution satisfying all subspecifications may exist though an execution satisfying some of them exists. 
-In such a case, one approach to relax the specification is to partition the subspecifications into a mandatory one called a hard constraint and several optional ones called soft constraints, where the former is the indispensable requirement and the latter describes a requirement preferable to be satisfied.  Then, we find an execution, called a plan, satisfying the hard constraint and some of the soft ones such that the set of the satisfied soft ones is the most preferable for a designer. 
-We formulate an optimal planning problem with a hard constraint and a set of soft constraints described by  ticked LTL$_f$ formulas for a TDES $G$ as an integer linear programming (ILP) problem.
+%In general, for a planning problem with a modular specification consisting of several subspecifications, no execution satisfying all subspecifications may exist though an execution satisfying some of them exists. In such a case, one approach to relax the specification is to partition the subspecifications into a mandatory one called a hard constraint and several optional ones called soft constraints, where the former is the indispensable requirement and the latter describes a requirement preferable to be satisfied.  Then, we find an execution, called a plan, satisfying the hard constraint and some of the soft ones such that the set of the satisfied soft ones is the most preferable for a designer. We formulate an optimal planning problem with a hard constraint and a set of soft constraints described by  ticked LTL$_f$ formulas for a TDES $G$ as an integer linear programming (ILP) problem.
 
-In this section, first, we review the linear encoding of both executions of $G$ and the constraints.  Then, we provide the formulation and show an illustrative example.
+%In this section, first, we review the linear encoding of both executions of $G$ and the constraints.  Then, we provide the formulation and show an illustrative example.
 
 \subsection{Encoding of constraints}\label{encode}
 %
-We review a method that encodes a finite trajectory of the TDES $G=(S, \Sigma, \delta, s_{0}, AP, L)$, where $s_{0} \in S= \{s_1, s_2 \ldots, s_{N} \}$, the counting function $count_\pi$, and the ticked LTL$_f$ formula $\phi$ using inequality and equality constraints.
+We review a method that encodes a finite trajectory of the TDES $G=(S, \Sigma, \delta, s_{init}, AP, L)$, where $s_{init} \in S= \{s_1, s_2 \ldots, s_{N} \}$, the counting function $count_\pi$, and the ticked LTL$_f$ formula $\phi$ using inequality and equality constraints.
 This method is an extension of the method proposed by \cite{BHJLS2006}.  See \cite{KHU2020} for its detail.
 %
 \subsubsection{TDES}
-Let $\pi_{G}=s(0)e(1)s(1) \ldots e(\Len)s(\Len)$ be an execution of the TDES $G$, where $\Len$ is the length of $\pi$ and $s(0)=s_{0}$.
-We introduce $\Len+1$ binary vectors $w_G (k)=[w_{G,1} (k), w_{G,2} (k) , \ldots , w_{G,N_S} (k) ]^{\mathsf{T}} \in \{0, 1\}^{N}$ \red{with $N_S=|S|$ for} $k\in [0,\ \Len]$ to represent the $k$-th state $s(k)$ of $\pi$ as follows.
+Let $\pi_{G}=s(0)e(1)s(1) \ldots e(\Len)s(\Len)$ be an execution of the TDES $G$, where $\Len$ is the length of $\pi$ and $s(0)=s_{init}$.
+We introduce $\Len+1$ binary vectors $w_G (k)=[w_{G,1} (k), w_{G,2} (k) , \ldots , w_{G,N_S} (k) ]^{\mathsf{T}} \in \{0, 1\}^{N_S}$ with $N_S=|S|$ for $k\in [0,\ \Len]$ to represent the $k$-th state $s(k)$ of $\pi$ as follows.
 \[
 w_{G,i}(k)=\left\{ \begin{array}{ll}
-1 & \mbox{ if } s(k)=s_i, \\
+1 & \mbox{if } s(k)=s_i, \\
+0 & \mbox{otherwise.}
+\end{array} \right.
+\]
+Additionally, we introduce a binary vector $w_{G,s_0}=[w_{G,s_0,1} (k), w_{G,s_0,2} (k) , \ldots , w_{G,s_0,N_S} (k) ]\in \{0, 1\}^{N_S}$ to represent the initial state of $G$ as follows.
+\[
+w_{G,s_0,i}=\left\{ \begin{array}{ll}
+1 & \mbox{if } s_0=s_i, \\
 0 & \mbox{otherwise.}
 \end{array} \right.
 \]
@@ -433,8 +440,8 @@ Then, the linear encoding corresponding to the satisfaction of  the ticked LTL$_
 
 \textit{Atomic proposition:} Let $\varphi = ap \in AP$ and $v \in \{0, 1\}^{N_S}$ be a binary vector such that $v_i = 1$ (the $i$-th component of $v$ is $1$) if and only if $ap \in L(s_i)$. Then, the satisfaction of the formula $\varphi$ is encoded as follows: 
 \begin{align}
-v^\mathsf{T} \red{w_G}(k) &\geq z_\varphi (k),\notag\\
-v^\mathsf{T} \red{w_G}(k) &< z_\varphi (k)+1. \notag
+v^\mathsf{T} {w_G}(k) &\geq z_\varphi (k),\notag\\
+v^\mathsf{T} {w_G}(k) &< z_\varphi (k)+1. \notag
 \end{align}
 
 \textit{Negation:} Let $\varphi = \neg \varphi'$. Then, the satisfaction of $\varphi$ is encoded as 
@@ -465,9 +472,9 @@ Let $\varphi = \varphi_1 U_{[m,n]} \varphi_2$. We introduce binary variables $\u
 such that $\underline{z}_m (k,j) = 1$ ({\sl resp.} $\overline{z}_n (k, j) = 1$) if and only if $m \leq c_{\pi_G} (k, j)$ ({\sl resp.} $c_{G_e}(k,j) \leq n$). Then, we have 
 \begin{eqnarray}
 m - M_c &\leq c_{\pi_G} (k, j) - M_c \underline{z}_m(k,j) &\leq m - \epsilon, \notag\\ 
-\red{n} + \epsilon  &\leq  c_{\pi_G} (k, j) + M_c \overline{z}_n(k,j) &\leq \red{n}+M_c, \notag
+{n} + \epsilon  &\leq  c_{\pi_G} (k, j) + M_c \overline{z}_n(k,j) &\leq {n}+M_c, \notag
 \end{eqnarray}
-where $M_c$ is a sufficiently large number satisfying $M_c >n$ \red{and $\epsilon$ is a sufficiently small number satisfying $\epsilon<1$.} 
+where $M_c$ is a sufficiently large number satisfying $M_c >n$ and $\epsilon$ is a sufficiently small number satisfying $\epsilon<1$.
 Then, the satisfaction of $\varphi$ is encoded as 
 \begin{align}%\label{until1}
 z_\varphi (k) = \bigvee^{\Len} _{j=k} z_\varphi (k, j),
@@ -484,14 +491,18 @@ Denoted by $LTL(\varphi)$ is the set of constraints obtained by the above encodi
 
 
 
+%\begin{comment}
+
+
+\begin{comment}
+
+
 %
 \red{
 \subsection{Problem formulation}\label{sec:pbm}
 }
 %
-We consider a planning problem for a TDES $G$ with a specification consisting of one hard constraint $\phi$ and $N$ soft constraints $\psi_1,...,\psi_N$, where all constraints are described by ticked LTL$_f$ formulas, such that a plan is an execution satisfying the specification as fast as possible.
-We assume that there is a preference for each soft constraint, that is, if there is no execution that satisfies both $\psi_i$ and $\psi_j$ but there are executions that satisfy one of them, then, as a plan, we select an execution that satisfies the more preferable constraint.  To represent the preference, we introduce a positive integer $w_i$, called a {\sl weight}, for each soft constraint $\psi_i (i \in [1,N])$ and interpret that $\psi_i$ is more preferable than $\psi_j$ if $w_i >w_j$. Thus, an execution for which the sum of the weights of the satisfied soft constraints is larger is a more preferable plan.
-We denote a set of pairs of a soft constraint and its weight by $\Psi=\{(\psi_i, w_i)|~i\in[1,~N]\}$.
+
 
 When we introduce the soft constraints to a planning problem, we have two performance indexes $J_{time}$ and $J_{soft}$ for a plan: $J_{time}$ indicates how fast the plan is completed and $J_{soft}$ indicates how large the sum of the preferences of the satisfied soft constraints is.
 Then, A preferable plan minimizes $J_{time}$ and maximizes $J_{soft}$ simultaneously, which causes a trade-off between the indexes. To represent the trade-off, we introduce the following objective function $J_{\kappa}$ with $0 \leq \kappa \leq 1$.
@@ -529,42 +540,12 @@ where $w_{s_0} \in \{0, 1 \}^N$ is the binary vector corresponding to the initia
 \qedwhite
 \end{pbm}
 %
-Note that, if there is no feasible solution of the ILP problem  {\bf ILP\ref{pbm2}}, there is no plan satisfying the hard constraint.  In such a case, we denote $\pi=\bot$.
-%
+
 
 The procedures to solve \rpbm{pbm2} is described in Algorithm 1 in detail. 
 %
-%
-%
-\begin{algorithm}
-\caption{: FIND($G,\phi,\Psi,\Len,J$): algorithm \red{for finding an optimal plan of \rpbm{pbm2}}. } \label{alg_solve_maxsat}
-\begin{algorithmic}
-%
-\Require $G$, $\phi$, $\Psi=\{(\psi_i,\red{w_i});\ i\in[1,\ N]\}$, $\Len$, $J$\red{.}
-\Ensure a finite execution $\pi$\red{.}
 
-\State Get $A$, $\alpha$, $\beta$ from a transition function of $G$\red{.}
-
-\State Set \req{w}-\req{zek3}\red{.}
-\State Convert $\phi$ to \red{$LTL$}($\phi$)\red{.}
-\If{$\Psi$ is not empty}
-
-	\For{ $i \in [1,N]$}
-	\State Convert $\psi_{i}$ to \red{$LTL$}($\psi_{i}$)\red{.}
-	\State Set $(z_{\psi_i}(0)=1,\red{w_i})$ as a soft constraint\red{.}
-	\EndFor
-\EndIf
-\State \red{Set the objective function $J$
-\State Find an optimal execution of $G$ for {\bf ILP\ref{pbm2}}.}
-\If{Succeed to find an execution}
-	\State Return the execution \red{as an optimal plan.}
-\Else
-	\State  Return $\bot$\red{.}
-\EndIf
-\end{algorithmic}
-\end{algorithm}
 %
-
 %
 \subsection{Example}\label{sec:sim1}
 %
@@ -620,6 +601,13 @@ The time for $\pi^1$, $\pi^2$, and $\pi^3$ are 7, 4, and 2 [\tick], respectively
 The sum of weight of soft constraints satisfied by $\pi^1$, $\pi^2$, and $\pi^3$ are 4, 3, and 0.
 The results of executions are shown that the combination of satisfied soft constraints is changed when the value of $\kappa$ is changed while satisfying the hard constraint.
 %
+%
+
+
+
+\end{comment}
+
+
 %
 %
 %
@@ -889,56 +877,102 @@ The results of executions are shown that the combination of satisfied soft const
 %
 \end{comment}
 %
-\section{Two-level hierarchical TDESs}\label{def:htdes}
+\section{Hierarchical TDESs}\label{def:htdes}
 %
+\red{In this section, we introduce a novel hierarchical timed discrete event system (HTDES). In the case where the specification is very complicated, a hierarchical specification is a practically useful. For example, we consider a mobile robot in a manufacturing system with many assembling machines and a specification gives constraints for both its movement and scheduling of assembling a product. Then, we introduce an atomic proposition ``assembling a product'' in the specification for the movement because the robot moves to a machine that can assemble the product.  Then, we also describe the assembling operation by a pair of a TDES and a formula, where the TDES models a behavior of the machine and the formula describes a constraint for the assembling. See Section V-B for the detail. Such a planning problem is formulated using a hierarchical model where an atomic proposition at the upper-level TDES model is refined as a pair of a TDES and a formula at its lower-level model, where the granularity of the unit time at the lower-level TDES is finer than that of the upper-level TDES because the specification of the lower-level TDES is a refinement of an atomic proposition at the upper-level TDES. For simplicity, we focus on a three-level HTDES which is composed of a top-level, a middle-level, and a bottom-level TDES with a specification. }
 %
-In the case where we find an execution for a very long length, the proposed ILP problem in the previous section becomes too large to solve it in a practical computational time. 
-In order to overcome this problem, first, we introduce a hierarchical timed discrete event system (hierarchical TDES) \red{where the granularity of the unit time at the lower-level TDESs is finer than that at the upper-level TDES, and specifications are given for both the upper-level and lower-level TDESs. Then, we propose a hierarchical planning method for the hierarchical TDES\footnote{For simplicity, we focus on planning over a three-level hierarchical TDES, but the key idea can be generalized into planning with more than two levels.}.}
-
 %
 %階層プランニングはボトムアップのプランニングである。なので、まず下位TDESをProblem 1に従って、プランニングを行う。このとき、いくつかのαの値で実行列を求め、そのそれぞれについて、かかった時間とソフト制約の重みの合計を上位TDESに情報として与える。その情報をもとに上位TDESのプランニングを行う
-\red{The proposed hierarchical planning is based on a  bottom-up approach.
-So, we first compute several candidates of a lowest-level plan with a finer time scale for each state of the middle-level TDES using the corresponding lowest-level TDES such that the plan is optimal for the corresponding objective function.
-Then, we find several candidates of a middle-level plan for the middle-level specification using the middle-level TDES such that a lowest-level plan at each refined state is determined(decided) of the candidates and all determined lowest-level plans are feasible under the middle-level plan.
-Finally, we find an optimal top-level plan and determine a middle plan at each refined state for the top-level specification using the top-level TDES such that all middle plans are feasible under the top-level plan.
-}
-In the following, the DES used in the top-level planning, those in the middle-level planning, and those in the lowest-level planning will be denoted by $G_{act}$, $G_{i,act}$, and $G_{i,{j_i},act}$, respectively.  
-$G_{act}$ is given by $G_{act}=(S_{act},\Sigma_{act},\delta_{act},s_{init,act},AP_{act},L_{act})$.
-Moreover, for $i \in [1,\ M]$ and $j_i\in [1,~M_i]$, $G_{i,act}$ is given by $G_{i,act}=(S_{i,act},\Sigma_{i,act},\delta_{i,act},s_{init,i,act},AP_{i,act},L_{i,act})$, and $G_{i,{j_i},act}$ is given by $G_{i,{j_i},act}=(S_{i,{j_i},act}$, $\Sigma_{i,{j_i},act},\delta_{i,{j_i},act},s_{init,i,{j_i},act},AP_{i,{j_i},act},L_{i,{j_i},act})$.
-%
-$S_{act}$, $S_{i,act}$, and $S_{i,{j_i},act}$ are the sets of states, $\Sigma_{act}$, $\Sigma_{i,act}$, and $\Sigma_{i,{j_i},act}$ are the sets of events, $\delta_{act}$, $\delta_{i,act}$, and $\delta_{i,{j_i},act}$ are the transition functions, $s_{init,act}$, $s_{init,i,act}$, and $s_{init,i,{j_i},act}$ are the initial states, $AP_{act}$, $AP_{i,act}$, and $AP_{i,{j_i},act}$ are the sets of atomic propositions and $L_{act}$, $L_{i,act}$, and $L_{i,{j_i},act}$ are their corresponding labeling functions.
-(We assume that $\Sigma_{act} \cap \Sigma_{i,act} = \emptyset,\Sigma_{i,act} \cap \Sigma_{i',act} = \emptyset$ for any $i,i'\in[1,\ M],\ i\neq i'$.)
-%
 
+In a three-level HTDES, a DES at the top level is denoted by $G_{act}$.
+$G_{act}$ is given by $G_{act}=(S_{act},\Sigma_{act},\delta_{act},s_{init,act},AP_{act},L_{act})$.
 %
+$S_{act}$ is the set of states, $\Sigma_{act}$ is the set of events, $\delta_{act}$ is the transition function, $s_{init,act}$ is the initial state, $AP_{act}$ is the set of atomic propositions and $L_{act}$ is its corresponding labeling function.
+In our proposed HTDES, each lower-level TDESs describes detailed behavior for the corresponding atomic proposition of its upper-level TDES.
+We call these atomic propositions \textit{refined atomic propositions} and atomic propositions other than refined atomic propositions \textit{unrefined atomic propositions}.
+Then, we assume that the set of atomic propositions $\AP_{act}$ is partitioned into two sets $\AP_{act}^{R}$ and $\AP_{act}^{N}$.
+The atomic propositions in $\AP_{act}^{R}$ and $\AP_{act}^{N}$ are refined atomic proposition and unrefined atomic proposition, respectively.
 %
-\red{
-In our proposed hierarchical TDES, TDESs correspond to atomic propositions of the next upper-level TDES.
-Then, we assume that the set of atomic propositions $\AP_{act}$ ({\sl resp.} $\AP_{i,act}$) is partitioned into two sets $\AP_{act}^{R}$ and $\AP_{act}^{N}$ ({\sl resp.} $\AP_{i,act}^{R}$ and $\AP_{i,act}^{N}$).
-The states where atomic propositions in $\AP_{act}^{R}$ and $\AP_{act}^{N}$ ({\sl resp.} $\AP_{i,act}^{R}$ and $\AP_{i,act}^{N}$) are assigned are refined and unrefined states, respectively.
-%
-$\AP_{act}^R$, $\AP_{act}^N$, $\AP_{act}^R$, and $\AP_{act}^N$ are given by
+$\AP_{act}^R$ and $\AP_{act}^N$ are given by
 \begin{eqnarray}
-\AP_{act}^R&=&\{\textit{p}_1,\textit{p}_2,\ldots,p_{M_1}\}, \notag \\
-\AP_{act}^N&=&\{\textit{p}_{M+1},\textit{p}_{M+2},\ldots,p_{|\AP_{act}|}\},\notag \\
-\AP_{i,act}^R&=&\{\textit{p}_{i,1},\textit{p}_{i,2},\ldots,p_{i,M_2}\}, \notag \\
-\AP_{i,act}^N&=&\{\textit{p}_{i,M+1},\textit{p}_{i,M+2},\ldots,p_{|\AP_{i,act}|}\},\notag
+\AP_{act}^R&=&\{\textit{p}_1,\textit{p}_2,\ldots,p_{M}\}, \notag \\
+\AP_{act}^N&=&\{\textit{p}_{M+1},\textit{p}_{M+2},\ldots,p_{|\AP_{act}|}\},\notag 
 \end{eqnarray}
 %
 with the following assumption.
 %
 \begin{align}
-&\AP_{act}=\AP_{act}^R \cup \AP_{act}^N,~
-\AP_{act}^R \cap \AP_{act}^N=\emptyset,\notag\\
+\AP_{act}=\AP_{act}^R \cup \AP_{act}^N,~
+\AP_{act}^R \cap \AP_{act}^N=\emptyset.\notag
+\end{align}
+%
+For every $i \in [1,\ M]$, detailed behavior of(corresponding to) $p_i$ is represented by a middle-level TDES, denoted by $G_{i,act}$. 
+$G_{i,act}$ is given by $G_{i,act}=(S_{i,act},\Sigma_{i,act},\delta_{i,act},s_{init,i,act},AP_{i,act},L_{i,act})$ for $i \in [1,\ M]$.
+$S_{i,act}$ is the set of states, $\Sigma_{i,act}$ is the set of events, $\delta_{i,act}$ is the transition function, $s_{init,i,act}$ is the initial state, $AP_{i,act}$ is the set of atomic propositions and $L_{i,act}$ is its corresponding labeling function.
+%
+As with $G_{act}$, we introduce refined atomic propositions and unrefined atomic propositions for $G_{i,act}$ ($i \in [1,\ M]$) whose sets are denoted by $\AP_{i,act}^R$ and $\AP_{i,act}^N$.
+Then, $\AP_{i,act}^R$ and $\AP_{i,act}^N$ are given by
+\begin{eqnarray}
+\AP_{i,act}^R&=&\{\textit{p}_{i,1},\textit{p}_{i,2},\ldots,p_{i,M_i}\},\notag\\
+\AP_{i,act}^N&=&\{\textit{p}_{i,M_i+1},\textit{p}_{i,M_i+2},\ldots,p_{|\AP_{i,act}|}\},\notag
+\end{eqnarray}
+%
+with the following assumption.
+%
+\begin{align}
 &\AP_{i,act}=\AP_{i,act}^R \cup \AP_{i,act}^N,~
 \AP_{i,act}^R \cap \AP_{i,act}^N=\emptyset,\notag\\
 &\AP_{act}^R \cap \AP_{i,act}^R =\emptyset.\notag
 \end{align}
+Then, we introduce a TDES $G_{i,j_i,act}$ for detailed behavior of a refined proposition $p_{i,j_i}$ for every $i\in[1,~M]$ and $j_i\in [1,~M_i]$.
+$G_{i,j_i,act}=(S_{i,{j_i},act}$, $\Sigma_{i,{j_i},act},\delta_{i,{j_i},act},s_{init,i,{j_i},act},AP_{i,{j_i},act},L_{i,{j_i},act})$ is given in the same way as $G_{act}$ and $G_{i,act}$.
+\red{Note that the family of event sets $\Sigma_{act}$, $\Sigma_{i, act}$, $\Sigma_{i,j,act}$ is pairwise disjoint.}
+
+\begin{comment}
+
+In the middle level, there are $M$ TDESs denoted by $G_{i,act}$ for $i \in [1,\ M]$.
+At the bottom level, there are $M_i$ TDESs, denoted by $G_{i,{j_i},act}$ for $j_i\in [1,~M_i]$, whose corresponding TDES at next upper-level is $G_{i,act}$ for each $i \in [1,\ M]$.
+$G_{act}$ is given by $G_{act}=(S_{act},\Sigma_{act},\delta_{act},s_{init,act},AP_{act},L_{act})$.
+Moreover, for $i \in [1,\ M]$ and $j_i\in [1,~M_i]$, $G_{i,act}$ is given by $G_{i,act}=(S_{i,act},\Sigma_{i,act},\delta_{i,act},s_{init,i,act},AP_{i,act},L_{i,act})$, and $G_{i,{j_i},act}$ is given by $G_{i,{j_i},act}=(S_{i,{j_i},act}$, $\Sigma_{i,{j_i},act},\delta_{i,{j_i},act},s_{init,i,{j_i},act},AP_{i,{j_i},act},L_{i,{j_i},act})$.
 %
-For each state corresponding to $\textit{p}_i \in \AP_{act}^{R}$ ({\sl resp.} $p_{i,{j_i}}\in \AP_{i,act}^{R}$), we have a DES in the middle-level $G_{i, act}$ ({\sl resp.} in the lowest-level $G_{i,{j_i}, act}$) that models its local behaviors.}
+$S_{act}$, $S_{i,act}$, and $S_{i,{j_i},act}$ are the sets of states, $\Sigma_{act}$, $\Sigma_{i,act}$, and $\Sigma_{i,{j_i},act}$ are the sets of events, $\delta_{act}$, $\delta_{i,act}$, and $\delta_{i,{j_i},act}$ are the transition functions, $s_{init,act}$, $s_{init,i,act}$, and $s_{init,i,{j_i},act}$ are the initial states, $AP_{act}$, $AP_{i,act}$, and $AP_{i,{j_i},act}$ are the sets of atomic propositions and $L_{act}$, $L_{i,act}$, and $L_{i,{j_i},act}$ are their corresponding labeling functions.
+
+%(We assume that $\Sigma_{act} \cap \Sigma_{i,act} = \emptyset,\Sigma_{i,act} \cap \Sigma_{i',act} = \emptyset$ for any $i,i'\in[1,\ M],\ i\neq i'$.)
 %
-According to \rsec{tdes}, we introduce TDESs corresponding to $G_{act}$, $G_{i,act}$, and $G_{i,{j_i},act}$ that are denoted by $G$, $G_{i}$, and $G_{i,{j_i}}$, respectively.
+
 %
+%
+In our proposed HTDES, TDESs correspond to atomic propositions of the next upper-level TDES.
+Then, we assume that the set of atomic propositions $\AP_{act}$ ({\sl resp.} $\AP_{i,act}$) is partitioned into two sets $\AP_{act}^{R}$ and $\AP_{act}^{N}$ ({\sl resp.} $\AP_{i,act}^{R}$ and $\AP_{i,act}^{N}$).
+The states where atomic propositions in $\AP_{act}^{R}$ and $\AP_{act}^{N}$ ({\sl resp.} $\AP_{i,act}^{R}$ and $\AP_{i,act}^{N}$) are assigned are refined and unrefined states, respectively.
+%
+$\AP_{act}^R$, $\AP_{act}^N$, $\AP_{act}^R$, and $\AP_{act}^N$ are given by
+\begin{eqnarray}
+\AP_{act}^R&=&\{\textit{p}_1,\textit{p}_2,\ldots,p_{M}\}, \notag \\
+\AP_{act}^N&=&\{\textit{p}_{M+1},\textit{p}_{M+2},\ldots,p_{|\AP_{act}|}\},\notag \\
+\AP_{i,act}^R&=&\{\textit{p}_{i,1},\textit{p}_{i,2},\ldots,p_{i,M_i}\}, \notag \\
+\AP_{i,act}^N&=&\{\textit{p}_{i,M_i+1},\textit{p}_{i,M_i+2},\ldots,p_{|\AP_{i,act}|}\},\notag
+\end{eqnarray}
+%
+with the following assumption.
+%
+\begin{eqnarray}
+\AP_{act}=\AP_{act}^R \cup \AP_{act}^N,&&
+\AP_{act}^R \cap \AP_{act}^N=\emptyset,\notag\\
+\AP_{i,act}=\AP_{i,act}^R \cup \AP_{i,act}^N,&&
+\AP_{i,act}^R \cap \AP_{i,act}^N=\emptyset,\notag\\
+\AP_{act}^R \cap \AP_{i,act}^R =\emptyset.&&\notag
+\end{eqnarray}
+%
+For each state corresponding to $\textit{p}_i \in \AP_{act}^{R}$ ({\sl resp.} $p_{i,{j_i}}\in \AP_{i,act}^{R}$), we have a middle-level DES $G_{i, act}$ ({\sl resp.} a bottom-level DES $G_{i,{j_i}, act}$) that models its local behaviors.
+
+
+\end{comment}
+
+%
+%According to \rsec{tdes}, we introduce TDESs corresponding to $G_{act}$, $G_{i,act}$, and $G_{i,{j_i},act}$ that are denoted by $G$, $G_{i}$, and $G_{i,{j_i}}$, respectively.
+%
+
 The granularity of the unit time of each system may be different, so its unit time is also different. 
 We distinguish each unit time and introduce a corresponding special event that means the elapse of one unit time as follows.
 %
@@ -947,14 +981,14 @@ Denoted by \tick$_p$ is a unit time of $G_{act}$, each \tick$_i (i\in[1,\ M])$ i
 %
 %
 %
-Timer interval $T_\sigma$, $T_{i,\sigma}$, and $T_{i,{j_i},\sigma}$ for each $\sigma\in\Sigma_{act}$, $\sigma\in\Sigma_{i,act}$, and $\sigma\in\Sigma_{i,{j_i},act}$ is given in the basis of \tick$_p$, \tick$_i$, and \tick$_{i,{j_i}}$, respectively.
+Timer interval $T_\sigma$, $T_{i,\sigma_i}$, and $T_{i,{j_i},\sigma_{i,{j_i}}}$ for each $\sigma\in\Sigma_{act}$, $\sigma_i\in\Sigma_{i,act}$, and $\sigma_{i,{j_i}}\in\Sigma_{i,{j_i},act}$ is given in the basis of \tick$_p$, \tick$_i$, and \tick$_{i,{j_i}}$, respectively.
 %
 %
 Then, we denote the DES together with the corresponding unit time and the corresponding timer interval by
 \begin{eqnarray}
-\overline{G}&\coloneqq&(G_{act},\mbox{\tick}_p,T_{\sigma}),\notag \\
-\overline{G_i}&\coloneqq&(G_{i,act},\mbox{\tick}_i,T_{i,\sigma}),\notag\\
-\overline{G_{i,{j_i}}}&\coloneqq&(G_{i,{j_i},act},\mbox{\tick}_{i,{j_i}},T_{i,{j_i},\sigma}),\notag
+\overline{G}&\coloneqq&(G_{act},\mbox{\tick}_p,\{T_{\sigma} |~\sigma\in \Sigma_{act} \}),\notag\\
+ \overline{G_i}&\coloneqq&(G_{i,act},\mbox{\tick}_i,\{T_{i,\sigma} |~\sigma\in \Sigma_{i,act} \}),\notag\\
+\overline{G_{i,{j_i}}}&\coloneqq&(G_{i,{j_i},act},\mbox{\tick}_{i,{j_i}},\{T_{i,{j_i},\sigma} |~\sigma\in \Sigma_{i,j_i,act} \}),\notag
 \end{eqnarray}
 respectively, where $i\in [1,\ M]$ and $j_i\in [1,\ M_i]$.
 According to \rdef{def:G}, the TDES $G$ corresponding to $\overline{G}$ is given by a tuple $G=(S,\Sigma,\delta,s_{init},AP,L)$, for each $i\in[1,\ M]$, a TDES $G_i$ corresponding to $\overline{G_i}$ is given by a tuple $G_i=(S_{i},\Sigma_{i},\delta_{i},s_{init,i},AP_{i},L_{i})$, and, for each $i\in[1,\ M]$ and $j_i\in[1,\ M_i]$, a TDES $G_{i,{j_i}}$ corresponding to $\overline{G_{i,{j_i}}}$ is given by a tuple $G_{i,j_i}=(S_{i,{j_i}},\Sigma_{i,{j_i}},\delta_{i,{j_i}},s_{init,i},AP_{i,{j_i}},L_{i,{j_i}})$.
@@ -964,7 +998,7 @@ $S$, $S_i$, and $S_{i,{j_i}}$ are the sets of states, $\Sigma$, $\Sigma_i$, and 
 Executions of the $G$, $G_{i}$, and $G_{i,{j_i}}$ are given in the same way as \req{execution}. 
 %
 %
-Then, we denote the three-level hierarchical TDES as follows. 
+Then, we denote the three-level HTDES as follows. 
 %
 \begin{align}\label{htdes}
 \mathcal{G}
@@ -973,9 +1007,8 @@ Then, we denote the three-level hierarchical TDES as follows.
 where $i\in[1,\ M]$ and $j_i\in[1,\ M_i]$.
 %
 %
-\red{
 \begin{exa}\label{exa:hier}
-Consider a three-level hierarchical TDES consists of TDESs corresponding to DESs shown in \rfig{ex:htdes}.
+Consider a three-level HTDES consists of TDESs corresponding to DESs shown in \rfig{ex:htdes}.
 For the top-level DES $G_{act}$, there are two states $s_1$ and $s_2$.
 We set $\AP^R_{act}=\{p_1,p_2\}$ and $\AP^N_{act}=\{p_3\}$. Then, atomic propositions are assigned to each state as follows.
 \[
@@ -985,64 +1018,84 @@ L_{act}(s_{2}) = \{p_1,p_2\}.
 If $s_1$ or $s_2$ is stayed at in a top-level plan, a middle-level plan determined by the TDES $G_1$ corresponding to $G_{1,act}$ can be implemented.
 If $s_2$ is stayed at in a top-level plan, both middle-level plans determined by $G_1$ and $G_2$ can be implemented in parallel.
 For the middle-level DESs $G_{1,act}$ and $G_{1,act}$, we set a set of atomic propositions and label functions as follows. 
-\[
+\begin{gather}
 \AP^R_{1,act}=\{p_{1,1}\},~\AP^N_{1,act}=\{p_{1,2}\},
-\]
-\[
+\notag\\
 \AP^R_{2,act}=\{p_{2,1}\},~\AP^N_{2,act}=\{p_{2,2}\},
-\]
-\[
-L_{act}(s_{1}^1) = \{p_{1,1}\},~
-L_{act}(s_{2}^1) = \{p_{1,2}\},
-\]
-\[
-L_{act}(s_{1}^2) = \{p_{2,2}\},~
-L_{act}(s_{2}^2) = \{p_{2,1}\},~
-L_{act}(s_{3}^2) = \{p_{2,1}\}.
-\]
-Then, there are two lowest-level DESs $G_{1,1,act}$ and $G_{2,1,act}$ corresponding to $p_{1,1}$ and $p_{2,1}$, respectively.
+\notag\\
+L_{1,act}(s_{1}^1) = \{p_{1,1}\},~
+L_{1,act}(s_{2}^1) = \{p_{1,2}\},
+\notag\\
+L_{2,act}(s_{1}^2) = \{p_{2,2}\},~
+L_{2,act}(s_{2}^2) = \{p_{2,1}\},
+\notag\\
+L_{2,act}(s_{3}^2) = \{p_{2,1}\}.\notag
+\end{gather}
+Then, there are two bottom-level DESs $G_{1,1,act}$ and $G_{2,1,act}$ corresponding to $p_{1,1}$ and $p_{2,1}$, respectively.
+\qedwhite
 \end{exa}
-}
 %
 \begin{figure}
 \centering
 \includegraphics[width=8cm]{ex_htdes_2-crop.pdf}
-\caption{The hierarchical TDES considered in Example \ref{exa:hier}.}
+\caption{The HTDES considered in Example \ref{exa:hier}.}
 \label{ex:htdes}
 \end{figure}
 %
 %
 %
-\red{\section{Hierarchical planning}}
+\red{\subsection{Complexity(kari)}}
 %
-We propose hierarchical planning for a three-level hierarchical TDES introduced in the previous section.
-The plan is composed of the top-level plan, middle-level plans, and lowest-level plans determined by the specification given to $G$, $G_i$, and $G_{i,{j_i}}$ for $i\in [1,~M]$ and $j_i\in [1,~M_i]$, respectively.
-An overall plan of the hierarchical TDES where plans are determined with considering some candidates of the next lower-level plans as an option is better than one considering a(only one)  local plan for each TDES.  
-Thus, in each lowest planning and middle-level planning, candidates of a plan are created for the next upper-level planning.
-Then, in top-level planning and middle-level planning, we find plans with considering the next lower-level candidates of plans and determine a lowest-level plan at each refined state of the candidates.
 %
-\subsection{Problem formulation}
 %
-We introduce $\pi(J)$, $m_{\pi(J)}$, and $W_{\pi(J)}$. 
-$\pi(J)$ is an execution of a TDES $G'$ which optimizes an objective function $J$.
-Let ${\tick}_{l}$ and ${\tick}_u$ be a unit time of the TDES $G'$ and one of the next upper-level TDES, respectively.
-$m_{\pi(J)}$ is the time for $\pi(J)$ with respect to ${\tick}_{u}$ and given by
+
+%
+\section{Hierarchical planning}\label{sec:hplan}
+%
+
+
+%So, we first compute several candidates of a bottom-level plan with a finer time scale for each state of the middle-level TDES using the corresponding bottom-level TDES such that the plan is optimal for the corresponding objective function. Then, we find several candidates of a middle-level plan for the middle-level specification using the middle-level TDES such that a bottom-level plan at each refined state is determined(decided) of the candidates and all determined bottom-level plans are feasible under the middle-level plan. Finally, we find an optimal top-level plan and determine a middle plan at each refined state for the top-level specification using the top-level TDES such that all middle plans are feasible under the top-level plan.
+We propose optimal hierarchical planning for a three-level HTDES introduced in the previous section with specification given for every TDES.
+Our proposed planning is based on a bottom-up approach such that every lower-level planer computes candidates of a plan for the its upper-level planning, then the upper-level planer selects one of candidates \red{for every time that refined atomic propositions are true} to optimize its cost function.
+
+
+For each TDES, we consider a planning problem with a specification consisting of one hard constraint and some soft constraints, where all constraints are described by ticked LTL$_f$ formulas. %, such that a plan is an execution satisfying the hard constraint and soft constraints as fast as possible.
+For $G$, $G_i$, and $G_{i,j_i}$, hard constraints are denoted by $\phi$, $\phi^i$, and $\phi^{i,j_i}$, respectively, and soft constraints are denoted by $\psi_1,...,\psi_N$, $\psi_1^i,...,\psi_{N_i}^i$, and $\psi_1^{i,j_i},...,\psi_{N_{i,j_i}}^{i,j_i}$ with the number of soft constraints $N$, $N_i$, and $N_{i,j_i}$, respectively. 
+We assume that there is a preference for each soft constraint, that is, if there is no execution that satisfies both $\psi_i$ and $\psi_j$ but there are executions that satisfy one of them, then, as a plan, we select an execution that satisfies the more preferable constraint.  For $G$, to represent the preference, we introduce a positive integer $w_n$, called a {\sl weight}, for each soft constraint $\psi_n (n \in [1,N])$ and interpret that $\psi_n$ is more preferable than $\psi_m$ if $w_n >w_m$. 
+In the same way, we introduce $w_{n_i}^i (n_i \in [1,N_i])$ and $w_{n_{i,j_i}}^{i,j_i} (n_{i,j_i} \in [1,N_{i,j_i}])$ for $G_i$ and $G_{i,j_i}$, respectively.
+Thus, an execution for which the sum of the weights of the satisfied soft constraints is larger is a more preferable one.
+We denote a set of pairs of a soft constraint and its weight by $\Psi=\{(\psi_n, w_n)|~n\in[1,~N]\}$, $\Psi^i=\{(\psi_n^i, w_n^i)|~n\in[1,~N_i]\}$, and $\Psi^{i,j_i}=\{(\psi_n^{i,j_i}, w_n^{i,j_i})|~n\in[1,~N_{i,j_i}]\}$ for $G$, $G_i$, and $G_{i,j_i}$, respectively.
+
+%the sum of weights of soft constraints that $\pi(J)$ satisfies.
+We introduce $\pi(J)$ as an execution of a TDES $G'$ which optimizes an objective function $J$.
+Let ${\tick}_{l}$ and ${\tick}_u$ be a unit time of the TDES $G'$ and one of its upper-level TDES, respectively.
+$m_{\pi(J)}$ is defined as the time for $\pi(J)$ with respect to ${\tick}_{u}$ and given by
 \begin{align}\label{ti}
 m_{\pi(J)}=\left\lceil \left(\textit{count}_{\pi(J)}(0,\Len)+1\right)\cdot\frac{{\tick}_l}{{\tick}_{u}} \right\rceil,
 \end{align}
-where $\Len$ is a given length of $\pi(J)$, $(\textit{count}_{\pi(J)}(0,\Len)+1 )$ represents the time for $\pi(J)$ with respect to ${\tick}_l$, and $\lceil x \rceil =\min\{n\in\mathbb{Z}|\ x\leq n\}$.
-Let $W_{\pi(J)}$ be the sum of weights of soft constraints that $\pi(J)$ satisfies.
+where $\Len$ is a given length for $\pi(J)$, $(\textit{count}_{\pi(J)}(0,\Len)+1 )$ represents the time for $\pi(J)$ with respect to ${\tick}_l$, and $\lceil x \rceil =\min\{n\in\mathbb{Z}|\ x\leq n\}$.
+Let $W_{\pi(J)}$ be the reward which is given for implementation of $\pi(J)$ at its upper-level plan. 
+For example, $W_{\pi(J)}$ is the sum of weights of soft constraints satisfied by $\pi(J)$ or the optimal value of $J$. 
+$m_{\pi(J)}$ and $W_{\pi(J)}$ are used when a planer selects one of candidates of its lower-level plan.
+Then, we consider what kinds of performance indexes are needed for each level planning.
 
-In the first step of our proposed hierarchical planning, we compute executions of $G_{i,{j_i}}$ to create candidates of a lowest-level plan with the objective function $J_\kappa$ in \req{j1} for each $i\in[1,~M]$ and $j_i\in[1,~M_i]$.
+In the bottom-level planning, we compute executions of $G_{i,{j_i}}$ as candidates of a bottom-level plan for each $i\in[1,~M]$ and $j_i\in[1,~M_i]$.
 %
+Since we introduce the soft constraints to a planning problem, we have two performance indexes $J_{time}^{i,j_i}$ and $J_{soft}^{i,j_i}$ for a plan: $J_{time}^{i,j_i}$ indicates how fast the plan is completed and $J_{soft}^{i,j_i}$ indicates how large the sum of the preferences of the satisfied soft constraints is.
+Then, a preferable plan minimizes $J_{time}^{i,j_i}$ and maximizes $J_{soft}^{i,j_i}$ simultaneously, which causes a trade-off between the indexes. 
+To represent the trade-off, we introduce the following objective function $J_{\kappa}$ with $0 \leq \kappa \leq 1$.
+\begin{equation}
+J_{\kappa}=-\kappa J_{time}^{i,j_i} + (1-\kappa) J_{soft}^{i,j_i}.
+\end{equation}
+The parameter $\kappa$ represents which index is more important.
 %
-To create candidates of a plan, we find executions of $G_{i,{j_i}}$ with some values of $\kappa$ since the results of execution are different when we change the value of $\kappa$ as shown in the examples of \rsec{sec4}.
+To compute candidates of a plan, we find executions of $G_{i,{j_i}}$ with some values of $\kappa$ since the results of execution are different when we change the value of $\kappa$.
 %
 A set of $\kappa$ is denoted as $K$ and given by
 $K=\{\kappa_1,\ldots,\kappa_{|K|}\}$ with $\kappa_i< \kappa_j$ for $i,j\in [1,~|K|],~i\neq j$.
-\red{Additionally, we set $\kappa_{|K|}=1$ since for each bottom-level TDES, the candidate of plan that satisfies a hard specification in the fastest time is practically necessary when the middle-level plan determines a bottom-level plan of candidates.}
+%\red{Additionally, we set $\kappa_{|K|}=1$ since for each bottom-level TDES, the candidate of plan that satisfies a hard specification in the fastest time is practically necessary when the middle-level plan determines a bottom-level plan of candidates.}
 %
-We give a hard constraint $\phi_{i,{j_i}}$ and a set of pairs of soft constraint and its weight $\Psi_{i,{j_i}}=\{(\psi_{i,j_i,n},w_{i,j_i,n})|~n\in [1,N_{i,j_i}]\}$ to $G_{i,{j_i}}$ for each $i\in[1,~M]$ and each $j_i\in[1,~M_i]$.
+%We give a hard constraint $\phi_{i,{j_i}}$ and a set of pairs of soft constraint and its weight $\Psi_{i,{j_i}}=\{(\psi_{i,j_i,n},w_{i,j_i,n})|~n\in [1,N_{i,j_i}]\}$ to $G_{i,{j_i}}$ for each $i\in[1,~M]$ and each $j_i\in[1,~M_i]$.
 The result of execution of $G_{i,{j_i}}$ with the given length $\Len_{i,{j_i}}$ is denoted by $\pi_{i,{j_i}}(J_\kappa)$ which satisfies $\phi_{i,{j_i}}$ and optimizes the objective function $J_\kappa$.
 %
 %
@@ -1052,238 +1105,173 @@ Then, we define $\mathcal{M}_i$ and $\mathcal{W}_i$ as follows.
 \mathcal{W}_i&=\{W_{\pi_{i,{j_i}}(J_\kappa)}|~j_i\in[1,~M_i],~\kappa\in K\}.
 \end{align}
 %
-In the second step, \red{we have three performance indexes $J_{time}$, $J_{soft}$, and $J_{lower}$(kari).
-$J_{time}$ and $J_{soft}$ are the same one as the performance indexes introduced in \rsec{sec:pbm}.
-$J_{lower}$ indicates how large the sum of $W_{\pi_{i,{j_i}}(J_\kappa)}$ of implemented bottom-level plans.
-For $J_{lower}$, when we compute executions of each middle-level TDES $G_i$, we consider $\M_i$ and $\W_i$ to determine which of candidates of bottom-level plan at each refined state should be implemented.}
-\red{The bottom-level plan whose procedure is described by $G_{i,j_i}$ is implemented at least once for every $i\in[1,~M]$ and $j_i\in[1,~M_i]$. Then, the following constraint is added to a hard constraint for $G_i$.
+
+In the middle-level planning, we have three performance indexes $J_{time}^i$, $J_{soft}^i$, and $J_{lower}^i$.
+$J_{time}^i$ and $J_{soft}^i$ have the same meanings as $J_{time}^{i,j_i}$ and $J_{soft}^{i,j_i}$, respectively.
+$J_{lower}^i$ indicates how large the sum of rewards of completed bottom-level plans is.
+The value of $J_{lower}$ is determined by $\M_i$ and $\W_i$.
+To represent a trade-off among $J_{time}^i$, $J_{soft}^i$, and $J_{lower}^i$, we introduce the objective function as follows.
 \[
-\bigwedge_{j_i\in[1,~M_i]}\F{0,\Len_i}\G{0,m_{\pi_{i,j_i}}(J_{1})}p_{i,j_i}.
+J_{\lambda,\M_i,\W_i}=-\lambda_1 J_{time}^i + \lambda_2J_{lower}^i+ (1-\lambda_1-\lambda_2)J_{soft}^i,
 \]
-There is a trade-off among $J_{time}$, $J_{soft}$, and $J_{lower}$.
-To represent the trade-off, we introduce the objective function as follows.
-\[
-J_\lambda=-\lambda_1 J_{time} + \lambda_2J_{soft}+ (1-\lambda_1-\lambda_2)J_{lower},
-\]
-where $0\leq\lambda_1,{\lambda}_2\leq1$ and $\lambda_1+{\lambda}_2\leq1$.
-The parameter $\lambda_1$ represents the importance of $J_{time}$, and $\lambda_2$ represents the importance of $J_{lower}$.
-Moreover, $1-\lambda_1-\lambda_2$ represents the importance of $J_{soft}$.
-We denote a pair of $\lambda_1$ and $\lambda_2$ by $\lambda$ and a set of some $\lambda$ by $\Lambda$, respectively.
-Then, we create candidates of a plan represented by $\pi_{i}(J_{\lambda,\M,\W})$ for $\lambda\in\Lambda$ and each $i\in[1,~M]$.}
-%Then, we define an objective function $J_{\lambda,\M,\W}$ with parameters in $\lambda\in\Lambda$ for middle-level TDESs, and 
+where $0\leq\lambda_1,{\lambda}_2\leq1$, $\lambda_1+{\lambda}_2\leq1$, and $\lambda$ denotes the pair of $\lambda_1$ and $\lambda_2$.
+The parameter $\lambda_1$ and ${\lambda}_2$ represent which indexes are more important.
+%
+%The parameter $\lambda_1$ represents the importance of $J_{time}$, and $\lambda_2$ represents the importance of $J_{lower}^i$. Moreover, $1-\lambda_1-\lambda_2$ represents the importance of $J_{soft}^i$.
+We denote a set of some $\lambda$ by $\Lambda$, respectively.
+Then, we compute candidates of a plan represented by $\pi_{i}(J_{\lambda,\M_i,\W_i})$ for $\lambda\in\Lambda$ ($|\Lambda|>1$) and each $i\in[1,~M]$.
+%Then, we define an objective function $J_{\lambda}$ with parameters in $\lambda\in\Lambda$ for middle-level TDESs, and 
 Then, we define $\mathcal{M}$ and $\mathcal{W}$ as follows.
 \begin{align}
-\mathcal{M}&=\{m_{\pi_{i}(J_{\lambda,\M,\W})}|~i\in[1,~M],~\lambda\in \Lambda\},\\
-\mathcal{W}&=\{W_{\pi_{i}(J_{\lambda,\M,\W})}|~i\in[1,~M],~\lambda\in \Lambda\}.
+\mathcal{M}&=\{m_{\pi_{i}(J_{\lambda,\M_i,\W_i})}|~i\in[1,~M],~\lambda\in \Lambda\},\\
+\mathcal{W}&=\{W_{\pi_{i}(J_{\lambda,\M_i,\W_i})}|~i\in[1,~M],~\lambda\in \Lambda\}.
 \end{align}
 %
 
-In the third step, for the top-level plan, we find an execution of $G$ with a length $\Len$ and the specification given to $G$.
-We assume that the top-level planning does not need to consider the time for the result of an execution.
-Then, there are two performance indexes $J_{soft}$ and $J_{lower}$ in the top-level planning.
-We denote a ratio of the importance of $J_{lower}$ to $J_{soft}$ by $\mu$ with $0\leq\mu\leq1$, and the objective function for the top-level planning is as follows.
+In the top-level planning, we have three performance indexes $J_{time}$, $J_{soft}$, and $J_{lower}$ in the same way as the middle-level planning.
+Then, we find a trajectory of $G$ with a length $\Len$ and the specification given to $G$ while optimizing the following objective function.
+%We assume that the top-level planning does not need to consider the time for the result of an execution.Then, there are two performance indexes $J_{soft}$ and $J_{lower}$ in the top-level planning.
+%We denote a ratio of the importance of $J_{lower}$ to $J_{soft}$ by $\mu$ with $0\leq\mu\leq1$, and the objective function for the top-level planning is as follows.
 \[
-J_\mu = \mu J_{lower} + (1-\mu)J_{soft}.
+J_{\mu,\M,\W} = \mu_1 J_{time}+ \mu_2 J_{lower} + (1-\mu_1-\mu_2)J_{soft},
 \]
-%
-In summary, we consider the following problem to find a plan of a three-level hierarchical TDES.
+where $0\leq\mu_1,{\mu}_2\leq1$, $\mu_1+{\mu}_2\leq1$, and $\mu$ denotes the pair of $\mu_1$ and $\mu_2$.
+These $\mu_1$ and $\mu_2$ represent trade-off among $J_{time}$, $J_{lower}$, and $J_{soft}$.
+
+In summary, we consider the following problem to find a plan of a three-level HTDES.
 \begin{pbm}\label{pbm3}
-Given a three-level hierarchical TDES $\mathcal{G}$, a hard constraint, denoted by $\phi$, $\phi_i$ and $\phi_{i,{j_i}}$, and a set of pairs of a soft constraint and its weight, denoted by $\Psi$, $\Psi_i$ and $\Psi_{i,{j_i}}$, for $G$, $G_i$ and $G_{i,{j_i}}$, respectively, the length $\Len(>0)$, $\Len_i(>0)$ and $\Len_{i,{j_i}}(>0)$ for $G$,  $G_i$ and $G_{i,{j_i}}$, respectively, ratios $K$, $\Lambda$ and $\mu$, and objective functions $J_\kappa$, $J_{\lambda,\M,\W}$ and $J_{\mu,\M,\W}$,
-find finite executions $\pi_{i,{j_i}}(J_\kappa)$ of $G_{i,{j_i}}$ with $\Len_{i,{j_i}}$ for each $i\in[1,~M]$, each $j_i\in[1,~M_i]$ and all $\kappa\in K$ such that
+Given a three-level HTDES $\mathcal{G}$, a hard constraint, denoted by $\phi$, $\phi_i$ and $\phi_{i,{j_i}}$, and a set of pairs of a soft constraint and its weight, denoted by $\Psi$, $\Psi_i$ and $\Psi_{i,{j_i}}$, for $G$, $G_i$ and $G_{i,{j_i}}$, respectively, the length $\Len(>0)$, $\Len_i(>0)$ and $\Len_{i,{j_i}}(>0)$ for $G$,  $G_i$ and $G_{i,{j_i}}$, respectively, parameters for objective functions $K$, $\Lambda$ and $\mu$, and objective functions $J_\kappa$, $J_{\lambda}$ and $J_{\mu}$, \red{find an overall plan of $\mathcal{G}$ by the following procedure.
+%
+\begin{enumerate}
+\item
+Find several candidates of a bottom-level plan  %represented by executions $\pi_{i,{j_i}}(J_\kappa)$ of 
+using $G_{i,j_i}$ for every $i\in [1,~M]$, $j_i\in [1,~M_i]$,  and all $\kappa\in K$
+such that 
 \begin{eqnarray}
 &\mbox{max: }&J_\kappa \notag \\
-&\mbox{subject to: }&\pi_{i,{j_i}}(J_\kappa)\models \phi_{i,{j_i}}\mbox{, and transition lows of }G_{i,{j_i}}\notag 
+&\mbox{subject to: }&\pi_{i,{j_i}}(J_\kappa)\models \phi_{i,{j_i}},\notag% \mbox{ and } SYS(G_{i,{j_i}}).\notag 
+\\&&\mbox{transition lows of }G_{i,{j_i}}.\notag 
 \end{eqnarray}
-Then, find finite executions $\pi_i(J_{\lambda,\M_i,\W_i})$ with $\Len_i$ for each $i\in[1,~M]$ and all $\lambda\in\Lambda$ such that
+%
+%
+%
+\item
+Find several candidates of a middle-level plan using $G_i$ for every $i\in [1,~M]$ and all $\lambda\in \Lambda$ 
+such that there is a feasible bottom-level plan for every time $p_{i,j_i}$ is true for every $j_i\in [1,~M_i]$, and
 \begin{eqnarray}
-&\mbox{max: }&J_{\lambda}\notag \\
-&\mbox{subject to: }&\pi_i(J_{\lambda})\models \phi_i\mbox{, and transition lows of }G_i\notag 
+&\mbox{max: }&J_{\lambda,\M_i,\W_i}\notag \\
+&\mbox{subject to: }&\pi_i(J_{\lambda,\M_i,\W_i})\models \phi_i,\notag% \mbox{ and } SYS(G_{i}).\notag
+ \\&&\mbox{transition lows of }G_i.\notag 
 \end{eqnarray}
- %
-Finally, find a finite execution $\pi(J_{\mu,\M,\W})$ of $G$ with $\Len$ such that
+%
+\item
+Find a top-level plan using the top-level TDES $G$  such that there is a feasible bottom-level plan for every time $p_{i}$ is true for every $i\in [1,~M]$, and
 \begin{eqnarray}
-&\mbox{max: }&J_{\mu}\notag \\
-&\mbox{subject to: }&\pi(J_\mu)\models \phi\mbox{, and transition lows of }G\notag 
+&\mbox{max: }&J_{\mu,\M,\W}\notag \\
+&\mbox{subject to: }&\pi(J_{\mu,\M,\W})\models \phi,\notag% \mbox{ and } SYS(G).\notag
+\\&&\mbox{transition lows of }G.\notag 
 \end{eqnarray}
- %
+\end{enumerate}
+}
+%
+%
+%
 \qedwhite
 \end{pbm}
-In the following, we define objective functions concretely and convert Problem \ref{pbm3} into an ILP problem(ILP problems).
-\red{
-\subsection{Optimization problem}}
-%
-%
-We introduce $\Len_i + 1$ binary variables $z_{p_{i,{j_i}},\kappa}(k)\in\{0,~1\}$ for $k\in[0,~\Len_i]$, $i\in[1,~M]$, $j_i\in[1,~M_i]$, and $\kappa\in K$.
-$z_{p_{i,{j_i}},\kappa}(k)=1$ represents that the lowest plan of $G_{i,{j_i}}$ determined by $\pi_{i,j_i}(J_\kappa)$ is being  implemented at the $k$-th state of the execution of $G_i$.
-$z_{p_{i,{j_i}},\kappa}(k)=1$ only if $p_{i,{j_i}}$ is true at the $k$-th state, i.e., $z_{p_{i,{j_i}}}(k)=1$.
-Then, $z_{p_{i,{j_i}},\kappa}(k)$ follows the below equation.
-\begin{align}\label{hier1}
-{z}_{p_{i,{j_i}},\kappa}(k) \leq z_{p_{i,{j_i}}}(k).
-\end{align}
-%
-We introduce two binary variables ${z}^{i,j_i}_\kappa$ and $z^{i,j_i}_{\phi_\kappa}$.
-Each ${z}^{i,{j_i}}_\kappa(k)$ and $z^{i,{j_i}}_{\phi_\kappa}(k)$ are $\Len_i + 1$ binary variables for $k\in[0,~\Len_i]$.
-${z}^{i,j_i}_\kappa(k)=1$ represents that the lowest plan determined by $\pi_{i,j_i}(J_\kappa)$ is started to implement at the $k$-th state of $\pi_i(J_\lambda)$.
-$z^{i,j_i}_{\phi_\kappa}$ represents the constraint such that it takes $m_{\pi_{i,{j_i}}(J_\kappa)}$ [$\tick_i$] to implement the plan determined by $\pi_{i,{j_i}}(J_\kappa)$.
-Once ${z}^{i,j_i}_\kappa=1$, ${z}^{i,j_i}_\kappa=0$ from the next state until the procedure is finished, i.e., $m_{\pi_{i,j_i}(J_\kappa)}$ $[\tick_i]$ passes.
-%
-Then, ${z}^{i,j_i}_\kappa$ and $z^{i,j_i}_{\phi_\kappa}$ follow the equation as below.
-%
-\begin{align}
-&{z}^{i,j_i}_\kappa
-\leq\G{0,m} z_{p_{i,j_i},\kappa},\label{hier2-1}\\
-&z^{i,j_i}_{\phi_\kappa} (k)
-\notag \\
-&\red{=\G{0,\Len_i}
-%\{ 
-\left(
-{z}_\kappa^{i,j_i} (k)\to
-%\notag \\&\hspace{1cm}
-\bigwedge_{j=k+1}^{\Len_i}
-\left(
-\overline{z}_{m}
-(k,j)\to \lnot {z}^{i,j_i}_\kappa (k)
-\right)
-%\right\},
-\right),}\label{hier2-2}\\
-&z^{i,{j_i}}_{\phi_\kappa}(0)=1 ,
-\end{align}
-where $m$ denotes $m_{\pi_{i,j_i}(J_\kappa)}$.
-
-%
-%
-Different candidates of a lowest-level plan can not be implemented at the same time, then
-\begin{align}\label{hier3}
-\sum_{\kappa\in K}{z}_{p_{i,{j_i}},\kappa}(k) \leq 1,~\mbox{for }\forall k\in[0,~\Len_i].
-\end{align}
-%
-With ${z}^{i,{j_i}}_\kappa$, we introduce the objective function $J_{\lambda,\M_i,\W_i}$ for $G_i$ as follows.
-\begin{align}
-J_{\lambda}=&
--\lambda_1\sum_{k=1}^{\Len_i}z_e(k) 
-\notag\\&~
-+
-{\lambda_2}\left(\sum_{j_i\in[1,~M_i]} \sum_{\kappa\in K} \sum_{k=0}^{\Len_i} {z}^{i,{j_i}}_\kappa(k) \cdot {W_{\pi_{i,{j_i}}(\kappa)}}\right)
-\notag\\&~
-+
-(1-{\lambda_1}-{\lambda_2})\left(\sum_{n=1}^{N_i} w^i_{n}\cdot z_{\psi^i_{n}}(0)\right) ,\notag
-\end{align}
-where $\Psi_i=\{(\psi^i_n,w_n^i)|~n\in[1,N_i]\}$ is a set of $N_i$ pairs of soft constraint and its weight for $G_i$.
-%
-%
 %
 
-In the same way as $z_{p_{i,{j_i}},\kappa}$, ${z}^{i,j_i}_\kappa$, and $z^{i,j_i}_{\phi_\kappa}$, we introduce  $\Len + 1$ binary variables $z_{p_{i},\lambda}$, $z_\lambda^i$, and $z^{i}_{\phi_\lambda} $, respectively.
-%$z_{p_i,\lambda}(k)$, $z_\lambda^i$, and $z^{i}_{\phi_\lambda} $
-These variables follow the below equations.
-\begin{align}
-&{z}_{p_{i},\lambda}(k) \leq z_{p_{i}}(k), \label{hier2-1}\\
-%
-&{z}^{i}_\lambda
-\leq\G{0,m_{\pi_{i}(\lambda)}} z_{p_{i},\lambda},\label{hier2-2}\\
-%
-&z^{i}_{\phi_\lambda} (k)
-\notag \\
-&
-\red{
-=\G{0,\Len_i}
-\left(
-{z}_\lambda^{i} (k)\to
-\bigwedge_{j=k+1}^{\Len_i}
-\left(
-\overline{z}_{m_{\pi_{i}}(\lambda)}
-(k,j)\to \lnot {z}^{i}_\lambda (k)
-\right)
-\right),}\label{hier2-3}\\
-%
-&z^{i}_{\phi_\lambda} (0)=1,\\
-%
-&\sum_{\lambda\in\Lambda}{z}_{p_{i},\lambda}(k) \leq 1\label{hier2-4}
-\end{align}
-%
-With ${z}^{i}_\lambda$, we introduce the objective function  $J_{\mu,\M,\W}$ for $G$ as follows.
-\begin{align}
-J_{\mu}=&
-\mu\left(\sum_{i\in[1,~M]} \sum_{\lambda\in\Lambda} \sum_{k=0}^{\Len} {z}^i_\lambda
-(k) \cdot W_{\pi_i(\lambda)}\right)
-\notag\\
-&~~~+
-(1-\mu)\left(\sum_{n=1}^{N} w_{n}\cdot z_{\psi_{n}}(0)\right).\label{obj}\notag
-\end{align}
-%
-Then, we convert \rpbm{pbm3} into the following ILP problems by using the encodings considered in Section \ref{encode}. 
-First, the ILP problem {\bf ILP\ref{pbm3}-1} to find $w_{G_{i,j_i}}(k)\in\{0,1\}^{|S_{i,j_i}|}$ ($k=[0,~\Len_{i,j_i}]$) for each $i\in[1,~M]$ and $j_i \in [1,M_i]$ is given by
+We convert \rpbm{pbm3} into the following ILP problems by using the encodings considered in Section \ref{encode}. 
+First, for the bottom-level planning, the ILP problem {\bf ILP\ref{pbm3}-1} to find $w_{G_{i,j_i}}(k)\in\{0,1\}^{|S_{i,j_i}|}$ ($k=[0,~\Len_{i,j_i}]$) for each $i\in[1,~M]$ and $j_i \in [1,M_i]$ is given by
 %
 \begin{eqnarray}
 \mbox{\bf ILP\ref{pbm3}-1}: &\mbox{maximize }&J_\kappa \notag \\
-&\mbox{subject to }&SYS(G_{i,j_i}) \notag \\
-&& LTL(\phi_{i,j_i}),\notag \\
-&& LTL(\psi_{i,j_i,n}) \  {\rm{for\ each\ }}  n \in [1,\ N_{i,j_i}], \notag\\
-&& w_{G_{i,j_i}}(0)=w_{s_0}, \notag \\
-&&z_{\phi_{i,j_i}} (0) = 1, \notag
+&\mbox{subject to }&SYS(G_{i,j_i}), \notag \\
+&& LTL(\phi^{i,j_i}),\notag \\
+&& LTL(\psi^{i,j_i}_n) \  {\rm{for\ each\ }}  n \in [1,\ N_{i,j_i}], \notag\\
+&& w_{G_{i,j_i}}(0)=w_{G_{i,j_i},s_0}, \notag \\
+&&z_{\phi_{i,j_i}} (0) = 1. \notag
 \end{eqnarray}
-Next, the ILP problem {\bf ILP\ref{pbm3}-2} to find $w_{G_i}(k)\in\{0,1\}^{|S_i|}$ ($k=[0,~\Len]$) for each $i\in[1,~M]$ is given by
+Next, for the middle-level planning, the ILP problem {\bf ILP\ref{pbm3}-2} to find $w_{G_i}(k)\in\{0,1\}^{|S_i|}$ ($k=[0,~\Len_i]$) for each $i\in[1,~M]$ is given by
 \begin{eqnarray}
-\mbox{\bf ILP\ref{pbm3}-2}: &\mbox{maximize }&J_\lambda \notag \\
-&\mbox{subject to }&SYS(G_i) \notag \\
-&& LTL(\phi_i),\notag \\
-&& LTL(\psi_{i,n}) \  {\rm{for\ each\ }}  n \in [1,\ N_i], \notag\\
-&& w_{G_i}(0)=w_{s_0}, \notag \\
-&&z_{\phi_i} (0) = 1, \notag
+\mbox{\bf ILP\ref{pbm3}-2}: 
+&\mbox{maximize }&J_{\lambda,\M_i,\W_i} \notag \\
+&\mbox{subject to }&SYS(G_i), \notag \\
+&& LTL(\phi^i),\notag \\
+&& LTL(\psi^{i}_n) \  {\rm{for\ each\ }}  n \in [1,\ N_i], \notag\\
+&& w_{G_i}(0)=w_{G_i,s_0}, \notag \\
+&&z_{\phi_i} (0) = 1. \notag
 \end{eqnarray}
 %
-Finally, the ILP problem {\bf ILP\ref{pbm3}-3} for finding $w_G(k)\in\{0,1\}^{|S|}$ ($k=[0,~\Len]$) is given by
+Finally, for the top-level planning, the ILP problem {\bf ILP\ref{pbm3}-3} for finding $w_G(k)\in\{0,1\}^{|S|}$ ($k=[0,~\Len]$) is given by
 %
 \begin{eqnarray}
-\mbox{\bf ILP\ref{pbm3}-3}: &\mbox{maximize }&J_\mu \notag \\
-&\mbox{subject to }&SYS(G) \notag \\
+\mbox{\bf ILP\ref{pbm3}-3}: 
+&\mbox{maximize }&J_{\mu,\M,\W} \notag \\
+&\mbox{subject to }&SYS(G), \notag \\
 && LTL(\phi),\notag \\
-&& LTL(\psi_i) \  {\rm{for\ each\ }}  n \in [1,\ N], \notag\\
-&& w_G(0)=w_{s_0}, \notag \\
-&&z_{\phi} (0) = 1, \notag
-\end{eqnarray}
-
-\begin{comment}
-
-\begin{eqnarray}
-&\mbox{max: }&J_\kappa \notag \\
-&\mbox{subject to: }&\req{w}-\req{ckj},\ \textit{ILP}(\phi),\ \textit{ILP}(\psi_i),\notag\\
-&&z_{\phi} (0) = 1, {\rm{for\ each\ }}  i \in [1,\ N],\notag\\ &&\tilde{\phi}_{i,{j_i},\kappa}(0)=1.\notag
+&& LTL(\psi_n) \  {\rm{for\ each\ }}  n \in [1,\ N], \notag\\
+&& w_G(0)=w_{G,s_0}, \notag \\
+&&z_{\phi} (0) = 1. \notag
 \end{eqnarray}
 %
-\begin{eqnarray}
-&\mbox{max: }&
-J_{\lambda,\M,\W}\notag\\
-&\mbox{subject to: }&\req{w}-\req{ckj},\ \textit{ILP}(\phi_i),\ \textit{ILP}(\psi^i_n),\notag\\
-&&z_{\phi_i} (0) = 1, {\rm{for\ each\ }}  n \in [1,\ N_i],\notag\\&&\req{hier1}-\req{hier3},~ z^{i,{j_i}}_{\phi_\kappa}(0)=1 .\notag
-\end{eqnarray}
-\begin{eqnarray}
-&\mbox{max: }&
-J_{\mu,\M,\W}\notag \\
-&\mbox{subject to: }&\req{w}-\req{ckj},\ \textit{ILP}(\phi),\ \textit{ILP}(\psi_n),\notag\\
-&&z_{\phi} (0) = 1, {\rm{for\ each\ }}  n \in [1,\ N],\notag\\&&\req{hier2-1}-\req{hier2-4},~ z^{i}_{\phi_\lambda}(0)=1.\notag
-\end{eqnarray}
+We obtain candidates $w_{G_{i,j_i}}$ and $w_{G_i}$ for all $\kappa\in K$ and all $\lambda\in \Lambda$ by solving {\bf ILP\ref{pbm3}-1} and {\bf ILP\ref{pbm3}-2}, respectively.
+Note that, if there are no feasible solutions of the ILP problem {\bf ILP\ref{pbm3}-1}, {\bf ILP\ref{pbm3}-2}, and {\bf ILP\ref{pbm3}-3}, there are no plan satisfying the hard constraint.  In such a case, we denote $\pi_{i,j_i}=\bot$, $\pi_i=\bot$, and $\pi=\bot$.
+Additionally, if $\pi_{i,j_i}=\bot$ ({\sl resp.} $\pi_{i}=\bot$), we update $\AP_i$ and $L_i$ ({\sl resp.} $\AP$ and $L$) such that $\AP_i\leftarrow \AP_i\setminus \{p_{i,j_i}\}$ ({\sl resp.} $\AP\leftarrow \AP\setminus \{p_{i}\}$) and $L_i(s)\leftarrow L_i(s)\setminus \{p_{i,j_i}\}$ ({\sl resp.} $L(s)\leftarrow L(s)\setminus \{p_{i}\}$) for all $s\in S_{i}$ ({\sl resp.} $s\in S$).
 
-
-\end{comment}
+The procedures to solve each ILP problem and Problem \ref{pbm3} are described in Algorithm \ref{alg_solve_maxsat} and Algorithm \ref{alg2} in detail, respectively.
+%
 
 %
-The procedures to solve Problem \ref{pbm3} is described in Algorithm \ref{alg2} in detail.
 %
 \begin{algorithm}
-\caption{Hierarchical planning} \label{alg2}
+\caption{: FIND($G,\phi,\Psi,\Len,J$): algorithm for finding an optimal plan of \red{a TDES}. } \label{alg_solve_maxsat}
 \begin{algorithmic}
+%
+\Require $G$, $\phi$, $\Psi=\{(\psi_n,{w_n});\ n\in[1,\ N]\}$, $\Len$, $J$.
+\Ensure a finite execution $\pi$.
+
+\State Get $A$, $\alpha$, $\beta$ from a transition function of $G$.
+
+\State Set \req{w}-\req{zek3}.
+\State Convert $\phi$ to $LTL$($\phi$).
+\If{$\Psi$ is not empty}
+
+	\For{ $n \in [1,N]$}
+	\State Convert $\psi_n$ to $LTL$($\psi_n$).
+	\State Set $(z_{\psi_n}(0)=1,{w_n})$ as a soft constraint.
+	\EndFor
+\EndIf
+\State Set the objective function \red{$J$}.
+\State Find an optimal execution of $G$ for \red{{\bf ILP\ref{pbm3}-1}, {\bf ILP\ref{pbm3}-2}, or {\bf ILP\ref{pbm3}-3}.}
+\If{Succeed to find an execution}
+	\State Return the execution as an optimal plan.
+\Else
+	\State  Return $\bot$.
+\EndIf
+\end{algorithmic}
+\end{algorithm}
+%
+
+
+
+\begin{algorithm}
+\caption{Hierarchical planning: algorithm for finding an overall plan of a HTDES.} \label{alg2}
+\begin{algorithmic}
+%
+\Require $\mathcal{G}$, hard constraints: $\phi$, $\phi^i$, and $\phi^{i,j_i}$, a sets of pairs of a soft constraint and its weight: $\Psi$, $\Psi^i$, and $\Psi^{i,j_i}$, the length: $\Len$, $\Len_i$, and $\Len_{i,j_i}$, cost functions: $J_\kappa$, $J_{\lambda}$ and $J_{\mu}$, and parameters: $K$, $\Lambda$ and $\mu$.
+\Ensure a finite execution of the top-level TDES $\pi$.
 %
 \State $\mathcal{M}=\emptyset,\mathcal{W}=\emptyset$
 \For{ $i \in \{1,\ldots,M\}$}
 \For{ $j \in \{1,\ldots,M_i\}$}
 	\For{ $\kappa\in K$}
-		\State ${\pi_{i,j_i}(\kappa)}$ = Find($G_{i,j_i},\phi_{i,j_i},\Psi_{i,j_i}\Len_{i,j_i},J_\kappa$).
+		\State ${\pi_{i,j_i}(\kappa)}$ = Find($G_{i,j_i},\phi^{i,j_i},\Psi^{i,j_i}\Len_{i,j_i},J_\kappa$).
 		\If{${\pi_{i,j_i}(\kappa)}=\bot$}
-		\State $\mathcal{M}_i=\mathcal{M}_i\cup\{0\}$, $\mathcal{W}_i=\mathcal{W}_i\cup\{-M_h\}$.
+		\State \red{$\AP_i\leftarrow \AP_i\setminus \{p_{i,j_i}\}$.}
+		\State \red{$L_i(s)\leftarrow L_i(s)\setminus \{p_{i,j_i}\}$ for all $s\in S_i$.}
 		\Else
 		\State $m_{\pi_{i,j_i}(\kappa)}$
-		\State \hspace{1cm}$=\left\lceil (\textit{count}_{\pi_{i,j_i}(\kappa)}(0,\Len_{i,j_i})+1)\frac{\tick_{i,j_i}}{\tick_i} \right\rceil $.
+		\State \hspace{0.8cm}$=\left\lceil (\textit{count}_{\pi_{i,j_i}(\kappa)}(0,\Len_{i,j_i})+1)\frac{\tick_{i,j_i}}{\tick_i} \right\rceil $.
 		\State Get $W_{\pi_{i,j_i}(\kappa)}$ from $\pi_{i,j_i}(\kappa)$.
 		\State $\mathcal{M}_i=\mathcal{M}_i\cup\{m_{\pi_{i,j_i}(\kappa)}\}$.
 		\State $\mathcal{W}_i=\mathcal{W}_i\cup\{W_{\pi_{i,j_i}(\kappa)}\}$.
@@ -1293,9 +1281,11 @@ The procedures to solve Problem \ref{pbm3} is described in Algorithm \ref{alg2} 
 \EndFor
 \For{ $i \in \{1,\ldots,M\}$}
 \For{ $\lambda\in \Lambda$}
-		\State ${\pi_i(\lambda)}$ = Find($G_i,\phi_i,\Psi_i,\Len_i,J_{\lambda,\M_i,\W_i}$).
+		\State ${\pi_i(\lambda)}$ = Find($G_i,\phi^i,\Psi^i,\Len_i,J_{\lambda,\M_i,\W_i}$).
 		\If{${\pi_{i}(\lambda)}=\bot$}
-		\State $\mathcal{M}=\mathcal{M}\cup\{0\}$, $\mathcal{W}=\mathcal{W}\cup\{-M_h\}$.
+		%\State $\AP\leftarrow\AP\setminus \{p_i\}$.
+		\State \red{$\AP\leftarrow \AP\setminus \{p_{i}\}$.}
+		\State \red{$L(s)\leftarrow L(s)\setminus \{p_{i}\}$ for all $s\in S$.}
 		\Else
 		\State $m_{\pi_i(\lambda)}=\left\lceil (\textit{count}_{\pi_i(\lambda)}(0,\Len_i)+1)\frac{\tick_i}{\tick_p} \right\rceil $.
 		\State Get $W_{\pi_i(\lambda)}$ from $\pi_i(\lambda)$.
@@ -1308,22 +1298,172 @@ The procedures to solve Problem \ref{pbm3} is described in Algorithm \ref{alg2} 
 \end{algorithmic}
 \end{algorithm}
 %
-%
+%$\AP_i\leftarrow \AP_i\setminus \{p_{i,j_i}\}$ ({\sl resp.} $\AP\leftarrow \AP\setminus \{p_{i}\}$) and $L_i(s)\leftarrow L_i(s)\setminus \{p_{i,j_i}\}$ ({\sl resp.} $L(s)\leftarrow L(s)\setminus \{p_{i}\}$)
 %
 %
 \section{Illustrative example of hierarchical planning}\label{simResult}
 %
 %
 %
-We show an illustrative example of planning for a mobile robot modeled by a three-level hierarchical TDES. % introduced above section.
-The effectiveness of the proposed approach is demonstrated by numerical simulation.
+We show an illustrative example of planning for a mobile robot modeled by a three-level HTDES. % introduced above section.
+We introduce objective functions considered in this section concretely.
+Then, the effectiveness of the proposed approach is demonstrated by numerical simulation.
+%
+
+
+\subsection{Objective function}
+%
+%We introduce the objective functions we consider in this simulation concretely.
+We simply denote $J_{\lambda,\M_i,\W_i}$ and $J_{\mu,\M,\W}$ as $J_{\lambda}$ and $J_{\mu}$, respectively.
+We first introduce the performance indexes of the objective function $J_\kappa$ for the bottom-level planning. 
+Based on the binary variables used in encoding of a trajectory of each $G_{i,j_i}$ and the ticked LTL${}_f$ formula $\psi^{i,j_i}_n$, $J_{time}^{i,j_i}$ and $J_{soft}^{i,j_i}$ in $J_{\kappa}$ are given by
+\begin{align}\label{obj:1}
+J_{time}^{i,j_i}=\sum_{k=1}^{\Len_{i,j_i}}z_e(k),~ J_{soft}^{i,j_i}=\sum_{n=1}^{N_{i,j_i}} w_{n}^{i,j_i}\cdot z_{\psi_{n}^{i,j_i}}(0), 
+\end{align}
+where $z_e(k)=1$ means that the $k$-th event of the execution is $\ttick_{i,j_i}$ and $z_{\psi_{n}^{i,j_i}}(0)=1$ means that the plan satisfies the soft constraint $\psi_{n}^{i,j_i}$.
+Note that $J_{time}^{i,j_i}$ indicates the number of the event $\ttick_{i,j_i}$ in the execution corresponding to the plan and $J_{soft}^{i,j_i}$ is the sum of the preferences of the soft constraints satisfied by the plan. 
+%
+
+Next, we consider the performance indexes of the objective function $J_\lambda$ for the middle-level planning.
+Based on the binary variables used in encoding of a trajectory of each $G_{i}$ and the ticked LTL${}_f$ formula $\psi^{i}_n$, $J_{time}^i$ and $J_{soft}^i$ in $J_{\lambda}$ are given in the same way as $J_{time}^{i,j_i}$ and $J_{soft}^{i,j_i}$ in $J_{\kappa}$ as follows. 
+\begin{align}\label{obj:2}
+J_{time}^{i}=\sum_{k=1}^{\Len_{i}}z_e(k),~ J_{soft}^{i}=\sum_{n=1}^{N_{i}} w_{n}^{i}\cdot z_{\psi_{n}^{i}}(0).
+\end{align}
+%
+\begin{comment}
+Then, we consider $J_{lower}^i$ that indicates the sum of rewards of completed bottom-level plans.
+One of candidates $\pi_{i,j_i}(J_\kappa)$ for $\kappa\in K$ can be selected when $z_{p_{i,{j_i}}}(k)=1$ for $j_i\in[1,~M_i]$. 
+To represent which plan is selected at the $k$-th state of the trajectory of $G_i$, we introduce $\Len_i + 1$ binary variables $y_{p_{i,{j_i}},\kappa}(k)\in\{0,~1\}$ for $k\in[0,~\Len_i]$, $i\in[1,~M]$, $j_i\in[1,~M_i]$, and $\kappa\in K$.
+Only if $p_{i,{j_i}}$ is true at the $k$-th state, i.e., $z_{p_{i,{j_i}}}(k)=1$, $y_{p_{i,{j_i}},\kappa}(k)=1$ that  represents that the bottom-level plan of $G_{i,{j_i}}$ determined by $\pi_{i,j_i}(J_\kappa)$ is selected at the $k$-th state.
+To represent when and which bottom-level plan is \red{put into action}, we introduce $\Len_i + 1$ binary variables ${y}^{i,j_i}_{\kappa}$ as follows.
+\begin{align}
+y^{i,j_i}_{\kappa}
+=\G{0,m_{\pi_{i,j_i}(J_\kappa)}} y_{p_{i,j_i},\kappa}.\label{hier2-1}
+\end{align}
+For each $k\in[0,~\Len_i]$, ${y}^{i,j_i}_{\kappa}(k)=1$ represents that the bottom-level plan determined by $\pi_{i,j_i}(J_\kappa)$ is \red{put into action} from the $k$-th state of $\pi_i(J_\lambda)$ until $m_{\pi_{i,j_i}(J_\kappa)}$ is passed.
+Since each bottom-level TDES represents detailed behavior of a task(system?), e.x., a detailed procedure of an operation, one of candidates have to be completed for every stay at the states where refined atomic propositions are assigned.
+Then, $y_{p_{i,{j_i}},\kappa}(k)$ satisfy the following equations.
+\begin{align}\label{hier1}
+%{y}_{p_{i,{j_i}},\kappa}(k) \leq z_{p_{i,{j_i}}}(k).
+\sum_{\kappa\in K}{y}_{p_{i,{j_i}},\kappa}(k) = z_{p_{i,{j_i}}}(k),~\mbox{for }\forall k\in[0,~\Len_i].
+\end{align}
+%
+
+\end{comment}
+\red{Then, we consider $J_{lower}^i$ that indicates the sum of rewards of completed bottom-level plans.
+To represent when and which bottom-level plan is put into action, we introduce $\Len_i + 1$ binary variables ${y}^{i,j_i}_{\kappa}$.
+For each $k\in[0,~\Len_i]$, ${y}^{i,j_i}_{\kappa}(k)=1$ represents that the bottom-level plan determined by $\pi_{i,j_i}(J_\kappa)$ is put into action from the $k$-th state of $\pi_i(J_\lambda)$ until $m_{\pi_{i,j_i}(J_\kappa)}$ is passed.
+$y^{i,j_i}_{\kappa}$ satisfy the following equation.
+\begin{align}
+y^{i,j_i}_{\kappa}
+=\G{0,m_{\pi_{i,j_i}(J_\kappa)}} y_{p_{i,j_i},\kappa},\label{hier2-1}
+\end{align}
+where $y_{p_{i,j_i},\kappa}(k)$ for $k\in [0,~\Len_i + 1]$ are $\Len_i + 1$ binary variables and defined by 
+\begin{align}\label{hier:y}
+y_{p_{i,j_i},\kappa}(k)=\left\{ \begin{array}{ll}
+1 & \mbox{$\pi_{i,j_i}(J_\kappa)$ is ongoing at }s(k), \\
+0 & \mbox{otherwise.}
+\end{array} \right. ,
+\end{align}
+and satisfy the following equation.
+\begin{align}\label{hier1}
+\sum_{\kappa\in K}{y}_{p_{i,{j_i}},\kappa}(k) = z_{p_{i,{j_i}}}(k),~\mbox{for }\forall k\in[0,~\Len_i].
+\end{align}
+From \req{hier:y}, $y_{p_{i,{j_i}},\kappa}(k)=1$ that  represents that the bottom-level plan of $G_{i,{j_i}}$ determined by $\pi_{i,j_i}(J_\kappa)$ is ongoing at the $k$-th state.
+\req{hier1} represents one of candidates $\pi_{i,j_i}(J_\kappa)$ for $\kappa\in K$ can be selected when $p_{i,{j_i}}$ is true at the $k$-th state, i.e., $z_{p_{i,{j_i}}}(k)=1$ for $j_i\in[1,~M_i]$.
+}
+
+Additionally, we introduce $\Len_i + 1$ binary variables $y^{i,j_i}_{{imp}}$.
+$y^{i,j_i}_{{imp}}$ represents the constraint such that one of candidates of a bottom-level plan is done from the state where $p_{i,j_i}$ changes from false to true. 
+%since it takes $m_{\pi_{i,{j_i}}(J_\kappa)}$ [$\tick_i$] to implement the plan determined by $\pi_{i,{j_i}}(J_\kappa)$.
+%Once ${y}^{i,j_i}_{\kappa}=1$, ${y}^{i,j_i}_{\kappa}=0$ from the next state until the procedure is finished, i.e., $m_{\pi_{i,j_i}(J_\kappa)}$ $[\tick_i]$ passes.
+%
+Then, $y^{i,j_i}_{{imp}}$ satisfy the following equations.
+%
+\begin{eqnarray}
+y^{i,j_i}_{{imp}}(0)~~ &=& z_{p_{i,{j_i}}}(0) \Leftrightarrow\bigvee_{\kappa\in K} {y}^{i,j_i}_{\kappa}(0),\label{hier2-2-0}\\
+y^{i,j_i}_{{imp}}(k+1) &=& (\lnot z_{p_{i,{j_i}}}(k))\land (z_{p_{i,{j_i}}}(k+1)) 
+\notag\\&&~\Leftrightarrow\bigvee_{\kappa\in K} {y}^{i,j_i}_{\kappa}(k+1),\label{hier2-2}
+\end{eqnarray}
+where $k\in[0,~\Len_{i,j_i}-1]$.
+%
+\begin{exa}
+We consider the following execution of the TDES corresponding to $G_{2,act}$ of Example \ref{exa:hier}.
+\begin{align}
+\Pr(\pi_{2,\lambda})
+=&s^2_1,\sigma_{1,2},s^2_2,\ttick_2,s^2_2,\sigma_{21},\notag \\
+&s^2_1,\sigma_{1,3},s^2_3,\ttick_2,s^2_3,\ttick_2,s^2_3,\notag
+\end{align}
+where $\sigma_{i,j}\in\Sigma_{2,act}$ for $i,j\in[1,3],i\neq j$, $s^2_j=\delta_{2,act}(s_i^2,\sigma_{i,j})$, and timer intervals for all events are given by $[0,~\infty]$.
+There are $\kappa_1$ and $\kappa_2$, and we have $m_{\pi_{i,j_i}(J_{\kappa_1})}=1$ and $m_{\pi_{i,j_i}(J_{\kappa_2})}=2$.
+In $\pi_{2,\lambda}$, the plan determined by $\kappa_1$ ({\sl resp.} $\kappa_2$) is done when $s^2_2$  ({\sl resp.} $s^2_3$) is stayed at.
+When $s^2_3$ is stayed at, the plan determined by $\kappa_1$ can not be done twice because of $\lnot z_{p_{i,{j_i}}}(k))\land (z_{p_{i,{j_i}}}(k+1)$ in \req{hier2-2}.
+\qedwhite
+\end{exa}
+%
+In this simulation, let the reward for $\pi(J)$, denoted by $W_{\pi(J)}$, be the sum of weights of soft constraints that $\pi(J)$ satisfies.
+%
+Then, we introduce $J_{lower}$ in the objective function $J_{\lambda}$ for $G_i$ with ${y}^{i,{j_i}}_\kappa$ as follows.
+\begin{align}\label{obj:3}
+J_{lower}^i=\sum_{j_i\in[1,~M_i]} \sum_{\kappa\in K} \sum_{k=0}^{\Len_i} {y}^{i,{j_i}}_\kappa(k) \cdot {W_{\pi_{i,{j_i}}(J_\kappa)}}.
+\end{align}
+%
+We determine $J_\lambda$ with \req{obj:2} and \req{obj:3}, and add the constraints \req{hier1}-\req{hier2-2} to the constraint of {\bf ILP\ref{pbm3}-2}.
+
+\begin{comment}
+
+Then, we introduce the objective function $J_{\lambda}$ for $G_i$ with ${z}^{i,{j_i}}_\kappa$ as follows.
+\begin{align}
+J_{\lambda}=&
+-\lambda_1\sum_{k=1}^{\Len_i}z_e(k) 
+\notag\\&~
++
+{\lambda_2}\left(\sum_{j_i\in[1,~M_i]} \sum_{\kappa\in K} \sum_{k=0}^{\Len_i} {y}^{i,{j_i}}_\kappa(k) \cdot {W_{\pi_{i,{j_i}}(J_\kappa)}}\right)
+\notag\\&~
++
+(1-{\lambda_1}-{\lambda_2})\left(\sum_{n=1}^{N_i} w^i_{n}\cdot z_{\psi^i_{n}}(0)\right) ,\notag
+\end{align}
+where $\Psi_i=\{(\psi^i_n,w_n^i)|~n\in[1,N_i]\}$ is a set of $N_i$ pairs of soft constraint and its weight for $G_i$.
+%
+%
+
+
+\end{comment}
+
+%
+Finally, we consider the performance indexes of $J_\mu$ for the top-level planning.
+In the same way as $y_{p_{i,{j_i}},\kappa}$ , ${y}^{i,j_i}_{\kappa}$, and $y^{i,j_i}_{{imp}}$, we introduce  $\Len + 1$ binary variables $y_{p_{i},\lambda}$ , ${y}^{i}_{\lambda}$, and $y^{i}_{{imp}}$, respectively.
+%$z_{p_i,\lambda}(k)$, $z_\lambda^i$, and $z^{i}_{\phi_\lambda} $
+These variables satisfy the following equations.
+\begin{align}
+%&{y}_{p_{i},\lambda}(k) \leq z_{p_{i}}(k)., \label{hier2-1}\\
+%
+&\sum_{\lambda\in \Lambda}{y}_{p_{i},\lambda}(k)= z_{p_{i}}(k), \label{hier:t-1}\\
+%
+%&\sum_{\lambda\in \Lambda}{y}_{p_{i},\lambda}(k) = 1,~\mbox{for }\forall k\in[0,~\Len_i],\label{hier2-2}\\
+%
+&y^{i}_{\lambda}
+=\G{0,m_{\pi_{i}(J_\lambda)}} y_{p_{i},\lambda},\label{hier:t-3}\\
+&y^{i}_{{imp}}(k) = \lnot z_{p_{i}}(k)\land (z_{p_{i}}(k+1)) \Leftrightarrow\bigvee_{\lambda\in \Lambda} {y}^{i}_{\lambda}(k+1).\label{hier:t-4}
+\end{align}
+%
+In the same way as \req{obj:1}, \req{obj:2}, and \req{obj:3}, we introduce $J_{time}$, $J_{soft}$, and $J_{lower}$ in the basis of the binary variables used in encoding of a trajectory of $G$ and the ticked LTL${}_f$ formula $\psi_n$, and $y^i_\lambda$ as follows.
+\begin{align}\label{obj:4}
+&J_{time}=\sum_{k=1}^{\Len}z_e(k),
+~J_{soft}=\sum_{n=1}^{N} w_{n}\cdot z_{\psi_{n}}(0).\\
+&J_{lower}=\sum_{i\in[1,~M]} \sum_{\lambda\in\Lambda} \sum_{k=0}^{\Len} {y}^i_\lambda
+(k) \cdot W_{\pi_i(\lambda)}.\label{obj:5}
+\end{align}
+%
+We determine $J_\mu$ with \req{obj:4} and \req{obj:5}, and add the constraints \req{hier:t-1}-\req{hier:t-4} to the constraint of {\bf ILP\ref{pbm3}-3}.
+
 %
 \subsection{Path planning with tasks}
 
 \begin{figure}
    \centering
    \includegraphics[width=6cm]{p-crop.pdf}
-   \caption{Grid model for the top-level DES considered in \rsec{simResult}. The left-top state(location) is $s_{0,act}$, the right-top state is $s_{5,act}$, the left-bottom state is $s_{30,act}$ and the right-bottom state is $s_{35,act}$. Atomic propositions assigned to green, red, yellow, and grey states are $p_1$, $p_2$, $p_3$, and $p_4$, respectively.}
+   \caption{Grid model for the top-level DES considered in \rsec{simResult}. The left-top state(location) is $s_{init,act}$, the right-top state is $s_{5,act}$, the left-bottom state is $s_{30,act}$ and the right-bottom state is $s_{35,act}$. Atomic propositions assigned to green, red, yellow, and grey states are $p_1$, $p_2$, $p_3$, and $p_4$, respectively.}
     \label{pTDES}
     %\vspace{0.1cm}
 \end{figure}
@@ -1342,7 +1482,7 @@ The effectiveness of the proposed approach is demonstrated by numerical simulati
 We consider a path planning problem where a robot moves the areas while doing tasks which is assigned to the corresponding states.
 In the top-level planning, we consider an order to visit states that represent locations.
 In the middle-level planning, we determine plans to operate procedures of tasks. 
-Then, in lowest-level planning, we determine plans of procedures in detail.
+Then, in bottom-level planning, we determine plans of procedures in detail.
 %
 %
 First, for the top-level planning, we introduce a DES $G_{act}$ for modeling behaviors of the robot 
@@ -1404,13 +1544,13 @@ respectively.
       {\includegraphics[width=7cm]{l_3_1-crop.pdf}\hspace{0.0cm}} \label{exa_des}} \vspace{0.0cm}
       \subfigure[The DES $G_{act,3,2}$ corresponding to $p_{3,2}\in \AP_{3,act}$.]{\hspace{0cm}
       {\includegraphics[width=7cm]{l_3_2-crop.pdf}\hspace{0.0cm}} \label{exa_des}} \vspace{0.0cm}
-    \caption{The untimed DESs used for the lowest-level planning in the simulation of \rsec{simResult}. Each DES represents task procedure or behaviors of a system.  } \label{l:TDES}
+    \caption{The untimed DESs used for the bottom-level planning in the simulation of \rsec{simResult}. Each DES represents task procedure or behaviors of a system.  } \label{l:TDES}
     %\vspace{0.1cm}
 \end{figure}
 %
-Finally, we introduce DESs for modeling procedures(behaviors) of systems used in the lowest-level planning as shown in \rfig{l:TDES}.
+Finally, we introduce DESs for modeling procedures(behaviors) of systems used in the bottom-level planning as shown in \rfig{l:TDES}.
 %
-From the above settings for DESs, we have the three-level hierarchical TDES with eight TDESs. 
+From the above settings for DESs, we have the three-level HTDES with eight TDESs. 
 %
 \subsection{Specifications for hierarchical planning}
 %
@@ -1550,11 +1690,11 @@ $G_{3,2}$ 	& 0.5 	& 5 &All &8 \\
 %
 %  \hfill
   %
-\subtable[The result of the middle-level TDESs. Time and $W$ are equal to $m_{\pi_i(J_{\lambda,\M,\W})}$ and $W_{\pi_i(J_{\lambda,\M,\W})}$, respectively. Soft and Task denote satisfied soft constraints and implemented tasks which are  determined by bottom-level plans.]{
+\subtable[The result of the middle-level TDESs. Time and $W$ are equal to $m_{\pi_i(J_{\lambda})}$ and $W_{\pi_i(J_{\lambda})}$, respectively. Soft and Task denote satisfied soft constraints and implemented tasks which are  determined by bottom-level plans.]{
 \centering
 \begin{tabular}{c|c|c|c|c|c}
 %
-%$W_{\pi_i(J_{\lambda,\M,\W})}$ 
+%$W_{\pi_i(J_{\lambda})}$ 
 & $\lambda\in \Lambda$& Time&Soft & $W$&Task\\
 %(0.1~0.1) (0.33,~0.33), (1,~0)
 \hline
@@ -1620,21 +1760,18 @@ Then, the robot moves to $s_{34,act}$.
     \caption{The path determined by the result of execution. } \label{p:result}
     %\vspace{0.1cm}
 \end{figure}
-%
-%
-%
-\end{comment}
-%
-%
+
+
+
 \section{efficiency of our method(kari)}
 %
 In this section, we consider(confirm) the efficiency of our proposed method.
-We consider three (cases of a) three-level hierarchical TDES $\mathcal{G}_1$, $\mathcal{G}_2$, $\mathcal{G}_3$, and $\mathcal{G}_4$.
+We consider three (cases of a) three-level HTDES $\mathcal{G}_1$, $\mathcal{G}_2$, $\mathcal{G}_3$, and $\mathcal{G}_4$.
 $\mathcal{G}_i$ for all $i=[1,~4]$ have one top-level TDES $G$.
 In $\mathcal{G}_i$ for $i=[1,~4]$, there are one, one, two, and two middle-level TDESs $G_i$, and one, two, three and four bottom-level TDESs, respectively.
 We introduce TDESs of $\mathcal{G}_i$ for $i=[1,~4]$ as follows.
 
-In every TDES of each hierarchical TDES, there are four states and transitions between pairs of states that are different from each other.
+In every TDES of each HTDES, there are four states and transitions between pairs of states that are different from each other.
 We define the initial state and the final state states, then the two states other than the initial state and the final state are defined as refined states.
 There is a transition from the final state to the final state, called \textit{self transition}.
 The unit time of the top-level TDES, middle-level TDESs, and bottom-level TDESs are given by 40, 20, and 10, respectively.
@@ -1670,7 +1807,13 @@ $\mathcal{G}_3,~\tilde{G}_3$& 105.9  & * &  6(all-6)  &* \\
 $\mathcal{G}_4,~\tilde{G}_4$& 177.1  & * &  8(all-6)  & *\\
 \end{tabular}
 \end{table}
-
+%
+%
+%
+\end{comment}
+%
+\red{\section{Complexity(kari)}}
+%
 %
 %
 \section{Conclusion}
@@ -1680,7 +1823,7 @@ In this paper, we considered two approaches to a planning problem for a real-tim
 One is to relax the specification by partitioning the specification into a hard constraint and a set of pairs of a  soft constraint and its weight. 
 Then, we formulated the problem with these constraints as an ILP problem.
 The other approach is hierarchical planning that allows to reduce the computational costs.
-For this approach, we proposed a hierarchical TDES and we especially considered a two-level hierarchical TDES that is composed of one upper level TDES and several lower level TDESs with different time-scales.
+For this approach, we proposed a HTDES and we especially considered a two-level HTDES that is composed of one upper level TDES and several lower level TDESs with different time-scales.
 Each lower level TDES describes detailed behaviors in the corresponding state in the upper level TDES.
 We proposed an algorithm of hierarchical planning where a rough plan is determined by using the upper level TDES and detailed plans are determined by using lower level TDESs.
 %
