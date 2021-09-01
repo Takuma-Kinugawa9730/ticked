@@ -1,0 +1,599 @@
+
+\documentclass{article}
+\usepackage{graphicx}      % include this line if your document contains figures
+\usepackage{mathtools}
+
+\usepackage{subfigure}
+\usepackage{cases}
+\usepackage{txfonts}
+\usepackage{comment}
+\usepackage{amsmath}
+\usepackage{balance}
+\usepackage{amssymb}
+\usepackage{amsfonts}
+\usepackage{comment}
+\usepackage{stmaryrd}
+\usepackage{latexsym}
+\usepackage{color}
+
+%\usepackage{lmodern} 
+
+\graphicspath{{./pic/}}
+
+\usepackage[linesnumbered, ruled]{algorithm2e}
+
+\newcommand{\qedwhite}{\hfill \ensuremath{\Box}}
+\newtheorem{myrem}{Remark}
+\newtheorem{dfn}{Definition}
+\newtheorem{pbm}{Problem}
+\newtheorem{exa}{Example}
+\newtheorem{q}{Q}
+\newcommand{\rdef}[1]{Definition\,\ref{#1}}
+\newcommand{\req}[1]{\eqref{#1}} 
+\newcommand{\rpbm}[1]{Problem\,\ref{#1}}
+\newcommand{\rsec}[1]{Section\,\ref{#1}}
+\newcommand{\rfig}[1]{Fig.\,\ref{#1}} 
+\newcommand{\rfigs}[1]{Figs.\,\ref{#1}} 
+
+\newcommand{\argmax}{\mathop{\rm arg~max}\limits}
+\newcommand{\argmin}{\mathop{\rm arg~min}\limits}
+
+
+\newcommand{\run}{\textit{run}}
+\newcommand{\Ad}{\textit{Ad}}
+\newcommand{\N}{\textit{Nei}}
+\newcommand{\x}{{\bf x}}
+
+\newcommand{\U}[1]{\mathcal{U}_{[#1]}}
+\newcommand{\G}[1]{\mathcal{G}_{[#1]}}
+\newcommand{\F}[1]{\mathcal{F}_{[#1]}}
+\newcommand{\Sw}[1]{\Diamonddot_{[#1]}}
+\newcommand{\Ew}[1]{\boxbox_{[#1]}}
+\newcommand{\Sur}[1]{\mathcal{S}_{[#1]}}
+\newcommand{\tick}{{\sf tick}}
+\newcommand{\ttick}{{\textit tick}}
+
+\newcommand{\Len}{{\sf L}}
+\newcommand{\M}{\mathcal{M}}
+\newcommand{\W}{\mathcal{W}}
+
+\newcommand{\red}[1]{\textcolor{red}{#1}}
+
+
+\parindent = 0pt
+
+\begin{document}
+
+Dear ,
+\vskip\baselineskip
+
+We have completed the first revision of the paper entitled ``Hierarchical Planning under Hard and Soft  Specifications Given by Ticked Linear Temporal Logic'' () and would like to submit the second version. The paper is now revised according to the comments of the first review round. Please find enclosed a letter with detailed answers to the comments of the Senior Editor and the Reviewers. We kindly thank the Senior Editor and the Reviewers and we are grateful for all comments and suggestions. We are looking forward to hearing from you.
+
+
+\vskip\baselineskip
+
+Yours sincerely,
+\vskip\baselineskip
+Takuma Kinugawa and Toshimitsu Ushio
+
+\newpage
+
+\begin{center}
+\large{\textbf{Aditor's Comments}}
+\end{center}
+\textit{Based on the reviews, it is our decision that the paper cannot be accepted for publication in the Transactions in its present form. Four reports have been obtained for this paper and all reviewers agree that the paper is well written and seems to be technical correct. However, there are two important concerns raised by the reviewers that should be considered. The first one, stated by the first two reviewers is related to the contributions. As the reviewers mentioned there are many works in robotics (and I can add here that also in DES community) dealing with high level robot planning with LTL specifications based on integer programming. The differences and novelty with respect to the recent papers in literature should be given. Some of the references are listed by the reviewers but there are more. The second main concern is related to the evaluation of the proposed method. As remarked by the last two reviewers, since there is no theoretical analysis of the results, the authors should or introduce such an analysis or improve the experimental results.}
+\vskip\baselineskip
+\textbf {Answer: }
+
+
+\newpage
+\begin{center}
+\large{\textbf{Reviewer 1 (225405)'s Comments}}
+\end{center}
+\textit{This paper addresses the problem of synthesizing paths for mobile
+robots modeled as Timed Discrete Event Systems (TDES) that have to
+satisfy hard and soft ticked LTLf specifications. The authors propose
+two approaches to address this problem. The first one requires
+assigning weights to the soft constraints and then picking the path
+that satisfies the hard and as many soft constraints as possible. The
+second approach which is more scalable relies on introducing
+hierarchical TDES, i.e., by decomposing large scale TDEs by several
+smaller subsystems.
+Overall, the paper is well written, although notationally heavy, with
+several examples explaining the proposed approach. Also, the paper
+seems to be technically sound and supported by simulation results.}
+\vskip\baselineskip
+\textbf {Answer: }
+
+\vskip\baselineskip
+
+\begin{q}{
+There is a long list of works in robotics that focus on controlling
+robots under hard and soft temporal logic constraints. 
+Is there a benefit in the proposed approach in using ticked LTL${}_f$ from
+a practical point of view? The authors do not need to cite these
+specific paper but a more thorough literature review is needed.
+}
+\end{q}
+\vskip\baselineskip
+\textbf {Answer: }
+%ticked LTLfはMTLのvariantである。ILPにするために実行列をMTLが対象にしているものとは変更した。もしかしたら意味するところは同じなのかもしれないが、そういった理由で違う名前をつけた。
+
+\vskip\baselineskip
+
+
+
+
+\begin{q}{
+Is it possible to use automata theoretic approaches to solve such a
+temporal logic synthesis problems that may be more scalable? 
+}
+\end{q}
+\vskip\baselineskip
+\textbf {Answer: }
+%今回の提案手法では、Soft制約に数字で定量的に重要度を与えた。そういったことはオートマトンでは難しい。また、早く終わることがいいことである、という指標もくみこめるのはILPだからこそ
+
+\vskip\baselineskip
+
+
+\begin{q}{
+It would be useful if the authors provide a comparison between the
+two proposed methods for smaller scale planning problems. Also, the
+authors should report the runtimes required to synthesize the plans.
+}
+\end{q}
+\vskip\baselineskip
+\textbf {Answer: }
+%やります
+
+\vskip\baselineskip
+
+
+\begin{q}{
+In (1), is it meant $[l_\sigma, u_\sigma]$ if
+$\sigma \in \Sigma_{pro}$ and $[l_\sigma, \infty]$ otherwise.
+Otherwise, it's hard to understand how the two cases in (1) are
+different with each other.
+}
+\end{q}
+\vskip\baselineskip
+\textbf {Answer: }
+%修正しました
+
+\vskip\baselineskip
+
+
+\begin{q}{
+It would be helpful if the authors provide a more elaborate
+discussion on the ``tick'' event in Definition (2) as this seems to be
+crucial for the paper}
+\end{q}
+\vskip\baselineskip
+\textbf {Answer: }
+%
+
+\vskip\baselineskip
+
+
+\begin{q}{
+Equation 2 is unclear. What is the meaning of $t_{\sigma,0}$? Why is it
+defined like that?
+}
+\end{q}
+\vskip\baselineskip
+\textbf {Answer: }
+%t_\sigmaはイベントの生起に関するタイマーで、カウントダウン的に動作する。speのほうではu_\sigmaからl_\sigma引いた分のタイマーになれば、生起できるようになり、remのほうでは0になれば生起できるようになる。TDESの遷移則を省略していたから、分かりにくくなってしまっている。
+
+\vskip\baselineskip
+
+
+\begin{q}{
+There are some minor typos throughout the paper e.g., "whose combination is prefer to any other one"
+}
+\end{q}
+\vskip\baselineskip
+\textbf {Answer: }
+%
+
+\vskip\baselineskip
+
+
+
+\newpage
+\begin{center}
+\large{\textbf{Reviewer 2(225407)'s Comments}}
+\end{center}
+\textit{The paper proposes two approaches to determine a plan for a real-time system modeled by a timed discrete event system (TDES) where one approach is to relax the specification by partitioning the specification into hard constraints and soft constraints, and the other is to represent a large-scale system by several subsystems, introducing a novel hierarchical model called hierarchical TDES.
+The considered problem is important to the community, and the authors do a good job in explaining that in the introduction section. My major concerns are with the proposed approach and the illustrative examples chosen in the paper.}
+\vskip\baselineskip
+\textbf {Answer: }
+
+\vskip\baselineskip
+
+\begin{q}{
+The problem of introducing time constraints in LTL and formulating such problems as ILPs have been studied before. The authors should clarify their novelty and contributions compared to these existing works. A few papers are listed below which appear to be similar to the work of this paper. Please look into the references of these mentioned papers to find other relevant works.
+}
+\end{q}
+\vskip\baselineskip
+\textbf {Answer: }
+%
+
+\vskip\baselineskip
+
+
+\begin{q}{
+Timed temporal logic has been studied in the past. Of most importance is the Signal Temporal Logic (STL) which provides a framework to study temporal logic constrained problems with time bounds. Although STL is designed for continuous time systems with real valued signals, the authors should briefly discuss what are the shortcomings of STL in the context of the problems they are interested and, more importantly, why LTL${}_f$ is needed to be introduced in the first place. Besides STL, there are other variants of temporal logic which consider timing constraints
+
+}
+\end{q}
+\vskip\baselineskip
+\textbf {Answer: }
+%STLの対象は連続信号。今回の制御対象はTDESの実行列。ticked LTLfはMTLの変異で、対象として列が異なる。具体的には稠密な時間ではなく離散的な時間を扱う。
+
+\vskip\baselineskip
+
+
+
+
+\begin{q}{
+A related approach is presented in "Maity, Dipankar, and John S. Baras. Motion planning in dynamic environments with bounded time temporal logic specifications. 23rd Mediterranean Conference on Control and Automation (MED). IEEE, 2015", which proposes an extension to LTL to include timing constraints. The framework of the paper by Maity et. al. seems to be related to this paper, especially in the fact that they both introduce timing constraints in LTL. Please briefly discuss how your paper is different/similar to the framework presented by Maity et. al.
+}
+\end{q}
+\vskip\baselineskip
+\textbf {Answer: }
+%たしかに似ている。Soft制約を組み込んだか否か、というぐらいしか違いはない。しかし、階層プランニングを導入している点は違う
+
+\vskip\baselineskip
+
+
+
+
+\begin{q}{
+In ``Wolff, Eric M., Ufuk Topcu, and Richard M. Murray. Optimization-based trajectory generation with linear temporal logic specifications. International Conference on Robotics and Automation (ICRA). IEEE, 2014'', Wolff et. al. considers a similar ILP formulation for solving LTL problems. An extension of this work for timed LTL problems is studied in ``Zhou, Yuchen, Dipankar Maity, and John S. Baras. Optimal mission planner with timed temporal logic constraints. European Control Conference (ECC). IEEE, 2015''. Please carefully consider these works and state the differences of your work from these papers.
+}
+\end{q}
+\vskip\baselineskip
+\textbf {Answer: }
+%
+
+\vskip\baselineskip
+
+
+
+\begin{q}{
+The first part of the paper reads very similar to the arXiv paper https://arxiv.org/pdf/1912.02513.pdf. If the arXiv paper is to be published elsewhere, the authors may remove some obvious overlap from the TAC submission by referencing the arXiv paper. In fact, to me, the soft-constraint problem seems to be a natural extension of the arXiv paper and does not add technical innovation. The hierarchical planning seems to be the novelty that is proposed in this work and the focus should be there.
+}
+\end{q}
+\vskip\baselineskip
+\textbf {Answer: }
+%
+
+\vskip\baselineskip
+
+
+
+\begin{q}{
+}
+\end{q}
+\vskip\baselineskip
+\textbf {Answer: }
+%
+
+\vskip\baselineskip
+
+
+
+\begin{q}{
+it is not clear how we obtain a hierarchical representation of the system. That is, how do we CREATE/GENERATE the pTDES and cTDEs to start with. It seems that the paper implicitly assumes that such pTDES and cTDES are given a priori. This is not necessarily the case in several applications, including robotics examples which the authors use to demonstrate their approach. In fact, the problem of generating state hierarchy goes back to state aggregation of MDPs and Finite State Machines, and such problems are computationally expensive to solve. Therefore, if we add the times taken to compute a hierarchical model plus running Algorithm 2, it may easily become more time consuming than using Algorithm 1.
+}
+\end{q}
+\vskip\baselineskip
+\textbf {Answer: }
+%現時点では事前に階層にできることを考えている。そして、システムが複数あることを想定している（経路設計だけでなく）。そういった意味では、分割するのに時間がかかる、ということは意識しなくてもよいと考える
+
+\vskip\baselineskip
+
+\begin{q}{
+I believe that for some (large) problems Algorithm 1 will be super inefficient and the hierarchical approach (generating the hierarchy plus running Algorithm 2) is useful. However, the paper does not shed any light on this aspect, i.e., how large a problem has to be in order to reap the benefits of a hierarchical approach where the user generate the hierarchy first and then use Algorithm 2 on that hierarchy. I believe that a complexity analysis of the algorithms may provide a strong understanding on this aspect.
+}
+\end{q}
+\vskip\baselineskip
+\textbf {Answer: }
+%新しいボトムアップの階層プランニングでは、下位は予め（オフラインで）計算しておくイメージ。なので、階層にせずに上位と下位を同時に考慮する（Algorithm１）と、計算量は多くなってしまう。しかし、Soft制約の合計は大きくなるかもしれない
+
+\vskip\baselineskip
+
+
+\begin{q}{
+How are $\Len'$ and $\Len$ chosen for solving the problems? It seems that these parameters can affect the feasibility as well as optimality of the approach. It again appears that the paper assumes that an L is given. However, in reality, the users may need to define it.
+}
+\end{q}
+\vskip\baselineskip
+\textbf {Answer: }
+%修正した資料では、どちらも設計者がgivenするものとなる。実行可能解や最適解を求めるうえでは大変重要。小さすぎると実行不可能になるし、大きすぎると計算時間がかかる。オフラインでの計算（＠下位）では大きめのＬを与えて、オンラインの計算（＠上位）では、そこそこな値にしておくのが、現状の解決作かな
+
+\vskip\baselineskip
+
+
+\begin{q}{
+It is not clear whether (26)-(33) are given a priori or derived from (24)-(25). If they are derived from the global specification, then how are these derived? That is, are there automated ways to derive these from the global specification, or does a user need to manually define these?
+}
+\end{q}
+\vskip\baselineskip
+\textbf {Answer: }
+%修正した案について説明します。修正した案では、下位TDESの使用は完全に決められた形で与えらます。一方、上位TDESはパラメータ表現された形で与えられます。このパラメータは下位TDESの実行列によって自動的に決められます。
+
+\vskip\baselineskip
+
+\begin{q}{
+In (34), it seems that the robot stays in s3 (for one tick) while moving from s1 to s2. However, in the timing table in Table II, such a stay in s3 is not captured, rather it shows a direct transition from s1 to s2 (from $tick_p\ 1$ to $tick_p\ 2$). Please clarify this anomaly and other similar ones.
+}
+\end{q}
+\vskip\baselineskip
+\textbf {Answer: }
+%これは明らかに表の作り方が分かりにくかった。修正案では表は削除して、ｐTDESにかんしては、ラベルを与えた場所にいつ到着したのか、というダイジェストにしよう。正確にはｓ_2に到着したのは3tick目が生起する前、2tick目が生起する前（つまり1tick）にs_3に言っている
+
+\vskip\baselineskip
+
+\begin{q}{
+The paper states ``For simplicity, we focus on planning over a two-level hierarchical TDES, but the key idea can be generalized into planning with more than two levels.'' It will be helpful to provide a discussion on the extension to more than two levels. From the current exposition, it is not clear.
+}
+\end{q}
+\vskip\baselineskip
+\textbf {Answer: }
+%最下位層のみ事前に計算できる（すなわち、仕様がパラメータ表示でない）という形式になる。そして、下から順番に実行列を求めていき、上の階層のパラメータを決める
+
+\vskip\baselineskip
+
+
+\begin{q}{
+In (1), why does the lower bound 0? Can it be anything else?
+}
+\end{q}
+\vskip\baselineskip
+\textbf {Answer: }
+%まず、タイマーはカウントダウン的に作動する。speにとって、u_\sigmaの定義からタイマーの値が0になるということは、もうイベントtickを生起させsることができないことを表す。一方、remにとって、タイマーの値が0になることは、そのイベントをそれ以降生起させることができることを表す。
+
+\vskip\baselineskip
+
+
+\begin{q}{
+One line before (2), it says $s_0 = (s_{0,act},{t_{\sigma,0} | \sigma \in \Sigma_{act}})$ where $t_{\sigma,0}$ is defined to be a real value in (2). However, based on (1) and Definition 2 $(S= S_{act} \prod T_\sigma)$ it seems that $t_{\sigma,0}$ should be an interval and not a real value. Please clarify.
+}
+\end{q}
+\vskip\baselineskip
+\textbf {Answer: }
+%[m, n]は区間ではなく、集合を表している。それを見落としているから、この勘違いをしている
+
+\vskip\baselineskip
+
+\begin{q}{
+In section IV-B-1, it is stated that $w(k) \in {0,1}^N$. However, the equations in (5) does not always ensure that $w(k) \in {0,1}^N$ unless the constraint ``$w(k) \in {0,1}^N$'' is explicitly incorporated in (5). Please clarify whether we need ``$w(k) \in {0,1}^N$'' to be added in (5) or not.
+}
+\end{q}
+\vskip\baselineskip
+\textbf {Answer: }
+%めっちゃ正確なことをいうと必要ではある。
+
+\vskip\baselineskip
+
+
+Finally, thank you for your pointing typos and notational ambiguity. We have corrected all these mistakes.
+
+
+
+%
+%
+%
+%
+%
+%
+\newpage
+\begin{center}
+\large{\textbf{Reviewer 3(225409)'s Comments}}
+\end{center}
+\textit{This paper presents two methods to
+determine a plan for a timed
+discrete event system (TDES) that needs to satisfy a given
+specification. The desired specification is represented a fragment of
+linear temporal logic (LTL). In the first method, the specification is
+partitioned into sets of h
+ard and soft constraints. In the second, the
+TDES is represented by a hierarchical model with multiple time scales,
+leading to plans of different granularities. The authors demonstrate
+their approaches in solving a path planning problem for a mobile robot.
+The paper is mostly written in a manner that is easy to follow, and the
+authors motivate their contribution clearly. However, I have some
+comments, which the authors are encouraged to address in a revision.}
+\vskip\baselineskip
+\textbf {Answer: }
+
+\vskip\baselineskip
+
+\begin{q}{
+In the Introduction, the authors indicate that the LTL to automaton
+representation has a ``double exponential time'' complexity. I am not
+sure this is correct. I think the double exponential complexity is a
+space complexity in terms of the size of the LTL formula.
+}
+\end{q}
+\vskip\baselineskip
+\textbf {Answer: }
+%はい、修正します
+
+\vskip\baselineskip
+
+\begin{q}{
+Regarding the semantics of ticked LTL${}_f$ introduced in Section III, what is the distinction between this and MITL (metric interval temporal
+logic) that uses the pointwise semantics (please see Ref. [1] at the
+end of this review)? In this case, the MITL formula are interpreted
+over runs of a timed automaton. However, it will be interesting to
+understand the distinction between the two (especially when the
+end points of the intervals in MITL are finite), and why LTL${}_f$ may be
+more appropriate for the setting in this paper.
+}
+\end{q}
+\vskip\baselineskip
+\textbf {Answer: }
+%ticked LTLfはMITLの変異種です。実行列的に新しくした
+
+\vskip\baselineskip
+
+
+\begin{q}{
+In the discussion in Section IV.B, there seems to be an overloading of
+the notation $\psi$ when speaking about encoding the ticked LTL${}_f$
+formula. $\psi$ is used in this section to denote the components of a
+larger LTL formula, and also for the soft constraints.
+}
+\end{q}
+\vskip\baselineskip
+\textbf {Answer: }
+%修正しましょう。\varphiで対応するか
+
+\vskip\baselineskip
+
+
+\begin{q}{
+The simulation example in Section IV is somewhat underwhelming, given
+the possible complexities that can arise in the satisfaction of the
+soft constraints. It will be interesting to evaluate an example where multiple ($> 1$) soft constraints and/ or different types of LTL${}_f$
+formulas (other than ``eventually'' reach types of formulas) can be
+satisfied in different ways.
+} 
+\end{q}
+\vskip\baselineskip
+\textbf {Answer: }
+%
+
+\vskip\baselineskip
+
+
+\begin{q}{
+In Section V, is there a constraint on the ratio of the two time
+scales that might need to hold? One would assume that such
+a condition will have to be enforced (like in the setting of two
+time scale reinforcement learning/ stochastic approximations).
+}
+\end{q}
+\vskip\baselineskip
+\textbf {Answer: }
+%最初のやつにはありました。しかし、修正した方では、天井関数にかけるからないです。
+
+\vskip\baselineskip
+
+\begin{q}{
+The discussion in Section VII.B may benefit from an interpretation of
+the specifications in Equations (25)-(26) to give the reader who may
+not be familiar with LTL an intuition of the meaning of these. The
+explanation of the results in Section VII.C is well
+written. However, like in Section IV, it would have been interesting to see a little more complexity in the hierarchy either in terms of the number of levels, or the number of child DESs in a lower level.
+}
+\end{q}
+\vskip\baselineskip
+\textbf {Answer: }
+%修正したものでは、ｃTDESを4つにして、ｐTDESの8つの場所に対応付けさせた
+
+\vskip\baselineskip
+
+
+\begin{q}{
+since the current manuscript lacks a theoretical analysis of the
+approach, one would have liked the authors to carry out more detailed
+experiments.
+}
+\end{q}
+\vskip\baselineskip
+\textbf {Answer: }
+%理論がないから、実験を行え、ということ
+
+\vskip\baselineskip
+
+
+\newpage
+\begin{center}
+\large{\textbf{Reviewer 4(226375)'s Comments}}
+\end{center}
+\textit{The paper under review introduces a novel algorithm for planning optimal finite executions of timed discrete event systems (TDES) under ticked LTL${}_f$ specifications. In particular, the paper considers the setting where both hard and soft specification constrains are given and the soft specifications are ordered by a weighting function. Then an optimal execution satisfies the hard specification constrains and optimizes the sum of the weights of soft constrains that it can
+additionally satisfy.
+The solution of this problem is obtained by rewriting the transition structure of the TDES as well as the LTL${}_f$ specification into an integer linear program (ILP) that can be solved by a standard
+MaxSAT solver.
+In order to use this approach, the authors have to overcome some technical difficulties, i.e., introducing a metric into LTL${}_f$ by using concepts from MTL, or rewriting TDES as linear constrains. To me, while important, these ideas follow more or less directly from the literature and
+are not very novel.
+For me the main contribution of this paper is to additionally introduce a hierarchical planning approach to solve the outlined problem. Here, an abstract TDES is considered whose states can be
+refined into local TDES models. While the time scales do not need to match among local TDES' or between any local and the global TDES, it is still assumed that they are integer multiples of each other for easy conversion.
+Here the set up of global and local specifications becomes a bit more involved. However, these
+ideas are all well explained. In particular, I felt that first introducing the simpler planning problem for a single TDES (even though this is very close to existing work) helped me to understand the
+more involved hierarchical approach.
+Generally, the paper is very well written. It starts with a detailed literature review and explains all
+introduced concepts well. Also the mathematical formulation of the problem is rigorous and small examples are used throughout the paper to explain more difficult constructions well. Finally, a case
+study is presented that applies all introduced concepts and also helps the reader to understand the overall planning framework.}
+\vskip\baselineskip
+\textbf {Answer: }
+
+\vskip\baselineskip
+
+\begin{q}{
+My main criticism of the paper is on the formalization of the properties of a solution plan derived from the hierarchical framework. The authors admit in one sentence that they are only computing locally optimal solutions (below Alg. 2). However, the overall properties of this algorithmic solution are not clear to me and are never stated consistently, e.g., as a theorem.
+For example, even when considering only hard constrains, does the algorithm always compute a feasible plan if one exists?
+}
+\end{q}
+\vskip\baselineskip
+\textbf {Answer: }
+%詳しいことは、QのXXを見てください、っていう感じにまとめるように回答しよう
+\vskip\baselineskip
+
+
+\begin{q}{
+W.r.t. local constrains, I even find the interpretation of a satisfying plan confusing. For example $\phi_i^E$ must hold at every\_stay\_in $s_i$. However, as shown in the example of Sec. VII, this means
+that whenever $\phi_i^E$ cannot be satisfied when the robot enters state $s_i$, the plan just forces the
+robot to not \_stay\_in $s_i$ but only ``pass through'' $s_i$. This is counter-intuitive to me. It seems to me
+that this can result in a feasable plan computed by algorithm 2 where $\phi_i^E$ is never fulfilled. It
+seems that the algorithm never raises an alarm in this case and is allowed to ``cheats'' w.r.t.\ local
+specifications by just never staying in this region of the state space.
+%
+Besides the fact that this seems conceptually odd, I also don't know how to interpret ``not staying'' in a certain region given a robotic context. If the robot needs one time unit to move from region 1 to
+region 2 (e.g., because it has to go from on door to the other), it is definitely staying in region 1 for
+one time unit. So once it enters 1 it cannot decide to instantaneously leave. It needs to physically
+\_stay\_ in region 1 until it can exit to 2. But if it \_stays\_ it should also fulfil $\phi_1^E$, what it does not in the given example. I don't feel that this situation is suitably taking care off by allowing the
+planner to force ``immediate transitions'' through regions.
+}
+\end{q}
+\vskip\baselineskip
+\textbf {Answer: }
+%stay をstay and exploreとして暗に使っていたことが裏目に出ている。あなたの指摘で確かに上手く行かないことに気が付きました。そこで、階層プランニングをbottom-up に変更しました。そこでは、あなたが列挙した問題点（下位システムのHard制約を最後までみたさないことがある、not-staying ということもおきない）を解決しています。下位システムのプランニングにおいて、Soft制約を無視して、最短でHard制約を満たす実行列を求めるようにしています。ここから得られるパラメータｍを用いて、上位のＨａｒｄ制約を構成する（FGの形式で）ことで、もし、下位システムのHard制約を満たすことができなければ、上位TDESでunsat となり、分かるようにした。こうすることで、2つ目にあげた問題点も解決できる。かならずどこかのタイミングで特別な原子命題が割り振られている状態に、stay and operate procedure of tasksする。あるいは、stay to moveのときもあるかもしれないけど
+
+
+\vskip\baselineskip
+
+
+\begin{q}{
+In terms of related work, the authors compare their work to many approaches that have been mainly
+developed for control purposes rather then planning. However, in control applications there are
+typically some un-controllable events, or un-predictable environment actions that have to be
+counteracted by a controller. The planning problem considered in this paper is easier, as no such
+opponent has to be considered and only a path through a graph with certain properties needs to be
+found.
+}
+\end{q}
+\vskip\baselineskip
+\textbf {Answer: }
+%それは本当にその通り。将来的にはMPCなどで外乱にも強い制御方法にしたい
+
+\vskip\baselineskip
+
+
+\begin{q}{
+I would like to see a formal characterization of the properties of these solutions
+in terms of the satisfaction of the given set of specifications.
+}
+\end{q}
+\vskip\baselineskip
+\textbf {Answer: }
+%
+
+\vskip\baselineskip
+
+%
+\end{document}
+%
